@@ -1,50 +1,39 @@
 <script setup>
-import { ref, watch, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import MainArea from './components/MainArea.vue'
+import MusicPlayer from './components/MusicPlayer.vue'
+import Sidebar from './components/Sidebar.vue'
+import CommentSection from './components/CommentSection.vue'
+import ModalDialog from './components/ModalDialog.vue'
+import Footer from './components/Footer.vue'
 import apiAdapter from './utils/api.js'
-import CommentHandler from './utils/commentHandler.js'
-
-// 导入组件
-import {
-  MainArea,
-  Sidebar,
-  CommentSection,
-  ModalDialog,
-  Footer,
-  MusicPlayer
-} from './components'
 
 // 响应式数据
-const newComment = ref('')
-const showBanner = ref(localStorage.getItem('visited') !== 'true')
-const showCaptcha = ref(false)
-const captchaImage = ref('')
-const captchaInput = ref('')
-const selectedTieba = ref({})
+const selectedTieba = ref({
+  name: '加载中...',
+  description: '正在加载贴吧信息...',
+  avatar: '',
+  backgroundImage: ''
+})
 const tiebaList = ref([])
 const comments = ref([])
+const newComment = ref('')
 const isPlaying = ref(false)
-const visitCount = ref(0)
-const pageViews = ref(0)
 const userCount = ref(0)
 const clickCount = ref(0)
+const pageViews = ref(0)
+const visitCount = ref(0)
+const showBanner = ref(false)
 
-// 模板引用
-const musicPlayerRef = ref(null)
+// 加载状态
+const isLoading = ref(true)
+
+// 组件引用
 const mainAreaRef = ref(null)
+const musicPlayerRef = ref(null)
+const commentSectionRef = ref(null)
 
-// 监听音乐播放器状态变化
-watch(() => musicPlayerRef.value?.isPlaying, (newValue) => {
-  if (newValue !== undefined) {
-    isPlaying.value = newValue
-  }
-}, { deep: true })
-
-// 计算属性
-const isValidCaptcha = computed(() => {
-  return /^\d{6}$/.test(captchaInput.value)
-})
-
-// 方法
+// 加载tieba列表
 const loadTiebaList = async () => {
   try {
     const response = await fetch('/data/tieba-list.csv')
@@ -76,7 +65,7 @@ const loadTiebaList = async () => {
 
 const loadComments = async () => {
   try {
-    const data = await apiAdapter.getComments()
+    const data = await apiAdapter.getAllComments()
     comments.value = data.comments
     
     // 调用 MainArea 的 reloadDanmakus 方法重新加载弹幕
@@ -119,6 +108,20 @@ const insertDanmakus = (comment) => {
   }
 }
 
+// 处理新评论的函数
+const handleNewComment = (newComment) => {
+  // 添加新评论到列表开头
+  comments.value = [newComment, ...comments.value]
+  
+  // 触发弹幕插入
+  insertDanmakus(newComment)
+}
+
+// 处理音乐播放状态变化
+const handleMusicStateChange = (playing) => {
+  isPlaying.value = playing
+}
+
 const initVisitStats = () => {
   const storedVisitCount = localStorage.getItem('visitCount') || 0
   const storedPageViews = localStorage.getItem('pageViews') || 0
@@ -144,38 +147,7 @@ const closeBanner = () => {
   localStorage.setItem('visited', 'true')
 }
 
-const submitComment = async () => {
-  if (commentHandler.value) {
-    await commentHandler.value.submitComment()
-  }
-}
 
-const refreshCaptcha = async () => {
-  if (commentHandler.value) {
-    await commentHandler.value.refreshCaptcha()
-  }
-}
-
-const closeCaptcha = () => {
-  if (commentHandler.value) {
-    commentHandler.value.closeCaptcha()
-  }
-}
-
-const validateCaptchaInput = () => {
-  if (commentHandler.value) {
-    commentHandler.value.validateCaptchaInput()
-  }
-}
-
-const submitCaptcha = async () => {
-  if (commentHandler.value) {
-    await commentHandler.value.submitCaptcha()
-  }
-}
-
-// 实例变量
-let commentHandler = ref(null)
 
 // 生命周期
 onMounted(async () => {
@@ -189,31 +161,33 @@ onMounted(async () => {
     }, 1000)
   }
   
-  // 同时加载tieba列表、评论数据和统计数据
-  await Promise.all([
-    loadTiebaList(),
-    loadComments(),
-    loadStats()
-  ])
+  // 先设置加载完成，让组件渲染
+  isLoading.value = false
   
-  // 初始化评论处理器
-  commentHandler.value = new CommentHandler({
-    newComment,
-    comments,
-    apiAdapter,
-    captchaImage,
-    captchaInput,
-    showCaptcha,
-    nextTick,
-    insertDanmakus
-  })
+  try {
+    // 然后加载数据
+    await Promise.all([
+      loadTiebaList(),
+      loadComments(),
+      loadStats()
+    ])
+  } catch (error) {
+    console.error('页面初始化失败:', error)
+  }
 })
 </script>
 
 <template>
   <div id="app">
     <div class="site-title" @click="showBanner = true">原神天堂内鬼吧二周年共创纪念</div>
-    <div class="container">
+    
+    <!-- 加载状态 -->
+    <div v-if="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">正在加载页面内容...</div>
+    </div>
+    
+    <div v-else class="container">
       <!-- 主体区域 -->
       <MainArea 
         :selected-tieba="selectedTieba" 
@@ -225,6 +199,7 @@ onMounted(async () => {
       <MusicPlayer 
         :selected-tieba="selectedTieba"
         ref="musicPlayerRef"
+        @music-state-change="handleMusicStateChange"
       />
 
       <!-- 侧边栏 -->
@@ -237,8 +212,10 @@ onMounted(async () => {
       <CommentSection 
         :new-comment="newComment"
         :comments="comments"
-        @submit-comment="submitComment"
+        :api-adapter="apiAdapter"
         @update:new-comment="newComment = $event"
+        @new-comment="handleNewComment"
+        ref="commentSectionRef"
       />
     </div>
 
@@ -251,20 +228,7 @@ onMounted(async () => {
       @close="closeBanner"
     />
     
-    <!-- 验证码对话框 -->
-    <ModalDialog 
-      :visible="showCaptcha"
-      type="captcha"
-      title="验证码验证"
-      :captcha-image="captchaImage"
-      :captcha-input="captchaInput"
-      :is-valid-captcha="isValidCaptcha"
-      @close="closeCaptcha"
-      @refresh-captcha="refreshCaptcha"
-      @submit-captcha="submitCaptcha"
-      @validate-captcha-input="validateCaptchaInput"
-      @update:captcha-input="captchaInput = $event"
-    />
+
     
     <!-- 底部信息 -->
     <Footer />
@@ -300,5 +264,36 @@ body {
 .site-title:hover {
   color: #4da6ff;
   transform: scale(1.05);
+}
+
+/* 加载状态样式 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #1a75ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+.loading-text {
+  font-size: 18px;
+  color: #666;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>

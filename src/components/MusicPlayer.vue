@@ -15,7 +15,7 @@ const props = defineProps({
 })
 
 // Emits
-const isPlaying = ref(false)
+const emit = defineEmits(['music-state-change'])
 
 // 响应式数据
 const aplayer = ref(null)
@@ -51,22 +51,22 @@ const initPlayer = () => {
   
   aplayer.value.on('play', () => {
     aplayerContainer.classList.add('aplayer-playing')
-    isPlaying.value = true
+    emit('music-state-change', true)
   })
   
   aplayer.value.on('pause', () => {
     aplayerContainer.classList.remove('aplayer-playing')
-    isPlaying.value = false
+    emit('music-state-change', false)
   })
   
   aplayer.value.on('ended', () => {
     aplayerContainer.classList.remove('aplayer-playing')
-    isPlaying.value = false
+    emit('music-state-change', false)
   })
   
   aplayer.value.on('error', () => {
     aplayerContainer.classList.remove('aplayer-playing')
-    isPlaying.value = false
+    emit('music-state-change', false)
   })
 
   // 鼠标悬浮展开/收起功能
@@ -74,9 +74,9 @@ const initPlayer = () => {
     aplayer.value.setMode('normal')
   })
   
-  // aplayerContainer.addEventListener('mouseleave', () => {
-  //   aplayer.value.setMode('mini')
-  // })
+  aplayerContainer.addEventListener('mouseleave', () => {
+    aplayer.value.setMode('mini')
+  })
 }
 
 // 更新播放器
@@ -116,8 +116,7 @@ onUnmounted(() => {
 // 暴露方法给父组件
 defineExpose({
   updatePlayer,
-  aplayer,
-  isPlaying
+  aplayer
 })
 </script> 
 

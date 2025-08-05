@@ -1,0 +1,418 @@
+openapi: 3.0.3
+info:
+  title: SeraphimLeak API
+  description: |
+    SeraphimLeak 后端API服务
+    
+    提供评论管理、访问统计、验证码等功能。
+    
+    ## 主要功能
+    - 评论提交和获取
+    - 访问统计
+    - 验证码生成和验证
+    - 内容安全审查
+    - 限流保护
+    
+    ## 安全特性
+    - 评论提交限流（1分钟内最多3次）
+    - 验证码刷新限流（5分钟内最多3次）
+    - 内容安全审查（基于阿里云内容安全服务）
+    - CORS支持
+    
+    ## 状态码说明
+    - 200: 请求成功
+    - 400: 请求参数错误
+    - 429: 请求过于频繁（限流）
+    - 500: 服务器内部错误
+  version: 1.0.0
+  contact:
+    name: SeraphimLeak API Support
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8001
+    description: 开发环境
+
+paths:
+  /health:
+    get:
+      summary: 健康检查
+      description: 检查API服务是否正常运行
+      tags:
+        - 系统
+      responses:
+        '200':
+          description: 服务正常运行
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  message:
+                    type: string
+                    example: "SeraphimLeak API is running"
+                required:
+                  - status
+                  - message
+
+  /stats:
+    get:
+      summary: 获取访问统计
+      description: |
+        获取网站访问统计数据，包括用户数和点击量。
+        每次调用都会增加点击量计数。
+      tags:
+        - 统计
+      responses:
+        '200':
+          description: 成功获取统计数据
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsResponse'
+
+  /captcha:
+    get:
+      summary: 获取验证码
+      description: |
+        生成并返回验证码图片。
+        验证码用于防止恶意评论提交。
+        
+        ## 限流规则
+        - 5分钟内最多刷新3次验证码
+        - 验证码有效期为5分钟
+      tags:
+        - 验证码
+      responses:
+        '200':
+          description: 成功生成验证码
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/CaptchaResponse'
+                required:
+                  - success
+                  - data
+        '429':
+          description: 刷新过于频繁
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /comments:
+    get:
+      summary: 获取评论列表
+      description: |
+        获取已审核通过的评论列表。
+        支持分页查询。
+      tags:
+        - 评论
+      parameters:
+        - name: limit
+          in: query
+          description: 每页评论数量，默认50
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: offset
+          in: query
+          description: 偏移量，默认0
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: 成功获取评论列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentListResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: 提交评论
+      description: |
+        提交新评论。
+        
+        ## 验证规则
+        - 评论内容不能为空
+        - 评论内容不能超过100字
+        - 需要验证码（如果触发验证码机制）
+        
+        ## 限流规则
+        - 1分钟内最多提交3次评论
+        - 24小时内成功提交5次评论后，需要验证码验证
+        
+        ## 审核流程
+        - 评论提交后立即保存为pending状态
+        - 异步进行内容安全审查
+        - 审查通过后状态更新为approved
+      tags:
+        - 评论
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+      parameters:
+        - name: captcha
+          in: query
+          description: 验证码（当需要验证码时）
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 评论提交成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  id:
+                    type: integer
+                    description: 评论ID
+                    example: 123
+                  content:
+                    type: string
+                    description: 评论内容
+                    example: "这是一个测试评论"
+                  time:
+                    type: string
+                    description: 提交时间
+                    example: "2024-01-01 12:00:00"
+                required:
+                  - success
+                  - id
+                  - content
+                  - time
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                  - type: object
+                    properties:
+                      success:
+                        type: boolean
+                        example: false
+                      captchaError:
+                        type: boolean
+                        example: true
+                      error:
+                        type: string
+                        example: "需要验证码验证"
+                    required:
+                      - success
+                      - captchaError
+                      - error
+        '429':
+          description: 请求过于频繁
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "请求过于频繁，请60秒后再试"
+                  retry_after:
+                    type: integer
+                    description: 重试等待时间（秒）
+                    example: 60
+                required:
+                  - success
+                  - error
+                  - retry_after
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Comment:
+      type: object
+      description: 评论对象
+      properties:
+        id:
+          type: integer
+          description: 评论ID
+          example: 123
+        content:
+          type: string
+          description: 评论内容
+          example: "这是一个测试评论"
+        status:
+          type: string
+          description: 评论状态
+          enum: [active, inactive]
+          example: "active"
+        moderation_status:
+          type: string
+          description: 审核状态
+          enum: [pending, approved, rejected, suspicious]
+          example: "approved"
+        created_at:
+          type: string
+          format: date-time
+          description: 创建时间
+          example: "2024-01-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: 更新时间
+          example: "2024-01-01T12:00:00Z"
+      required:
+        - id
+        - content
+        - status
+        - moderation_status
+        - created_at
+        - updated_at
+
+    CommentRequest:
+      type: object
+      description: 评论请求
+      properties:
+        content:
+          type: string
+          description: 评论内容
+          maxLength: 100
+          example: "这是一个测试评论"
+      required:
+        - content
+
+    CommentListResponse:
+      type: object
+      description: 评论列表响应
+      properties:
+        comments:
+          type: array
+          description: 评论列表
+          items:
+            $ref: '#/components/schemas/Comment'
+      required:
+        - comments
+
+    CaptchaResponse:
+      type: object
+      description: 验证码响应
+      properties:
+        captcha_id:
+          type: string
+          description: 验证码ID
+          example: "abc123"
+        image:
+          type: string
+          description: base64编码的验证码图片
+          example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+      required:
+        - captcha_id
+        - image
+
+    StatsResponse:
+      type: object
+      description: 统计响应
+      properties:
+        userCount:
+          type: integer
+          description: 用户数
+          example: 1234
+        clickCount:
+          type: integer
+          description: 点击量
+          example: 5678
+        timestamp:
+          type: string
+          description: 时间戳
+          example: "2024-01-01 12:00:00"
+        error:
+          type: string
+          description: 错误信息（可选）
+          example: "初始化统计数据失败"
+      required:
+        - userCount
+        - clickCount
+        - timestamp
+
+    ErrorResponse:
+      type: object
+      description: 错误响应
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: 错误信息
+          example: "请求参数错误"
+      required:
+        - success
+        - error
+
+  securitySchemes:
+    # 目前API不需要认证，但保留安全方案定义
+    # 未来可能需要API密钥或其他认证方式
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API密钥认证（可选）
+
+security:
+  - {}  # 空安全要求，表示不需要认证
+
+tags:
+  - name: 系统
+    description: 系统相关接口
+  - name: 统计
+    description: 访问统计相关接口
+  - name: 验证码
+    description: 验证码相关接口
+  - name: 评论
+    description: 评论管理相关接口 

@@ -3,10 +3,11 @@
 
     <div class="main-title" @click="goToTieba">
       <div class="text-content">
-        <h1>{{ selectedTieba.name}}</h1>
-        <p>{{ selectedTieba.description }}</p>
+        <h1>{{ selectedTieba?.name || '加载中...' }}</h1>
+        <p>{{ selectedTieba?.description || '正在加载贴吧信息...' }}</p>
       </div>
-      <img :src="selectedTieba.avatar" :alt="selectedTieba.name" class="avatar-large">
+      <img v-if="selectedTieba?.avatar" :src="selectedTieba.avatar" :alt="selectedTieba.name" class="avatar-large">
+      <div v-else class="avatar-placeholder">📷</div>
     </div>
 
     <!-- 弹幕区域 - 显示在main-title下方 -->
@@ -17,8 +18,9 @@
     </div>
 
     <!-- 背景下载按钮 -->
-    <a class="background-download-btn" :href="selectedTieba.backgroundImage || selectedTieba.avatar"
-      :download="selectedTieba.name + '背景图.jpg'" @click.stop title="下载背景图">
+    <a v-if="selectedTieba?.backgroundImage || selectedTieba?.avatar" class="background-download-btn"
+      :href="selectedTieba.backgroundImage || selectedTieba.avatar" :download="selectedTieba.name + '背景图.jpg'"
+      @click.stop title="下载背景图">
       <svg class="download-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <!-- 向下箭头 -->
         <path d="M12 3L12 15M12 15L8 11M12 15L16 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -52,25 +54,30 @@ const danmakuRef = ref(null)
 // 重新加载所有弹幕的函数
 const reloadDanmakus = (comments) => {
   if (!danmakuRef.value) return
-  
+
   // 停止并清空现有弹幕
   danmakuRef.value.stop()
-  
+
   // 将所有评论添加到弹幕中
   danmakuRef.value.danmuList = comments
+  console.log("danmaku after loading comments: ",danmakuRef.value)
 }
 
 // 插入单条弹幕的函数
 const insertDanmakus = (comment) => {
   if (!danmakuRef.value) return
-  
+
   // 添加单条弹幕
   danmakuRef.value.addDanmu({
     content: comment.content
   }, 'current')
+  if (!props.isPlaying) {
+    danmakuRef.value.pause()
+  }
 }
 
 watch(() => props.isPlaying, (newIsPlaying, _) => {
+  console.log("danmaku:",danmakuRef.value)
   if (newIsPlaying) {
     danmakuRef.value.play()
   } else {
@@ -86,7 +93,7 @@ defineExpose({
 
 // 计算属性
 const mainAreaStyle = computed(() => {
-  if (props.selectedTieba.backgroundImage) {
+  if (props.selectedTieba?.backgroundImage) {
     return { background: `url('${props.selectedTieba.backgroundImage}') center/cover` }
   } else {
     return { background: 'linear-gradient(45deg, #1a75ff, #4da6ff)' }
@@ -94,6 +101,9 @@ const mainAreaStyle = computed(() => {
 })
 
 function goToTieba() {
+  if (!props.selectedTieba?.name) {
+    return
+  }
   const tiebaName = encodeURIComponent(props.selectedTieba.name.slice(0, -1))
   const url = `https://tieba.baidu.com/f?kw=${tiebaName}`
   window.open(url, '_blank')
@@ -172,7 +182,7 @@ function goToTieba() {
   right: 30px;
   text-align: right;
   color: white;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   gap: 20px;
@@ -203,7 +213,22 @@ function goToTieba() {
   width: 80px;
   height: 80px;
   border-radius: 10px;
-  border: 3px solid rgba(255,255,255,0.3);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 20px rgba(26, 117, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.avatar-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5em;
+  color: white;
+  border: 3px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 20px rgba(26, 117, 255, 0.3);
   flex-shrink: 0;
 }
@@ -224,11 +249,11 @@ function goToTieba() {
   .main-area {
     height: 400px;
   }
-  
+
   .text-content h1 {
     font-size: 1.8em;
   }
-  
+
   .danmaku-container {
     height: 200px;
   }
