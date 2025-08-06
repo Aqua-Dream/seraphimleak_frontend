@@ -166,7 +166,7 @@ const submitCommentCore = async (commentText, captchaInput = null) => {
     return;
   }
 
-  if (content.length > 100) {
+  if (commentText.length > 100) {
     alert('留言不能超过100字');
     return;
   }
@@ -180,7 +180,9 @@ const submitCommentCore = async (commentText, captchaInput = null) => {
   isSubmitting.value = true;
 
   try {
-    const result = await props.apiAdapter.submitComment(commentText, captchaInput);
+    // 如果提供了验证码输入，同时传递验证码ID
+    const captchaIdToSend = captchaInput !== null ? captchaId.value : null;
+    const result = await props.apiAdapter.submitComment(commentText, captchaInput, captchaIdToSend);
 
     if (result.success) {
       // 检查是否已经存在相同ID的评论，避免重复添加
@@ -212,13 +214,18 @@ const submitCommentCore = async (commentText, captchaInput = null) => {
     } else {
       // 处理需要验证码的情况
       if (result.captchaError) {
-        showCaptchaDialog(result);
-      } else if (result.captchaData) {
-        // 验证码错误，刷新验证码
-        captchaImage.value = result.captchaData.image;
-        captchaId.value = result.captchaData.captcha_id;
-        captchaInput.value = '';
-        alert('验证码错误，请重新输入');
+        // 获得了验证码
+        if (result.captchaData) {
+          if (showCaptcha.value) {
+            // 验证码对话框已经展示
+            alert('验证码错误或已过期，请重新输入或刷新验证码');
+          } else {
+            // 展示验证码对话框
+            showCaptchaDialog(result);
+          }
+        } else { //没能获得验证码，被限流了
+          alert('请求过于频繁，请稍后再试');
+        }
       } else {
         alert(result.error || '提交失败，请重试');
       }
@@ -249,8 +256,8 @@ const showCaptchaDialog = (result) => {
     captchaImage.value = result.captchaData.image;
     captchaId.value = result.captchaData.captcha_id;
   }
-  showCaptcha.value = true;
   captchaInput.value = '';
+  showCaptcha.value = true;
 }
 
 // 刷新验证码
@@ -261,6 +268,10 @@ const refreshCaptcha = async () => {
       captchaImage.value = result.data.image;
       captchaId.value = result.data.captcha_id;
       captchaInput.value = '';
+    } else if (result.error) {
+      alert(result.error);
+    } else {
+      alert('刷新验证码失败，请重试');
     }
   } catch (error) {
     console.error('刷新验证码失败:', error);
@@ -290,6 +301,12 @@ const validateCaptchaInput = () => {
 // 提交验证码
 const submitCaptcha = async () => {
   if (!captchaInput.value.trim()) {
+    return;
+  }
+
+  // 确保有验证码ID
+  if (!captchaId.value) {
+    alert('验证码ID无效，请刷新验证码');
     return;
   }
 

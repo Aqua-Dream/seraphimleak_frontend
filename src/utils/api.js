@@ -48,11 +48,15 @@ class ApiAdapter {
   }
 
   // 提交评论
-  async submitComment(content, captcha = null) {
-    // 构建请求URL，验证码作为query参数
+  async submitComment(content, captcha = null, captchaId = null) {
+    // 构建请求URL，验证码参数作为query参数
     let url = `${this.apiUrl}/comments`;
-    if (captcha) {
-      url += `?captcha=${encodeURIComponent(captcha)}`;
+    
+    if (captcha && captchaId) {
+      const params = new URLSearchParams();
+      params.append('captcha', captcha);
+      params.append('captcha_id', captchaId);
+      url += `?${params.toString()}`;
     }
 
     const response = await fetch(url, {

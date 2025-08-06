@@ -9,13 +9,14 @@ info:
     ## 主要功能
     - 评论提交和获取
     - 访问统计
-    - 验证码生成和验证
+    - 验证码生成和验证（基于dchest/captcha库）
     - 内容安全审查
     - 限流保护
     
     ## 安全特性
     - 评论提交限流（1分钟内最多3次）
     - 验证码刷新限流（5分钟内最多3次）
+    - 验证码验证（基于dchest/captcha库，无需额外存储）
     - 内容安全审查（基于阿里云内容安全服务）
     - CORS支持
     
@@ -33,6 +34,8 @@ info:
 servers:
   - url: http://localhost:8001
     description: 开发环境
+  - url: https://api.seraphimleak.com
+    description: 生产环境
 
 paths:
   /health:
@@ -88,9 +91,14 @@ paths:
         生成并返回验证码图片。
         验证码用于防止恶意评论提交。
         
+        ## 验证码流程
+        1. 调用此接口获取验证码ID和图片
+        2. 用户输入验证码内容
+        3. 提交评论时同时提供验证码ID和验证码内容
+        
         ## 限流规则
         - 5分钟内最多刷新3次验证码
-        - 验证码有效期为5分钟
+        - 验证码由dchest/captcha库管理，无需额外存储
       tags:
         - 验证码
       responses:
@@ -171,6 +179,8 @@ paths:
         - 评论内容不能为空
         - 评论内容不能超过100字
         - 需要验证码（如果触发验证码机制）
+          - 必须同时提供captcha_id和captcha参数
+          - 验证码由dchest/captcha库直接验证
         
         ## 限流规则
         - 1分钟内最多提交3次评论
@@ -189,12 +199,20 @@ paths:
             schema:
               $ref: '#/components/schemas/CommentRequest'
       parameters:
-        - name: captcha
+        - name: captcha_id
           in: query
-          description: 验证码（当需要验证码时）
+          description: 验证码ID（当需要验证码时）
           required: false
           schema:
             type: string
+            example: "abc123"
+        - name: captcha
+          in: query
+          description: 验证码内容（当需要验证码时）
+          required: false
+          schema:
+            type: string
+            example: "1234"
       responses:
         '200':
           description: 评论提交成功
@@ -244,6 +262,17 @@ paths:
                     required:
                       - success
                       - captchaError
+                      - error
+                  - type: object
+                    properties:
+                      success:
+                        type: boolean
+                        example: false
+                      error:
+                        type: string
+                        example: "验证码错误"
+                    required:
+                      - success
                       - error
         '429':
           description: 请求过于频繁
@@ -345,7 +374,7 @@ components:
       properties:
         captcha_id:
           type: string
-          description: 验证码ID
+          description: 验证码ID，用于后续验证
           example: "abc123"
         image:
           type: string

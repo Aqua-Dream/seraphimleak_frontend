@@ -60,7 +60,6 @@ const reloadDanmakus = (comments) => {
 
   // 将所有评论添加到弹幕中
   danmakuRef.value.danmuList = comments
-  console.log("danmaku after loading comments: ",danmakuRef.value)
 }
 
 // 插入单条弹幕的函数
@@ -77,7 +76,6 @@ const insertDanmakus = (comment) => {
 }
 
 watch(() => props.isPlaying, (newIsPlaying, _) => {
-  console.log("danmaku:",danmakuRef.value)
   if (newIsPlaying) {
     danmakuRef.value.play()
   } else {
