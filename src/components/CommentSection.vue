@@ -3,8 +3,8 @@
     <div class="comment-input-area">
       <input :value="newComment" @input="$emit('update:newComment', $event.target.value)" placeholder="输入你的留言..."
         class="comment-input" @keyup.enter="handleSubmitComment">
-      <button @click="handleSubmitComment" class="submit-btn" :disabled="isSubmitting">
-        {{ isSubmitting ? '提交中...' : '提交' }}
+      <button @click="handleSubmitComment" class="submit-btn">
+        提交
       </button>
     </div>
 
@@ -21,8 +21,8 @@
           <div class="comment-body">
             <span class="comment-content">{{ msg.content }}</span>
           </div>
-          <div class="comment-footer">
-            第{{ msg.id }}楼 {{ msg.time }}
+          <div class="comment-footer" :title="getFullFormattedTime(msg)">
+            第{{ msg.id }}楼 {{ getFormattedTime(msg) }}
           </div>
         </div>
       </div>
@@ -82,8 +82,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { formatDateTime } from '../utils/dateFormatter.js'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { formatDateTime, formatFullDateTime } from '../utils/dateFormatter.js'
 import ModalDialog from './ModalDialog.vue'
 
 // Props
@@ -113,8 +113,7 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const jumpPage = ref('')
 
-// 防重复提交标志
-const isSubmitting = ref(false)
+
 
 // 验证码相关
 const captchaId = ref(null)
@@ -122,10 +121,53 @@ const showCaptcha = ref(false)
 const captchaImage = ref('')
 const captchaInput = ref('')
 
+// 时间刷新相关
+const timeRefreshTrigger = ref(0)
+let timeRefreshTimer = null
+
 // 计算验证码是否有效
 const isValidCaptcha = computed(() => {
   return /^\d{6}$/.test(captchaInput.value)
 })
+
+// 格式化时间的函数
+const getFormattedTime = (msg) => {
+  // 使用 timeRefreshTrigger 来触发响应式更新
+  timeRefreshTrigger.value
+  
+  // 直接使用 created_at 字段作为原始时间进行实时计算
+  return formatDateTime(msg.created_at)
+}
+
+// 获取完整时间的函数
+const getFullFormattedTime = (msg) => {
+  // 使用 timeRefreshTrigger 来触发响应式更新
+  timeRefreshTrigger.value
+  
+  // 直接使用 created_at 字段作为原始时间进行实时计算
+  return formatFullDateTime(msg.created_at)
+}
+
+// 启动时间刷新定时器
+const startTimeRefresh = () => {
+  // 清除可能存在的旧定时器
+  if (timeRefreshTimer) {
+    clearInterval(timeRefreshTimer)
+  }
+  
+  // 每分钟更新一次时间
+  timeRefreshTimer = setInterval(() => {
+    timeRefreshTrigger.value++
+  }, 60000) // 60000ms = 1分钟
+}
+
+// 停止时间刷新定时器
+const stopTimeRefresh = () => {
+  if (timeRefreshTimer) {
+    clearInterval(timeRefreshTimer)
+    timeRefreshTimer = null
+  }
+}
 
 // 计算总页数
 const totalPages = computed(() => Math.ceil(props.comments.length / pageSize.value))
@@ -157,10 +199,6 @@ const visiblePages = computed(() => {
 
 // 提交评论的核心逻辑
 const submitCommentCore = async (commentText, captchaInput = null) => {
-  if (isSubmitting.value) {
-    return;
-  }
-
   if (!commentText.trim()) {
     alert('请输入留言内容');
     return;
@@ -177,27 +215,21 @@ const submitCommentCore = async (commentText, captchaInput = null) => {
     return;
   }
 
-  isSubmitting.value = true;
-
   try {
     // 如果提供了验证码输入，同时传递验证码ID
     const captchaIdToSend = captchaInput !== null ? captchaId.value : null;
     const result = await props.apiAdapter.submitComment(commentText, captchaInput, captchaIdToSend);
 
     if (result.success) {
-      // 检查是否已经存在相同ID的评论，避免重复添加
-      const existingComment = props.comments.find(comment => comment.id === result.id);
-      if (!existingComment) {
-        // 添加新评论到列表
-        const newComment = {
-          id: result.id,
-          content: result.content,
-          time: formatDateTime(result.time || new Date().toLocaleString('zh-CN'))
-        };
+      // 添加新评论到列表
+      const newComment = {
+        id: result.id,
+        content: result.content,
+        created_at: result.created_at || new Date().toLocaleString('zh-CN')
+      };
 
-        // 通知父组件更新评论列表
-        emit('new-comment', newComment);
-      }
+      // 通知父组件更新评论列表
+      emit('new-comment', newComment);
 
       // 清空输入框
       emit('update:newComment', '');
@@ -207,10 +239,17 @@ const submitCommentCore = async (commentText, captchaInput = null) => {
         closeCaptcha();
       }
 
-
-
       // 显示成功消息
       console.log('评论提交成功');
+      
+      // 自动跳转到最后一页，让用户看到自己刚发表的评论
+      if (totalPages.value > 0) {
+        currentPage.value = totalPages.value;
+        // 等待DOM更新后滚动到底部
+        setTimeout(() => {
+          scrollToBottom();
+        }, 300);
+      }
     } else {
       // 处理需要验证码的情况
       if (result.captchaError) {
@@ -240,8 +279,6 @@ const submitCommentCore = async (commentText, captchaInput = null) => {
     } else {
       alert('提交失败，请重试');
     }
-  } finally {
-    isSubmitting.value = false;
   }
 }
 
@@ -322,26 +359,29 @@ const jumpToPage = () => {
   }
 }
 
-// 监听评论数量变化
-watch(() => props.comments.length, (newLength, oldLength) => {
-  // 如果评论数量增加了（新提交了评论），跳转到第一页
-  if (newLength > oldLength) {
-    currentPage.value = 1
-  } else if (currentPage.value > totalPages.value) {
-    // 如果当前页超出范围，重置到第一页
-    currentPage.value = 1
-  }
-}, { immediate: true })
+// 滚动到页面底部
+const scrollToBottom = () => {
+  // 滚动到页面底部
+  window.scrollTo({
+    top: document.documentElement.scrollHeight,
+    behavior: 'smooth'
+  })
+}
 
-// 监听当前页变化，滚动到顶部
-watch(currentPage, () => {
-  // 等待DOM更新后滚动到顶部
-  setTimeout(() => {
-    const commentsList = document.querySelector('.comments-list')
-    if (commentsList) {
-      commentsList.scrollTop = 0
-    }
-  }, 100)
+
+
+
+
+
+
+// 组件挂载时启动时间刷新
+onMounted(() => {
+  startTimeRefresh()
+})
+
+// 组件卸载时停止时间刷新
+onUnmounted(() => {
+  stopTimeRefresh()
 })
 
 // 暴露方法给父组件

@@ -14,36 +14,10 @@ class ApiAdapter {
     return await response.json();
   }
 
-  // 获取评论数据
-  async getComments(limit = 50, offset = 0) {
-    const params = new URLSearchParams({ limit, offset });
-    const response = await fetch(`${this.apiUrl}/comments?${params}`);
-    const data = await response.json();
-
-    // 确保评论数据格式与前端期望一致，并格式化时间
-    if (data.comments) {
-      data.comments = data.comments.map(comment => ({
-        ...comment,
-        time: formatDateTime(comment.time || comment.created_at || new Date().toLocaleString('zh-CN'))
-      }));
-    }
-
-    return data;
-  }
-
   // 获取所有评论数据（用于分页）
   async getAllComments() {
     const response = await fetch(`${this.apiUrl}/comments`);
     const data = await response.json();
-
-    // 确保评论数据格式与前端期望一致，并格式化时间
-    if (data.comments) {
-      data.comments = data.comments.map(comment => ({
-        ...comment,
-        time: formatDateTime(comment.time || comment.created_at || new Date().toLocaleString('zh-CN'))
-      }));
-    }
-
     return data;
   }
 

@@ -66,11 +66,21 @@ const loadTiebaList = async () => {
 const loadComments = async () => {
   try {
     const data = await apiAdapter.getAllComments()
-    comments.value = data.comments
+    comments.value = (data.comments || []).reverse()
+    
+    // 随机化弹幕列表：随机选择一个起始点，将该点前面的弹幕移到数组末尾
+    let shuffledComments = []
+    if (data.comments && data.comments.length > 0) {
+      const randomStartIndex = Math.floor(Math.random() * data.comments.length)
+      shuffledComments = [
+        ...data.comments.slice(randomStartIndex),
+        ...data.comments.slice(0, randomStartIndex)
+      ]
+    }
     
     // 调用 MainArea 的 reloadDanmakus 方法重新加载弹幕
     if (mainAreaRef.value) {
-      mainAreaRef.value.reloadDanmakus(data.comments)
+      mainAreaRef.value.reloadDanmakus(shuffledComments)
     }
   } catch (error) {
     console.error('加载评论数据失败:', error)
@@ -110,8 +120,8 @@ const insertDanmakus = (comment) => {
 
 // 处理新评论的函数
 const handleNewComment = (newComment) => {
-  // 添加新评论到列表开头
-  comments.value = [newComment, ...comments.value]
+  // 添加新评论到列表末尾（因为评论是倒序排列的）
+  comments.value.push(newComment)
   
   // 触发弹幕插入
   insertDanmakus(newComment)

@@ -135,27 +135,9 @@ paths:
       summary: 获取评论列表
       description: |
         获取已审核通过的评论列表。
-        支持分页查询。
+        固定返回最新的10000条评论，按ID倒序排列。
       tags:
         - 评论
-      parameters:
-        - name: limit
-          in: query
-          description: 每页评论数量，默认50
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 50
-        - name: offset
-          in: query
-          description: 偏移量，默认0
-          required: false
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
       responses:
         '200':
           description: 成功获取评论列表
