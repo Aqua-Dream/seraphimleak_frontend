@@ -12,7 +12,7 @@
 
     <!-- 弹幕区域 - 显示在main-title下方 -->
     <div class="danmaku-container">
-      <VueDanmaku ref="danmakuRef" :danmus="[]" loop random-channel :channels="8" :debounce="2000" :isSuspend="true">
+      <VueDanmaku ref="danmakuRef" :danmus="[]" loop random-channel :channels="8" :debounce="debounce" :isSuspend="true">
         <template #danmu="{ danmu }"> {{ danmu.content }} </template>
       </VueDanmaku>
     </div>
@@ -50,6 +50,7 @@ const props = defineProps({
 })
 
 const danmakuRef = ref(null)
+const debounce = ref(200)
 
 // 重新加载所有弹幕的函数
 const reloadDanmakus = (comments) => {
@@ -57,6 +58,14 @@ const reloadDanmakus = (comments) => {
 
   // 停止并清空现有弹幕
   danmakuRef.value.stop()
+
+  // 设置debounce值
+  var danmakuNum = comments.length
+  if(danmakuNum < 30)
+    danmakuNum = 30;
+  if (danmakuNum > 300)
+    danmakuNum = 300;
+  debounce.value = 60000 / danmakuNum;
 
   // 将所有评论添加到弹幕中
   danmakuRef.value.danmuList = comments

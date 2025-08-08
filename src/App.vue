@@ -68,14 +68,17 @@ const loadComments = async () => {
     const data = await apiAdapter.getAllComments()
     comments.value = (data.comments || []).reverse()
     
-    // 随机化弹幕列表：随机选择一个起始点，将该点前面的弹幕移到数组末尾
+    // 随机化弹幕列表：使用Fisher-Yates算法完全打乱comments数组
     let shuffledComments = []
     if (data.comments && data.comments.length > 0) {
-      const randomStartIndex = Math.floor(Math.random() * data.comments.length)
-      shuffledComments = [
-        ...data.comments.slice(randomStartIndex),
-        ...data.comments.slice(0, randomStartIndex)
-      ]
+      // 创建数组副本以避免修改原数组
+      shuffledComments = [...data.comments]
+      
+      // Fisher-Yates shuffle算法
+      for (let i = shuffledComments.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledComments[i], shuffledComments[j]] = [shuffledComments[j], shuffledComments[i]];
+      }
     }
     
     // 调用 MainArea 的 reloadDanmakus 方法重新加载弹幕
