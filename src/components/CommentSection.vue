@@ -29,38 +29,41 @@
 
       <!-- 分页控件 -->
       <div v-if="totalPages > 1" class="pagination">
-        <!-- 首页按钮 -->
-        <button v-if="currentPage > 1" @click="currentPage = 1" class="page-btn">
-          首页
-        </button>
-
-        <!-- 上一页按钮 -->
-        <button v-if="currentPage > 1" @click="currentPage--" class="page-btn">
-          上一页
-        </button>
-
-        <!-- 页码按钮 -->
-        <div class="page-numbers">
-          <button v-for="page in visiblePages" :key="page" @click="currentPage = page"
-            :class="['page-btn', { 'active': currentPage === page }]">
-            {{ page }}
-          </button>
-        </div>
-
-        <!-- 下一页按钮 -->
-        <button v-if="currentPage < totalPages" @click="currentPage++" class="page-btn">
-          下一页
-        </button>
-
-        <!-- 尾页按钮 -->
-        <button v-if="currentPage < totalPages" @click="currentPage = totalPages" class="page-btn">
-          尾页
-        </button>
-
         <!-- 分页信息 -->
         <span class="page-info">
           <span>{{ comments.length }}</span> 回复贴，共<span>{{ totalPages }}</span>页
         </span>
+
+        <!-- 导航按钮组 -->
+        <div class="nav-buttons">
+          <!-- 首页按钮 -->
+          <button v-if="currentPage > 1" @click="currentPage = 1" class="page-btn">
+            首页
+          </button>
+
+          <!-- 上一页按钮 -->
+          <button v-if="currentPage > 1" @click="currentPage--" class="page-btn">
+            上一页
+          </button>
+
+          <!-- 页码按钮 -->
+          <div class="page-numbers">
+            <button v-for="page in visiblePages" :key="page" @click="currentPage = page"
+              :class="['page-btn', { 'active': currentPage === page }]">
+              {{ page }}
+            </button>
+          </div>
+
+          <!-- 下一页按钮 -->
+          <button v-if="currentPage < totalPages" @click="currentPage++" class="page-btn">
+            下一页
+          </button>
+
+          <!-- 尾页按钮 -->
+          <button v-if="currentPage < totalPages" @click="currentPage = totalPages" class="page-btn">
+            尾页
+          </button>
+        </div>
 
         <!-- 跳转控件 -->
         <div class="jump-to-page">
@@ -541,22 +544,6 @@ defineExpose({
   row-gap: 10px;
 }
 
-@media (max-width: 768px) {
-  .pagination {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .page-info {
-    margin-left: 0;
-    order: -1;
-  }
-
-  .jump-to-page {
-    margin-left: 0;
-  }
-}
-
 .page-btn {
   padding: 6px 12px;
   background: white;
@@ -581,6 +568,12 @@ defineExpose({
   font-weight: bold;
 }
 
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .page-numbers {
   display: flex;
   gap: 4px;
@@ -602,6 +595,38 @@ defineExpose({
   align-items: center;
   gap: 5px;
   margin-left: 15px;
+}
+
+@media (max-width: 768px) {
+  .comment-section .pagination {
+    flex-direction: column !important;
+    gap: 15px !important;
+  }
+
+  .comment-section .page-numbers {
+    display: none !important;
+  }
+
+  .comment-section .jump-to-page {
+    display: none !important;
+  }
+
+  .comment-section .page-info {
+    margin-left: 0 !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  .comment-section .nav-buttons {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .comment-section .page-btn {
+    flex: 0 0 auto !important;
+  }
 }
 
 .jump-input {

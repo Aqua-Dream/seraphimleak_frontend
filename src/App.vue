@@ -2,18 +2,21 @@
 import { ref, computed, onMounted } from 'vue'
 import MainArea from './components/MainArea.vue'
 import MusicPlayer from './components/MusicPlayer.vue'
-import Sidebar from './components/Sidebar.vue'
 import CommentSection from './components/CommentSection.vue'
 import ModalDialog from './components/ModalDialog.vue'
 import Footer from './components/Footer.vue'
 import apiAdapter from './utils/api.js'
+import tiebaListData from './data/tieba-list.json'
 
 // 响应式数据
 const selectedTieba = ref({
+  id: 0,
   name: '加载中...',
   description: '正在加载贴吧信息...',
   avatar: '',
-  backgroundImage: ''
+  backgroundImages: [],
+  currentBackgroundIndex: 0,
+  songs: []
 })
 const tiebaList = ref([])
 const comments = ref([])
@@ -23,7 +26,7 @@ const userCount = ref(0)
 const clickCount = ref(0)
 const pageViews = ref(0)
 const visitCount = ref(0)
-const showBanner = ref(false)
+const showBanner = ref(true)
 
 // 加载状态
 const isLoading = ref(true)
@@ -36,26 +39,26 @@ const commentSectionRef = ref(null)
 // 加载tieba列表
 const loadTiebaList = async () => {
   try {
-    const response = await fetch('/data/tieba-list.csv')
-    const csvText = await response.text()
-    const lines = csvText.split('\n')
-    const headers = lines[0].split(',')
-    
-    tiebaList.value = lines.slice(1).filter(line => line.trim()).map(line => {
-      const values = line.split(',')
-      const tieba = {}
-      headers.forEach((header, index) => {
-        tieba[header.trim()] = values[index] ? values[index].trim() : ''
-      })
-      tieba.id = parseInt(tieba.id)
-      
+    for (const tieba of tiebaListData) {
+      // 验证贴吧名称格式
       if (tieba.name && tieba.name.slice(-1) !== '吧') {
         throw new Error(`贴吧名称 "${tieba.name}" 必须以"吧"结尾`)
       }
       
-      return tieba
-    })
-    
+      // 为每个歌曲添加cover信息
+      if (tieba.songs) {
+        for (var song of tieba.songs) {
+          if(song.cover == null) {
+            song.cover = tieba.avatar
+          }
+        }
+      }
+      
+      // 为每个贴吧添加当前背景图片索引
+      tieba.currentBackgroundIndex = 0
+    }
+    // 直接使用导入的JSON数据
+    tiebaList.value = tiebaListData
     selectedTieba.value = tiebaList.value[0]
   } catch (error) {
     console.error('加载tieba列表失败:', error)
@@ -111,7 +114,10 @@ const loadStats = async () => {
 }
 
 const switchTieba = (tieba) => {
-  selectedTieba.value = tieba
+  selectedTieba.value = {
+    ...tieba,
+    currentBackgroundIndex: 0
+  }
 }
 
 // 插入单条弹幕的函数
@@ -135,6 +141,8 @@ const handleMusicStateChange = (playing) => {
   isPlaying.value = playing
 }
 
+
+
 const initVisitStats = () => {
   const storedVisitCount = localStorage.getItem('visitCount') || 0
   const storedPageViews = localStorage.getItem('pageViews') || 0
@@ -157,7 +165,7 @@ const initVisitStats = () => {
 
 const closeBanner = () => {
   showBanner.value = false
-  localStorage.setItem('visited', 'true')
+  musicPlayerRef.value.aplayer.play()
 }
 
 
@@ -166,13 +174,6 @@ const closeBanner = () => {
 onMounted(async () => {
   // 初始化访问统计
   initVisitStats()
-  
-  // 页面加载时自动显示弹窗给新用户
-  if (localStorage.getItem('visited') !== 'true') {
-    setTimeout(() => {
-      showBanner.value = true
-    }, 1000)
-  }
   
   // 先设置加载完成，让组件渲染
   isLoading.value = false
@@ -205,6 +206,9 @@ onMounted(async () => {
       <MainArea 
         :selected-tieba="selectedTieba" 
         :is-playing="isPlaying"
+        :tieba-list="tiebaList"
+        @switch-tieba="switchTieba"
+
         ref="mainAreaRef"
       />
       
@@ -213,12 +217,6 @@ onMounted(async () => {
         :selected-tieba="selectedTieba"
         ref="musicPlayerRef"
         @music-state-change="handleMusicStateChange"
-      />
-
-      <!-- 侧边栏 -->
-      <Sidebar 
-        :tieba-list="tiebaList" 
-        @switch-tieba="switchTieba"
       />
 
       <!-- 留言区域 -->
@@ -240,8 +238,6 @@ onMounted(async () => {
       :stats="{ pageViews, userCount }"
       @close="closeBanner"
     />
-    
-
     
     <!-- 底部信息 -->
     <Footer />

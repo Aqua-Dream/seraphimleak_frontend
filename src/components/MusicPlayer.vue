@@ -26,24 +26,27 @@ const initPlayer = () => {
     aplayer.value.destroy()
   }
 
+  // 获取歌曲数组
+  const songs = props.selectedTieba.songs || []
+  
+  if (songs.length === 0) {
+    console.warn('没有找到歌曲数据')
+    return
+  }
+
   aplayer.value = new APlayer({
     container: document.getElementById('aplayer'),
     fixed: true,
     autoplay: false,
     theme: '#1a75ff',
     loop: 'all',
-    order: 'random',
+    order: 'list',
     preload: 'auto',
     volume: 0.7,
     mutex: true,
     listFolded: true,
     lrcType: 0,
-    audio: [{
-      name: props.selectedTieba.songName,
-      artist: props.selectedTieba.songArtist,
-      url: props.selectedTieba.songUrl,
-      cover: props.selectedTieba.avatar
-    }]
+    audio: songs
   })
 
   // 监听播放状态
@@ -83,13 +86,17 @@ const initPlayer = () => {
 const updatePlayer = () => {
   if (aplayer.value) {
     const wasPlaying = !aplayer.value.audio.paused
+    
+    // 获取歌曲数组
+    const songs = props.selectedTieba.songs || []
+    
+    if (songs.length === 0) {
+      console.warn('没有找到歌曲数据')
+      return
+    }
+    
     aplayer.value.list.clear()
-    aplayer.value.list.add([{
-      name: props.selectedTieba.songName,
-      artist: props.selectedTieba.songArtist,
-      url: props.selectedTieba.songUrl,
-      cover: props.selectedTieba.avatar
-    }])
+    aplayer.value.list.add(songs)
     aplayer.value.list.switch(0)
     if (wasPlaying) {
       aplayer.value.play()
@@ -171,7 +178,7 @@ defineExpose({
 }
 
 .aplayer-pic .aplayer-button,
-.aplayer-icon-lrc, .aplayer-icon-back, .aplayer-icon-forward, .aplayer-icon-play, .aplayer-miniswitcher {
+.aplayer-icon-lrc, .aplayer-icon-back, .aplayer-icon-forward, .aplayer-icon-play, .aplayer-miniswitcher,.aplayer-icon-order {
   display: none !important;
 } 
 

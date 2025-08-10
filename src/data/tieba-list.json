@@ -1,0 +1,72 @@
+[
+  {
+    "id": 0,
+    "name": "原神天堂内鬼吧",
+    "description": "原神爆料集散地",
+    "avatar": "assets/avatar/0.jpg",
+    "backgroundImages": [
+      "assets/backgrounds/1.jpg",
+      "assets/backgrounds/2.png"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/0.mp3",
+        "name": "过时不候",
+        "artist": "方糖泡泡"
+      },
+      {
+        "url": "assets/music/1.mp3",
+        "name": "泣心谱",
+        "artist": "曾志豪"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "name": "原神攻略吧",
+    "description": "原神攻略分享交流",
+    "avatar": "assets/avatar/1.jpg",
+    "backgroundImages": [
+      "assets/backgrounds/2.png"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/1.mp3",
+        "name": "泣心谱",
+        "artist": "曾志豪"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "原神同人吧",
+    "description": "原神同人创作交流",
+    "avatar": "assets/avatar/2.jpg",
+    "backgroundImages": [
+      "assets/backgrounds/1.jpg"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/2.mp3",
+        "name": "清醒记",
+        "artist": "黄诗扶"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "原神音乐吧",
+    "description": "原神音乐分享交流",
+    "avatar": "assets/avatar/3.jpg",
+    "backgroundImages": [
+      "assets/backgrounds/2.png"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/3.mp3",
+        "name": "孤雏",
+        "artist": "AGA"
+      }
+    ]
+  }
+] 
