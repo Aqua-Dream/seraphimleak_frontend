@@ -104,10 +104,10 @@ const updatePlayer = () => {
   }
 }
 
-// 监听selectedTieba变化
-watch(() => props.selectedTieba, () => {
+// 监听selectedTieba的id变化
+watch(() => props.selectedTieba?.id, () => {
   updatePlayer()
-}, { deep: true })
+})
 
 // 生命周期
 onMounted(() => {

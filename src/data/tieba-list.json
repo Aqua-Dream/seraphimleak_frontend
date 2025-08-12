@@ -8,6 +8,10 @@
       "assets/backgrounds/1.jpg",
       "assets/backgrounds/2.png"
     ],
+    "avatarPosition": [
+      "left-bottom",
+      "left-up"
+    ],
     "songs": [
       {
         "url": "assets/music/0.mp3",
@@ -29,6 +33,9 @@
     "backgroundImages": [
       "assets/backgrounds/2.png"
     ],
+    "avatarPosition": [
+      "right-up"
+    ],
     "songs": [
       {
         "url": "assets/music/1.mp3",
@@ -45,6 +52,9 @@
     "backgroundImages": [
       "assets/backgrounds/1.jpg"
     ],
+    "avatarPosition": [
+      "left-bottom"
+    ],
     "songs": [
       {
         "url": "assets/music/2.mp3",
@@ -60,6 +70,9 @@
     "avatar": "assets/avatar/3.jpg",
     "backgroundImages": [
       "assets/backgrounds/2.png"
+    ],
+    "avatarPosition": [
+      "right-bottom"
     ],
     "songs": [
       {
