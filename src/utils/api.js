@@ -1,5 +1,3 @@
-import { formatDateTime } from './dateFormatter.js'
-
 // API适配器 - 根据环境自动选择数据源
 class ApiAdapter {
   constructor() {

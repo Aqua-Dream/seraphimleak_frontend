@@ -193,7 +193,7 @@ onMounted(async () => {
 
 <template>
   <div id="app">
-    <div class="site-title" @click="showBanner = true">原神天堂内鬼吧二周年共创纪念</div>
+    <div class="site-title">原神天堂内鬼吧二周年共创纪念</div>
     
     <!-- 加载状态 -->
     <div v-if="isLoading" class="loading-container">
@@ -265,14 +265,8 @@ body {
   font-weight: bold;
   color: #1a75ff;
   margin: 20px 0;
-  cursor: pointer;
   transition: all 0.3s ease;
   text-shadow: 2px 2px 4px rgba(26, 117, 255, 0.2);
-}
-
-.site-title:hover {
-  color: #4da6ff;
-  transform: scale(1.05);
 }
 
 /* 加载状态样式 */

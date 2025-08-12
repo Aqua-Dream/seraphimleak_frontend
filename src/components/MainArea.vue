@@ -1,7 +1,28 @@
 <template>
   <div class="main-area">
+
+
     <!-- 内容区域 - 包含头像和弹幕 -->
     <div class="content-area" :style="contentAreaStyle">
+
+      <!-- 背景图片轮播 - 覆盖整个content-area -->
+      <div class="background-carousel">
+        <el-carousel 
+          :arrow="selectedTieba.backgroundImages && selectedTieba.backgroundImages.length > 1 ? 'hover' : 'never'" 
+          height="100%"
+          :autoplay="false"
+          indicator-position="none"
+          @change="handleCarouselChange"
+          ref="carouselRef"
+        >
+          <el-carousel-item 
+            v-for="item in selectedTieba.backgroundImages" 
+            :key="item"
+          >
+          </el-carousel-item>
+        </el-carousel>
+      </div>
+      
       <div class="main-title" @click="goToTieba" v-if="showAvatar">
         <div class="text-content">
           <h1>{{ selectedTieba?.name || '加载中...' }}</h1>
@@ -16,28 +37,6 @@
         <VueDanmaku ref="danmakuRef" :danmus="[]" loop random-channel :debounce="debounce" :isSuspend="true">
           <template #danmu="{ danmu }"> {{ danmu.content }} </template>
         </VueDanmaku>
-      </div>
-
-      <!-- 背景图片轮播 -->
-      <div class="background-carousel" v-if="selectedTieba?.backgroundImages && selectedTieba.backgroundImages.length > 1">
-        <el-carousel 
-          :height="'60px'"
-          :interval="0"
-          :arrow="'hover'"
-          indicator-position="none"
-          @change="handleCarouselChange"
-          ref="carouselRef"
-        >
-          <el-carousel-item 
-            v-for="(image, index) in selectedTieba.backgroundImages" 
-            :key="index"
-            class="carousel-item"
-          >
-            <div class="carousel-image-preview" :style="{ backgroundImage: `url('${image}')` }">
-              <span class="image-index">{{ index + 1 }}/{{ selectedTieba.backgroundImages.length }}</span>
-            </div>
-          </el-carousel-item>
-        </el-carousel>
       </div>
     </div>
 
@@ -156,16 +155,27 @@ const handleCarouselChange = (index) => {
 }
 
 // 监听背景图片索引变化，同步轮播图位置
-watch(() => props.selectedTieba?.currentBackgroundIndex, (newIndex) => {
-  if (carouselRef.value && typeof newIndex === 'number') {
-    // 使用nextTick确保DOM更新后再设置轮播图位置
-    nextTick(() => {
-      if (carouselRef.value && carouselRef.value.setActiveItem) {
-        carouselRef.value.setActiveItem(newIndex)
-      }
-    })
-  } 
-}, { immediate: true })
+// watch(() => props.selectedTieba?.currentBackgroundIndex, (newIndex) => {
+//   if (carouselRef.value && typeof newIndex === 'number') {
+//     // 使用nextTick确保DOM更新后再设置轮播图位置
+//     nextTick(() => {
+//       if (carouselRef.value && carouselRef.value.setActiveItem) {
+//         carouselRef.value.setActiveItem(newIndex)
+//       }
+//     })
+//   } 
+// }, { immediate: true })
+
+// // 监听背景图片数组变化，重置索引
+// watch(() => props.selectedTieba?.backgroundImages, (newImages) => {
+//   if (newImages && newImages.length > 0) {
+//     // 如果当前索引超出范围，重置为0
+//     const currentIndex = props.selectedTieba?.currentBackgroundIndex || 0
+//     if (currentIndex >= newImages.length) {
+//       props.selectedTieba.currentBackgroundIndex = 0
+//     }
+//   }
+// }, { immediate: true })
 
 // 处理弹幕显示/隐藏
 const handleDanmakuVisibilityChange = (value) => {
@@ -397,6 +407,13 @@ function goToTieba() {
   z-index: 1;
 }
 
+/* 隐藏默认图标 */
+:deep(.el-carousel__arrow i) {
+  display:inline;
+}
+
+
+
 /* 弹幕文字样式 - 白色字体，黑色边框提高可读性 */
 
 
@@ -436,79 +453,26 @@ function goToTieba() {
 /* 背景图片轮播样式 */
 .background-carousel {
   position: absolute;
-  bottom: 20px;
-  left: 20px;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  width: 120px; /* 固定宽度 */
-  z-index: 10;
-}
-
-.carousel-item {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  overflow: hidden;
-  cursor: pointer;
-  position: relative;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  transition: all 0.3s ease;
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.carousel-item:hover {
-  border-color: rgba(255, 255, 255, 0.8);
-  transform: scale(1.05);
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.carousel-image-preview {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
   height: 100%;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.2em;
-  font-weight: bold;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  z-index: 2;
 }
 
-.carousel-image-preview .image-index {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 0.8em;
-  font-weight: normal;
+
+/* 确保轮播图箭头相对于content-area定位 */
+:deep(.el-carousel) {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
-/* Element Plus Carousel 样式覆盖 */
-:deep(.el-carousel__container) {
-  height: 60px !important;
-}
 
-:deep(.el-carousel__item) {
-  width: 60px !important;
-  height: 60px !important;
-}
 
-:deep(.el-carousel__arrow) {
-  background-color: rgba(26, 117, 255, 0.8);
-  border: none;
-  width: 20px;
-  height: 20px;
-  font-size: 12px;
-}
 
-:deep(.el-carousel__arrow:hover) {
-  background-color: rgba(26, 117, 255, 1);
-}
 
 /* 显示控制样式 */
 .display-controls {
@@ -551,17 +515,11 @@ function goToTieba() {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .main-area {
-    height: 400px;
-  }
 
   .text-content h1 {
     font-size: 1.8em;
   }
 
-  .content-area {
-    height: 100%;
-  }
 }
 
 </style>
