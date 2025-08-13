@@ -33,7 +33,7 @@
 
       <!-- 弹幕区域 -->
       <div class="danmaku-container">
-        <VueDanmaku ref="danmakuRef" :danmus="[]" :loop="true" random-channel :debounce="debounce" :isSuspend="true">
+        <VueDanmaku ref="danmakuRef" :danmus="[]" :loop="true" random-channel :debounce="debounce" :isSuspend="true" :speeds="adaptiveSpeed">
           <template #danmu="{ danmu }"> {{ danmu.content }} </template>
         </VueDanmaku>
       </div>
@@ -73,9 +73,10 @@
 
       <!-- 下载控制 -->
       <div class="download-controls" v-if="(selectedTieba?.backgroundImages && selectedTieba.backgroundImages.length > 0) || selectedTieba?.avatar">
-        <el-button type="primary" :icon="Download" @click="handleDownload">
+        <el-button type="primary" :icon="Download" @click="handleDownload" class="show-in-pc">
           下载
         </el-button>
+        <el-button type="primary" :icon="Download" @click="handleDownload" class="show-in-media"></el-button>
       </div>
     </div>
   </div>
@@ -109,6 +110,7 @@ const danmakuRef = ref(null)
 const debounce = ref(200)
 const showAvatar = ref(true)
 const showDanmaku = ref(true)
+const windowWidth = ref(window.innerWidth)
 
 // 计算当前选中的贴吧ID
 const selectedTiebaId = computed({
@@ -177,7 +179,25 @@ const downloadBackground = async (showAvatar, showDanmaku) => {
   } else {
     fileName += '_纯背景'
   }
-  fileName += '.jpg'
+  
+  // 检测原始图片格式
+  const getImageExtension = (url) => {
+    const urlLower = url.toLowerCase()
+    if (urlLower.includes('.png')) return '.png'
+    if (urlLower.includes('.jpg') || urlLower.includes('.jpeg')) return '.jpg'
+    if (urlLower.includes('.webp')) return '.webp'
+    if (urlLower.includes('.gif')) return '.gif'
+    // 默认返回.jpg
+    return '.jpg'
+  }
+  
+  // 如果是直接下载原图，保持原始格式；否则使用jpg（因为合成图片固定为jpg）
+  const shouldKeepOriginalFormat = !showAvatar && !showDanmaku
+  if (shouldKeepOriginalFormat) {
+    fileName += getImageExtension(backgroundImageUrl)
+  } else {
+    fileName += '.jpg'
+  }
   
   try {
     if (showAvatar && props.selectedTieba?.avatar) {
@@ -494,10 +514,19 @@ onMounted(() => {
       }
     }
   })
+  
+  // 监听窗口大小变化
+  const handleResize = () => {
+    windowWidth.value = window.innerWidth
+  }
+  window.addEventListener('resize', handleResize)
 })
 
 onUnmounted(() => {
-  // 移除原有的点击外部关闭逻辑
+  // 移除窗口大小变化监听器
+  window.removeEventListener('resize', () => {
+    windowWidth.value = window.innerWidth
+  })
 })
 
 // 计算属性
@@ -567,6 +596,17 @@ const avatarPositionStyle = computed(() => {
         right: 'var(--main-title-margin)',
         bottom: 'auto'
       }
+  }
+})
+
+// 自适应弹幕速度计算
+const adaptiveSpeed = computed(() => {
+  if (windowWidth.value <= 400) {
+    return 50
+  } else if (windowWidth.value <= 768) {
+    return 100
+  } else {
+    return 200
   }
 })
 
@@ -728,6 +768,8 @@ function goToTieba() {
   padding: 20px;
   border-radius: 10px;
   overflow: visible;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 /* 贴吧选择器样式 */
@@ -767,6 +809,7 @@ function goToTieba() {
   align-items: center;
   gap: 20px;
   margin-right: 20px;
+  flex-wrap: wrap;
 }
 
 .switch-item {
@@ -800,6 +843,16 @@ function goToTieba() {
   overflow: visible;
 }
 
+/* PC端显示带文字的按钮，移动端隐藏 */
+.show-in-pc {
+  display: inline-flex;
+}
+
+/* 移动端显示只带图标的按钮，PC端隐藏 */
+.show-in-media {
+  display: none;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .main-title {
@@ -809,8 +862,15 @@ function goToTieba() {
   .text-content h1 {
     font-size: 1.8em;
   }
-  
 
+  /* 在768px以下，PC端按钮隐藏，移动端按钮显示 */
+  .show-in-pc {
+    display: none;
+  }
+  
+  .show-in-media {
+    display: inline-flex;
+  }
 }
 
 @media (max-width: 480px) {
