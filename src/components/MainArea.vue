@@ -217,7 +217,8 @@ const drawDanmakus = (ctx, canvas, scale) => {
   const danmuElements = danmakuRef.value.dmContainer.getElementsByClassName('dm')
   
   // 设置弹幕样式（与网页样式一致）
-  ctx.font = `${20 * scale}px "Microsoft YaHei", sans-serif` // 字体大小按比例缩放
+  const baseFontSize = 20 * scale // 20px * scale
+  ctx.font = `${baseFontSize}px "Microsoft YaHei", sans-serif`
   ctx.textBaseline = 'top'
   
   // 绘制每个弹幕
@@ -233,12 +234,12 @@ const drawDanmakus = (ctx, canvas, scale) => {
     const top = parseFloat(danmuEl.style.top) || 0
     
     // 计算弹幕在Canvas中的位置
-    const danmuHeight = 20 * scale // 弹幕高度
-    const danmuTop = 4 * scale // 弹幕间距
+    const danmuHeight = 20 * scale // 弹幕高度：20 * 1.92 = 38.4
+    const danmuTop = 4 * scale // 弹幕间距：4 * 1.92 = 7.68
     // 考虑最外层border的偏移（1px）
     // 网页中main-area有1px border，导致内容向内缩进1px
-    const borderOffset = 1 * scale // 1px * 1.92 = 1.92px
-    const y = top * scale + borderOffset // 垂直位置按比例缩放，然后加上border偏移王
+    const borderOffset = 8
+    const y = top * scale + borderOffset // 垂直位置按比例缩放，然后加上border偏移
     
     // 计算弹幕的水平位置（根据当前移动进度）
     let x = canvas.width // 默认从右侧开始
@@ -345,7 +346,7 @@ const createCompositeImage = async (backgroundUrl, avatarUrl, fileName, showDanm
         // 网页展示框1000px，canvas 1920px，比例1.92
         const scale = 1.92
         const avatarSize = 80 * scale // 头像大小：80 * 1.92 = 153.6
-        const margin = 40 * scale // 边距：40 * 1.92 = 76.8
+        const margin = 30 * scale // 边距：40 * 1.92 = 76.8
         let avatarX, avatarY
         
         // 根据当前头像位置计算邮戳位置
@@ -403,7 +404,7 @@ const createCompositeImage = async (backgroundUrl, avatarUrl, fileName, showDanm
         
         // 绘制弹幕（如果需要）
         if (showDanmaku) {
-          drawDanmakus(ctx, canvas, scale)
+          drawDanmakus(ctx, canvas, 1.92)
         }
         
         // 转换为blob并下载
@@ -536,8 +537,8 @@ const avatarPositionStyle = computed(() => {
     case 'left-up':
       return {
         ...baseStyle,
-        top: '30px',
-        left: '30px',
+        top: 'var(--main-title-margin)',
+        left: 'var(--main-title-margin)',
         right: 'auto',
         bottom: 'auto'
       }
@@ -545,25 +546,25 @@ const avatarPositionStyle = computed(() => {
       return {
         ...baseStyle,
         top: 'auto',
-        left: '30px',
+        left: 'var(--main-title-margin)',
         right: 'auto',
-        bottom: '30px'
+        bottom: 'var(--main-title-margin)'
       }
     case 'right-bottom':
       return {
         ...baseStyle,
         top: 'auto',
         left: 'auto',
-        right: '30px',
-        bottom: '30px'
+        right: 'var(--main-title-margin)',
+        bottom: 'var(--main-title-margin)'
       }
     case 'right-up':
     default:
       return {
         ...baseStyle,
-        top: '30px',
+        top: 'var(--main-title-margin)',
         left: 'auto',
-        right: '30px',
+        right: 'var(--main-title-margin)',
         bottom: 'auto'
       }
   }
@@ -627,6 +628,7 @@ function goToTieba() {
   gap: 20px;
   cursor: pointer;
   z-index: 10;
+  --main-title-margin: 30px;
 }
 
 
@@ -654,26 +656,32 @@ function goToTieba() {
 }
 
 .avatar-large {
-  width: 80px;
-  height: 80px;
-  border-radius: 10px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 20px rgba(26, 117, 255, 0.3);
+  width: 8vw;
+  height: 8vw;
+  max-width: 80px;
+  max-height: 80px;
+  border-radius: 1vw;
+  border: 0.3vw solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0.4vw 2vw rgba(26, 117, 255, 0.3);
   flex-shrink: 0;
 }
 
 .avatar-placeholder {
-  width: 80px;
-  height: 80px;
-  border-radius: 10px;
+  width: 8vw;
+  height: 8vw;
+  max-width: 80px;
+  max-height: 80px;
+  min-width: 60px;
+  min-height: 60px;
+  border-radius: 1vw;
   background-color: rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.5em;
   color: white;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 20px rgba(26, 117, 255, 0.3);
+  border: 0.3vw solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0.4vw 2vw rgba(26, 117, 255, 0.3);
   flex-shrink: 0;
 }
 
@@ -702,6 +710,7 @@ function goToTieba() {
 /* 确保弹幕容器内的所有文字都有白色字体和黑色边框 */
 :deep(.danmaku-container *) {
   color: white !important;
+  font-size: clamp(12px, 2vw, 20px) !important;
   text-shadow: 
     -1px -1px 1px #000,
     1px -1px 1px #000,
@@ -793,11 +802,37 @@ function goToTieba() {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-
+  .main-title {
+    --main-title-margin: 20px;
+  }
+  
   .text-content h1 {
     font-size: 1.8em;
   }
+  
 
+}
+
+@media (max-width: 480px) {
+  .main-title {
+    --main-title-margin: 15px;
+  }
+  
+  .avatar-large,
+  .avatar-placeholder {
+    width: 12vw;
+    height: 12vw;
+    max-width: 60px;
+    max-height: 60px;
+  }
+  
+  .text-content h1 {
+    font-size: 1.5em;
+  }
+  
+  .text-content p {
+    font-size: 1em;
+  }
 }
 
 </style>

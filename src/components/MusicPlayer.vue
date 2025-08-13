@@ -134,7 +134,25 @@ defineExpose({
   background: transparent !important;
 } 
 
-.aplayer-body {
+/* 折叠状态下的样式 */
+.aplayer.aplayer-narrow .aplayer-body {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  padding-right: 0 !important;
+  box-shadow: none !important;
+}
+
+/* 确保折叠状态下所有背景元素都是透明的 */
+.aplayer.aplayer-narrow .aplayer-info {
+  background: transparent !important;
+}
+
+.aplayer.aplayer-narrow .aplayer-controller {
+  background: transparent !important;
+}
+
+/* 展开状态下的样式 */
+.aplayer:not(.aplayer-narrow) .aplayer-body {
   padding-right: 8px !important;
   border-radius: 12px !important;
   background: rgba(255, 255, 255, 0.5) !important;
