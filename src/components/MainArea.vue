@@ -387,6 +387,11 @@ const createCompositeImage = async (backgroundUrl, avatarUrl, fileName, showDanm
         ctx.fill()
         ctx.restore()
         
+        // 绘制弹幕（如果需要）- 在头像之前绘制，确保弹幕在头像下层
+        if (showDanmaku) {
+          drawDanmakus(ctx, canvas, 1.92)
+        }
+        
         // 绘制头像图片
         ctx.save()
         ctx.beginPath()
@@ -401,11 +406,6 @@ const createCompositeImage = async (backgroundUrl, avatarUrl, fileName, showDanm
         ctx.beginPath()
         ctx.roundRect(avatarX, avatarY, avatarSize, avatarSize, 10 * scale)
         ctx.stroke()
-        
-        // 绘制弹幕（如果需要）
-        if (showDanmaku) {
-          drawDanmakus(ctx, canvas, 1.92)
-        }
         
         // 转换为blob并下载
         canvas.toBlob((blob) => {
@@ -627,7 +627,7 @@ function goToTieba() {
   align-items: center;
   gap: 20px;
   cursor: pointer;
-  z-index: 10;
+  z-index: 4;
   --main-title-margin: 30px;
 }
 
@@ -694,7 +694,7 @@ function goToTieba() {
   bottom: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 2;
 }
 
 /* 隐藏默认图标 */
@@ -750,7 +750,7 @@ function goToTieba() {
   bottom: 0;
   width: 100%;
   height: 100%;
-  z-index: 2;
+  z-index: 3;
 }
 
 
