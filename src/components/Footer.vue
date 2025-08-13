@@ -8,7 +8,7 @@
         <span class="author-text">Sponsored by @费德里科~吉亚洛</span>
       </div>
       <div class="footer-row">
-        <a href="https://beian.miit.gov.cn/" target="_blank" class="beian-link">备案号：京ICP备XXXXXXXX号</a>
+        <a href="https://beian.miit.gov.cn/" target="_blank" class="beian-link">鲁ICP备2025179278号-1</a>
       </div>
     </div>
   </div>
