@@ -87,7 +87,7 @@
       :visible="showBanner"
       type="info"
       title="网站信息"
-      :stats="{ pageViews, userCount }"
+      :stats="{ clickCount, userCount }"
       @close="closeBanner"
     />
     

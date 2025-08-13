@@ -22,7 +22,7 @@
         <div class="modal-stats">
           <div class="stat-row">
             <span class="stat-label">访问量：</span>
-            <span class="stat-value">{{ stats.pageViews }} 次</span>
+            <span class="stat-value">{{ stats.clickCount }} 次</span>
           </div>
           <div class="stat-row">
             <span class="stat-label">用户量：</span>
@@ -81,7 +81,7 @@ const props = defineProps({
   stats: {
     type: Object,
     default: () => ({
-      pageViews: 0,
+      clickCount: 0,
       userCount: 0
     })
   },

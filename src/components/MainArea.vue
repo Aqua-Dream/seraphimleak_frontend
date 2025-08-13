@@ -506,7 +506,7 @@ const contentAreaStyle = computed(() => {
   
   if (backgroundImages && backgroundImages.length > 0) {
     const currentBackground = backgroundImages[currentIndex] || backgroundImages[0]
-    return { background: `url('${currentBackground}') center/cover` }
+    return { background: `url('${currentBackground}') left top/cover` }
   } else {
     return { background: 'linear-gradient(45deg, #1a75ff, #4da6ff)' }
   }

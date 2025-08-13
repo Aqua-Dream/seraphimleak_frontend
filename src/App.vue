@@ -24,8 +24,6 @@ const newComment = ref('')
 const isPlaying = ref(false)
 const userCount = ref(0)
 const clickCount = ref(0)
-const pageViews = ref(0)
-const visitCount = ref(0)
 const showBanner = ref(true)
 
 // 加载状态
@@ -97,15 +95,19 @@ const loadComments = async () => {
 const loadStats = async () => {
   try {
     const data = await apiAdapter.getStats()
+    
+    // 从后端获取用户数和点击数
     userCount.value = data.userCount || 0
     clickCount.value = data.clickCount || 0
     
     if (data.environment) {
       console.log('统计数据环境:', data.environment)
-      if (data.visitResult) {
-        console.log('访问统计结果:', data.visitResult)
-      }
     }
+    
+    console.log('从后端获取的统计数据:', { 
+      userCount: userCount.value, 
+      clickCount: clickCount.value
+    })
   } catch (error) {
     console.error('加载统计数据失败:', error)
     userCount.value = 0
@@ -143,25 +145,7 @@ const handleMusicStateChange = (playing) => {
 
 
 
-const initVisitStats = () => {
-  const storedVisitCount = localStorage.getItem('visitCount') || 0
-  const storedPageViews = localStorage.getItem('pageViews') || 0
-  
-  visitCount.value = parseInt(storedVisitCount)
-  pageViews.value = parseInt(storedPageViews)
-  
-  pageViews.value++
-  localStorage.setItem('pageViews', pageViews.value)
-  
-  const lastVisit = localStorage.getItem('lastVisit')
-  const today = new Date().toDateString()
-  
-  if (lastVisit !== today) {
-    visitCount.value++
-    localStorage.setItem('visitCount', visitCount.value)
-    localStorage.setItem('lastVisit', today)
-  }
-}
+
 
 const closeBanner = () => {
   showBanner.value = false
@@ -172,14 +156,10 @@ const closeBanner = () => {
 
 // 生命周期
 onMounted(async () => {
-  // 初始化访问统计
-  initVisitStats()
-  
-  // 先设置加载完成，让组件渲染
-  isLoading.value = false
-  
+  // 完成组件加载
+  isLoading.value = false 
   try {
-    // 然后加载数据
+    // 加载所有数据
     await Promise.all([
       loadTiebaList(),
       loadComments(),
@@ -235,7 +215,7 @@ onMounted(async () => {
       :visible="showBanner"
       type="info"
       title="网站信息"
-      :stats="{ pageViews, userCount }"
+      :stats="{ clickCount, userCount }"
       @close="closeBanner"
     />
     
