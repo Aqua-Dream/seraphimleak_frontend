@@ -3,14 +3,24 @@
     "id": 0,
     "name": "原神天堂内鬼吧",
     "description": "原神爆料集散地",
-    "avatar": "assets/avatar/0.jpg",
+    "avatar": "assets/avatar/0.jpeg",
     "backgroundImages": [
-      "assets/backgrounds/1.jpg",
-      "assets/backgrounds/2.png"
+      "assets/backgrounds/原神天堂内鬼吧1.png",
+      "assets/backgrounds/原神天堂内鬼吧2.png",
+      "assets/backgrounds/原神天堂内鬼吧3.png",
+      "assets/backgrounds/原神天堂内鬼吧4.jpg",
+      "assets/backgrounds/原神天堂内鬼吧5.png",
+      "assets/backgrounds/原神天堂内鬼吧6.jpg",
+      "assets/backgrounds/原神天堂内鬼吧7.png"
     ],
     "avatarPosition": [
+      "right-up",
+      "left-up",
+      "right-up",
+      "left-up",
       "left-bottom",
-      "left-up"
+      "left-up",
+      "right-up"
     ],
     "songs": [
       {
@@ -27,11 +37,224 @@
   },
   {
     "id": 1,
-    "name": "原神攻略吧",
-    "description": "原神攻略分享交流",
-    "avatar": "assets/avatar/1.jpg",
+    "name": "原神吧",
+    "description": "找回遗落的命运吧",
+    "avatar": "assets/avatar/1.jpeg",
     "backgroundImages": [
-      "assets/backgrounds/2.png"
+      "assets/backgrounds/原神吧.png"
+    ],
+    "avatarPosition": [
+      "right-up"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/2.mp3",
+        "name": "清醒记",
+        "artist": "黄诗扶"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "原神内鬼吧",
+    "description": "二游玩家终点站，宅男资讯小茶馆",
+    "avatar": "assets/avatar/2.jpeg",
+    "backgroundImages": [
+      "assets/backgrounds/原神内鬼吧.png"
+    ],
+    "avatarPosition": [
+      "right-up"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/3.mp3",
+        "name": "孤雏",
+        "artist": "AGA"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "崩坏星穹铁道吧",
+    "description": "和谐讨论，理智一点",
+    "avatar": "assets/avatar/3.png",
+    "backgroundImages": [
+      "assets/backgrounds/崩坏星穹铁道吧.png"
+    ],
+    "avatarPosition": [
+      "left-bottom",
+      "left-up"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/0.mp3",
+        "name": "过时不候",
+        "artist": "方糖泡泡"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "鸣潮内鬼吧",
+    "description": "因热爱相聚，为鸣潮共鸣。",
+    "avatar": "assets/avatar/4.jpeg",
+    "backgroundImages": [
+      "assets/backgrounds/鸣潮内鬼吧.png"
+    ],
+    "avatarPosition": [
+      "left-up"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/1.mp3",
+        "name": "泣心谱",
+        "artist": "曾志豪"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "芙宁娜吧",
+    "description": "喜欢芙宁娜的真爱聚集地",
+    "avatar": "assets/avatar/5.jpeg",
+    "backgroundImages": [
+      "assets/backgrounds/芙宁娜吧.png"
+    ],
+    "avatarPosition": [
+      "left-bottom",
+      "left-up"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/2.mp3",
+        "name": "清醒记",
+        "artist": "黄诗扶"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "小水母芙宁娜吧",
+    "description": "芙宁娜真爱吧",
+    "avatar": "assets/avatar/6.jpeg",
+    "backgroundImages": [
+      "assets/backgrounds/小水母芙宁娜吧.png"
+    ],
+    "avatarPosition": [
+      "left-bottom"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/3.mp3",
+        "name": "孤雏",
+        "artist": "AGA"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "原神芙宁娜吧",
+    "description": "欢迎每一个喜欢芙芙的人。",
+    "avatar": "assets/avatar/7.jpeg",
+      "backgroundImages": [
+      "assets/backgrounds/原神芙宁娜吧.png"
+    ],
+    "avatarPosition": [
+      "left-bottom",
+      "left-up"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/0.mp3",
+        "name": "过时不候",
+        "artist": "方糖泡泡"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "芙卡洛斯吧",
+    "description": "芙宁娜的角色吧",
+    "avatar": "assets/avatar/8.jpeg",
+    "backgroundImages": [
+      "assets/backgrounds/芙卡洛斯吧.png"
+    ],
+    "avatarPosition": [
+      "left-up"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/1.mp3",
+        "name": "泣心谱",
+        "artist": "曾志豪"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "name": "空芙吧",
+    "description": "《原神》中芙宁娜与空（玩家）的cp吧",
+    "avatar": "assets/avatar/9.jpeg",
+    "backgroundImages": [
+      "assets/backgrounds/空芙吧.png"
+    ],
+    "avatarPosition": [
+      "left-up"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/2.mp3",
+        "name": "清醒记",
+        "artist": "黄诗扶"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "name": "原神芙卡洛斯吧",
+    "description": " ",
+    "avatar": "assets/avatar/10.jpeg",
+    "backgroundImages": [
+      "assets/backgrounds/原神芙卡洛斯吧.png"
+    ],
+    "avatarPosition": [
+      "right-up"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/3.mp3",
+        "name": "孤雏",
+        "artist": "AGA"
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": "幽夜净土吧",
+    "description": "幽夜净土吧，鸦鸦们的家",
+    "avatar": "assets/avatar/11.jpeg",
+    "backgroundImages": [
+      "assets/background极s/幽夜净土吧.png"
+    ],
+    "avatarPosition": [
+      "left-bottom",
+      "left-up"
+    ],
+    "songs": [
+      {
+        "url": "assets/music/0.mp3",
+        "name": "过时不候",
+        "artist": "方糖泡泡"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "name": "七圣召唤吧",
+    "description": "原神卡牌游戏",
+    "avatar": "assets/avatar/12.jpeg",
+    "backgroundImages": [
+      "assets/backgrounds/七圣召唤吧.png"
     ],
     "avatarPosition": [
       "right-up"
@@ -45,15 +268,15 @@
     ]
   },
   {
-    "id": 2,
-    "name": "原神同人吧",
-    "description": "原神同人创作交流",
-    "avatar": "assets/avatar/2.jpg",
+    "id": 13,
+    "name": "二游联萌吧",
+    "description": "保护萌萌人二游玩家！",
+    "avatar": "assets/avatar/13.jpeg",
     "backgroundImages": [
-      "assets/backgrounds/1.jpg"
+      "assets/backgrounds/二游联萌吧.png"
     ],
     "avatarPosition": [
-      "left-bottom"
+      "right-up"
     ],
     "songs": [
       {
@@ -64,15 +287,15 @@
     ]
   },
   {
-    "id": 3,
-    "name": "原神音乐吧",
-    "description": "原神音乐分享交流",
-    "avatar": "assets/avatar/3.jpg",
+    "id": 14,
+    "name": "黑海岸通讯吧",
+    "description": "鸣潮黑海岸通讯社，和谐讨论，资讯搬运处。",
+    "avatar": "assets/avatar/14.jpeg",
     "backgroundImages": [
-      "assets/backgrounds/2.png"
+      "assets/backgrounds/黑海岸通讯吧.png"
     ],
     "avatarPosition": [
-      "right-bottom"
+      "right-up"
     ],
     "songs": [
       {
@@ -82,4 +305,4 @@
       }
     ]
   }
-] 
+]
