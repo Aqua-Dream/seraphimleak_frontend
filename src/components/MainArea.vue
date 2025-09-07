@@ -614,9 +614,17 @@ const adaptiveSpeed = computed(() => {
 const textContentStyle = computed(() => {
   const position = currentAvatarPosition.value
   const isLeft = position.startsWith('left')
+  var useBlackFont = true
+  const blackFonts = props.selectedTieba?.blackFonts
+  const currentIndex = props.selectedTieba?.currentBackgroundIndex || 0
   
+  if (blackFonts && blackFonts.length > 0) {
+    useBlackFont = blackFonts[currentIndex] === true
+  }
   return {
-    textAlign: isLeft ? 'left' : 'right'
+    textAlign: isLeft ? 'left' : 'right',
+    color: useBlackFont ? 'black' : 'white',
+    textShadow: useBlackFont ? '0 0 4px white, 0 0 6px white, 0 0 8px white': '2px 2px 4px rgba(0, 0, 0, 0.3)'
   }
 })
 
@@ -686,7 +694,6 @@ function goToTieba() {
   margin: 0 0 10px 0;
   font-size: 2.5em;
   font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .text-content p {

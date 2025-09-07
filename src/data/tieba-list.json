@@ -22,6 +22,15 @@
       "left-up",
       "right-up"
     ],
+    "blackFonts": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true
+    ],
     "songs": [
       {
         "url": "assets/music/0.mp3",
@@ -271,6 +280,7 @@
     "id": 13,
     "name": "二游联萌吧",
     "description": "保护萌萌人二游玩家！",
+    "blackFonts": [true],
     "avatar": "assets/avatar/13.jpeg",
     "backgroundImages": [
       "assets/backgrounds/二游联萌吧.png"
@@ -290,6 +300,7 @@
     "id": 14,
     "name": "黑海岸通讯吧",
     "description": "鸣潮黑海岸通讯社，和谐讨论，资讯搬运处。",
+    "blackFonts": [true],
     "avatar": "assets/avatar/14.jpeg",
     "backgroundImages": [
       "assets/backgrounds/黑海岸通讯吧.png"
