@@ -614,7 +614,7 @@ const adaptiveSpeed = computed(() => {
 const textContentStyle = computed(() => {
   const position = currentAvatarPosition.value
   const isLeft = position.startsWith('left')
-  var useBlackFont = true
+  var useBlackFont = false
   const blackFonts = props.selectedTieba?.blackFonts
   const currentIndex = props.selectedTieba?.currentBackgroundIndex || 0
   

@@ -54,6 +54,9 @@ const loadTiebaList = async () => {
       
       // 为每个贴吧添加当前背景图片索引
       tieba.currentBackgroundIndex = 0
+      // 为每个贴吧添加当前背景图片索引（随机）
+      // const bgLen = Array.isArray(tieba.backgroundImages) ? tieba.backgroundImages.length : 0
+      // tieba.currentBackgroundIndex = bgLen > 0 ? Math.floor(Math.random() * bgLen) : 0
     }
     // 直接使用导入的JSON数据
     tiebaList.value = tiebaListData
@@ -116,9 +119,11 @@ const loadStats = async () => {
 }
 
 const switchTieba = (tieba) => {
+  const bgLen = Array.isArray(tieba.backgroundImages) ? tieba.backgroundImages.length : 0
+  const randomBgIndex = bgLen > 0 ? Math.floor(Math.random() * bgLen) : 0
   selectedTieba.value = {
     ...tieba,
-    currentBackgroundIndex: 0
+    currentBackgroundIndex: randomBgIndex
   }
 }
 

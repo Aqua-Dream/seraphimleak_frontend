@@ -28,7 +28,7 @@ const initPlayer = () => {
 
   // 获取歌曲数组
   const songs = props.selectedTieba.songs || []
-  
+
   if (songs.length === 0) {
     console.warn('没有找到歌曲数据')
     return
@@ -51,22 +51,22 @@ const initPlayer = () => {
 
   // 监听播放状态
   const aplayerContainer = document.getElementById('aplayer')
-  
+
   aplayer.value.on('play', () => {
     aplayerContainer.classList.add('aplayer-playing')
     emit('music-state-change', true)
   })
-  
+
   aplayer.value.on('pause', () => {
     aplayerContainer.classList.remove('aplayer-playing')
     emit('music-state-change', false)
   })
-  
+
   aplayer.value.on('ended', () => {
     aplayerContainer.classList.remove('aplayer-playing')
     emit('music-state-change', false)
   })
-  
+
   aplayer.value.on('error', () => {
     aplayerContainer.classList.remove('aplayer-playing')
     emit('music-state-change', false)
@@ -76,7 +76,7 @@ const initPlayer = () => {
   aplayerContainer.addEventListener('mouseenter', () => {
     aplayer.value.setMode('normal')
   })
-  
+
   aplayerContainer.addEventListener('mouseleave', () => {
     aplayer.value.setMode('mini')
   })
@@ -86,18 +86,22 @@ const initPlayer = () => {
 const updatePlayer = () => {
   if (aplayer.value) {
     const wasPlaying = !aplayer.value.audio.paused
-    
+
     // 获取歌曲数组
     const songs = props.selectedTieba.songs || []
-    
+
     if (songs.length === 0) {
       console.warn('没有找到歌曲数据')
       return
     }
-    
+
     aplayer.value.list.clear()
     aplayer.value.list.add(songs)
-    aplayer.value.list.switch(0)
+    var index = 0
+    if (songs.length > 1) {
+      index = Math.floor(Math.random() * songs.length)
+    }
+    aplayer.value.list.switch(index)
     if (wasPlaying) {
       aplayer.value.play()
     }
@@ -125,14 +129,14 @@ defineExpose({
   updatePlayer,
   aplayer
 })
-</script> 
+</script>
 
 <style>
 /* APlayer 样式调整 */
 .aplayer .aplayer-narrow,
 .aplayer-narrow .aplayer-body {
   background: transparent !important;
-} 
+}
 
 /* 折叠状态下的样式 */
 .aplayer.aplayer-narrow .aplayer-body {
@@ -162,12 +166,12 @@ defineExpose({
 .aplayer-pic {
   position: relative !important;
   width: 46px !important;
-  height: 46px !important;  
+  height: 46px !important;
   border-radius: 50% !important;
   background: radial-gradient(circle at 60% 40%, #444 60%, #222 100%);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   overflow: visible !important;
-  border: 10px solid #222; 
+  border: 10px solid #222;
   transition: transform 0.3s ease;
 }
 
@@ -180,7 +184,7 @@ defineExpose({
   border-radius: 50%;
   transform: translate(-50%, -50%);
   border: 4px solid #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   object-fit: cover;
   background: #fff;
 }
@@ -196,12 +200,22 @@ defineExpose({
 }
 
 .aplayer-pic .aplayer-button,
-.aplayer-icon-lrc, .aplayer-icon-back, .aplayer-icon-forward, .aplayer-icon-play, .aplayer-miniswitcher,.aplayer-icon-order {
+.aplayer-icon-lrc,
+.aplayer-icon-back,
+.aplayer-icon-forward,
+.aplayer-icon-play,
+.aplayer-miniswitcher,
+.aplayer-icon-order {
   display: none !important;
-} 
+}
 
 @keyframes vinyl-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
-</style> 
+</style>

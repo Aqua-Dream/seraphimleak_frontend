@@ -8,9 +8,9 @@
       "assets/backgrounds/原神天堂内鬼吧1.png",
       "assets/backgrounds/原神天堂内鬼吧2.png",
       "assets/backgrounds/原神天堂内鬼吧3.png",
-      "assets/backgrounds/原神天堂内鬼吧4.jpg",
+      "assets/backgrounds/原神天堂内鬼吧4.png",
       "assets/backgrounds/原神天堂内鬼吧5.png",
-      "assets/backgrounds/原神天堂内鬼吧6.jpg",
+      "assets/backgrounds/原神天堂内鬼吧6.png",
       "assets/backgrounds/原神天堂内鬼吧7.png"
     ],
     "avatarPosition": [
@@ -33,14 +33,39 @@
     ],
     "songs": [
       {
-        "url": "assets/music/0.mp3",
-        "name": "过时不候",
-        "artist": "方糖泡泡"
+        "url": "assets/music/张杰,HOYO-MiX - 经过.mp3",
+        "name": "经过",
+        "artist": "张杰,HOYO-MiX"
       },
       {
-        "url": "assets/music/1.mp3",
-        "name": "泣心谱",
-        "artist": "曾志豪"
+        "url": "assets/music/HOYO-MiX,尚雯婕 - 邀欢同游 Se mettre sur son trente-et-un !.mp3",
+        "name": "邀欢同游 Se mettre sur son trente-et-un !",
+        "artist": "HOYO-MiX,尚雯婕"
+      },
+      {
+        "url": "assets/music/Aimer,EGOIST - ninelie.mp3",
+        "name": "ninelie",
+        "artist": "Aimer,EGOIST"
+      },
+      {
+        "url": "assets/music/當山みれい - 願い～あの頃のキミへ～.mp3",
+        "name": "願い～あの頃のキミへ～",
+        "artist": "當山みれい"
+      },
+      {
+        "url": "assets/music/tayori,倚水 - 花がら.mp3",
+        "name": "花がら",
+        "artist": "tayori,倚水"
+      },
+      {
+        "url": "assets/music/Kirara Magic - To the South.mp3",
+        "name": "To the South",
+        "artist": "Kirara Magic"
+      },
+      {
+        "url": "assets/music/yama - 春を告げる.mp3",
+        "name": "春を告げる",
+        "artist": "yama"
       }
     ]
   },
@@ -57,9 +82,9 @@
     ],
     "songs": [
       {
-        "url": "assets/music/2.mp3",
-        "name": "清醒记",
-        "artist": "黄诗扶"
+        "url": "assets/music/陈致逸,HOYO-MiX - 七天神像 Statue of the Seven.mp3",
+        "name": "七天神像 Statue of the Seven",
+        "artist": "陈致逸,HOYO-MiX"
       }
     ]
   },
@@ -76,9 +101,9 @@
     ],
     "songs": [
       {
-        "url": "assets/music/3.mp3",
-        "name": "孤雏",
-        "artist": "AGA"
+        "url": "assets/music/Aimer,塞壬唱片-MSR - Eclipse.mp3",
+        "name": "Eclipse",
+        "artist": "Aimer,塞壬唱片-MSR"
       }
     ]
   },
@@ -96,9 +121,9 @@
     ],
     "songs": [
       {
-        "url": "assets/music/0.mp3",
-        "name": "过时不候",
-        "artist": "方糖泡泡"
+        "url": "assets/music/知更鸟,HOYO-MiX,Chevy - 若我不曾见过太阳.mp3",
+        "name": "若我不曾见过太阳",
+        "artist": "知更鸟,HOYO-MiX,Chevy"
       }
     ]
   },
@@ -115,9 +140,9 @@
     ],
     "songs": [
       {
-        "url": "assets/music/1.mp3",
-        "name": "泣心谱",
-        "artist": "曾志豪"
+        "url": "assets/music/鸣潮先约电台,YUE.STEVEN - 繁星、新生，与你 Astrum Unicum.mp3",
+        "name": "繁星、新生，与你 Astrum Unicum",
+        "artist": "鸣潮先约电台,YUE.STEVEN"
       }
     ]
   },
@@ -135,9 +160,9 @@
     ],
     "songs": [
       {
-        "url": "assets/music/2.mp3",
-        "name": "清醒记",
-        "artist": "黄诗扶"
+        "url": "assets/music/雨帆不烦 - 荒 (我曾爱过一个人竹笛纯享版).mp3",
+        "name": "荒 (我曾爱过一个人竹笛纯享版)",
+        "artist": "雨帆不烦"
       }
     ]
   },
@@ -154,9 +179,9 @@
     ],
     "songs": [
       {
-        "url": "assets/music/3.mp3",
-        "name": "孤雏",
-        "artist": "AGA"
+        "url": "assets/music/松本文紀 - こんなにも穏やかな時の流れ.mp3",
+        "name": "こんなにも穏やかな時の流れ",
+        "artist": "松本文紀"
       }
     ]
   },
@@ -165,7 +190,7 @@
     "name": "原神芙宁娜吧",
     "description": "欢迎每一个喜欢芙芙的人。",
     "avatar": "assets/avatar/7.jpeg",
-      "backgroundImages": [
+    "backgroundImages": [
       "assets/backgrounds/原神芙宁娜吧.png"
     ],
     "avatarPosition": [
@@ -174,9 +199,9 @@
     ],
     "songs": [
       {
-        "url": "assets/music/0.mp3",
-        "name": "过时不候",
-        "artist": "方糖泡泡"
+        "url": "assets/music/HOYO-MiX - 轻涟 La vaguelette.mp3",
+        "name": "轻涟 La vaguelette",
+        "artist": "HOYO-MiX"
       }
     ]
   },
@@ -193,9 +218,9 @@
     ],
     "songs": [
       {
-        "url": "assets/music/1.mp3",
-        "name": "泣心谱",
-        "artist": "曾志豪"
+        "url": "assets/music/Streaming Music Studios - Aerith's Theme (From Final Fantasy VII) [Piano Version].mp3",
+        "name": "Aerith's Theme (From \"Final Fantasy VII\") [Piano Version]",
+        "artist": "Streaming Music Studios"
       }
     ]
   },
@@ -212,9 +237,9 @@
     ],
     "songs": [
       {
-        "url": "assets/music/2.mp3",
-        "name": "清醒记",
-        "artist": "黄诗扶"
+        "url": "assets/music/Mariette - A Million Years.mp3",
+        "name": "A Million Years",
+        "artist": "Mariette"
       }
     ]
   },
@@ -231,9 +256,9 @@
     ],
     "songs": [
       {
-        "url": "assets/music/3.mp3",
-        "name": "孤雏",
-        "artist": "AGA"
+        "url": "assets/music/HOYO-MiX - A Sprinkling of Warmth.mp3",
+        "name": "A Sprinkling of Warmth",
+        "artist": "HOYO-MiX"
       }
     ]
   },
@@ -243,17 +268,16 @@
     "description": "幽夜净土吧，鸦鸦们的家",
     "avatar": "assets/avatar/11.jpeg",
     "backgroundImages": [
-      "assets/background极s/幽夜净土吧.png"
+      "assets/backgrounds/幽夜净土吧.png"
     ],
     "avatarPosition": [
-      "left-bottom",
-      "left-up"
+      "right-up"
     ],
     "songs": [
       {
-        "url": "assets/music/0.mp3",
-        "name": "过时不候",
-        "artist": "方糖泡泡"
+        "url": "assets/music/HOYO-MiX - 圣眷的净土 Das Folkwanglied.mp3",
+        "name": "圣眷的净土 Das Folkwanglied",
+        "artist": "HOYO-MiX"
       }
     ]
   },
@@ -270,9 +294,9 @@
     ],
     "songs": [
       {
-        "url": "assets/music/1.mp3",
-        "name": "泣心谱",
-        "artist": "曾志豪"
+        "url": "assets/music/HOYO-MiX - 柔风浅酌 Sipping in the Soft Breeze.mp3",
+        "name": "柔风浅酌 Sipping in the Soft Breeze",
+        "artist": "HOYO-MiX"
       }
     ]
   },
@@ -280,7 +304,9 @@
     "id": 13,
     "name": "二游联萌吧",
     "description": "保护萌萌人二游玩家！",
-    "blackFonts": [true],
+    "blackFonts": [
+      true
+    ],
     "avatar": "assets/avatar/13.jpeg",
     "backgroundImages": [
       "assets/backgrounds/二游联萌吧.png"
@@ -290,9 +316,9 @@
     ],
     "songs": [
       {
-        "url": "assets/music/2.mp3",
-        "name": "清醒记",
-        "artist": "黄诗扶"
+        "url": "assets/music/Lia - 鳥の詩.mp3",
+        "name": "鳥の詩",
+        "artist": "Lia"
       }
     ]
   },
@@ -300,7 +326,9 @@
     "id": 14,
     "name": "黑海岸通讯吧",
     "description": "鸣潮黑海岸通讯社，和谐讨论，资讯搬运处。",
-    "blackFonts": [true],
+    "blackFonts": [
+      true
+    ],
     "avatar": "assets/avatar/14.jpeg",
     "backgroundImages": [
       "assets/backgrounds/黑海岸通讯吧.png"
@@ -310,9 +338,9 @@
     ],
     "songs": [
       {
-        "url": "assets/music/3.mp3",
-        "name": "孤雏",
-        "artist": "AGA"
+        "url": "assets/music/鸣潮先约电台,YUE.STEVEN - 孑遗者的故乡.mp3",
+        "name": "孑遗者的故乡",
+        "artist": "鸣潮先约电台,YUE.STEVEN"
       }
     ]
   }
