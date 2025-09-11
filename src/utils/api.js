@@ -1,9 +1,17 @@
+/*
+ * @Author: 刘凯欣 18532285824@163.com
+ * @Date: 2025-09-11 11:41:15
+ * @LastEditors: 刘凯欣 18532285824@163.com
+ * @LastEditTime: 2025-09-11 14:06:27
+ * @Description: 
+ */
 // API适配器 - 根据环境自动选择数据源
 class ApiAdapter {
   constructor() {
     // 检测是否为本地开发环境
     this.isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    this.apiUrl = this.isLocalDev ? 'http://localhost:8001' : '/api';
+    // this.apiUrl = this.isLocalDev ? 'http://localhost:8001' : '/api';
+    this.apiUrl = this.isLocalDev ? 'http://seraphimleak.com/api' : '/api';
   }
 
   // 获取统计数据
