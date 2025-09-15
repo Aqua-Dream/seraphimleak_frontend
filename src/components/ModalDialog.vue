@@ -1,14 +1,11 @@
 <template>
   <div class="modal-overlay" :class="{ show: visible }" @click="$emit('close')">
     <div class="modal-content" :class="modalClass" @click.stop>
-      <button class="close-btn" @click="$emit('close')">×</button>
-      <h2 class="modal-title">{{ title }}</h2>
-      
+      <img src="/assets/backgrounds/popupIcon-big.png" class="user-img show-in-pc" alt="">
+      <img src="/assets/backgrounds/popupIcon-big.png" class="user-img show-in-media" alt="">
+      <img src="/assets/backgrounds/close-button.png" @click="$emit('close')" class="close-btn" alt="">
       <!-- 网站信息内容 -->
-      <div v-if="type === 'info'">
-        <p class="modal-text">
-          欢迎来到原神天堂内鬼吧二周年共创纪念网站！
-        </p>
+      <div class="modal-info" v-if="type === 'info'">
         <p class="modal-text">
           本网站为粉丝纪念网站，所有内容仅供交流学习使用，不涉及任何商业行为。
           所有图片、音乐等素材版权归原作者所有，如有侵权请联系我们删除。
@@ -21,38 +18,33 @@
         </p>
         <div class="modal-stats">
           <div class="stat-row">
-            <span class="stat-label">访问量：</span>
+            <span class="stat-label">访问量(次)</span>
             <span class="stat-value">{{ stats.clickCount }} 次</span>
           </div>
           <div class="stat-row">
-            <span class="stat-label">用户量：</span>
+            <span class="stat-label">用户量(人)</span>
             <span class="stat-value">{{ stats.userCount }} 人</span>
           </div>
         </div>
       </div>
-      
       <!-- 验证码内容 -->
       <div v-else-if="type === 'captcha'" class="captcha-container">
         <div class="captcha-image-container">
           <img :src="captchaImage" alt="验证码" class="captcha-image" v-if="captchaImage">
           <button @click="$emit('refreshCaptcha')" class="captcha-refresh-btn" title="刷新验证码">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M1 4V10H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M23 20V14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14L18.36 18.36A9 9 0 0 1 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M1 4V10H7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M23 20V14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14L18.36 18.36A9 9 0 0 1 3.51 15" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </button>
         </div>
         <div class="captcha-input-area">
-          <input 
-            :value="captchaInput" 
-            @input="handleCaptchaInput"
-            placeholder="请输入6位数字验证码" 
-            class="captcha-input"
-            @keyup.enter="$emit('submitCaptcha')"
-            maxlength="6"
-            ref="captchaInput"
-          >
+          <input :value="captchaInput" @input="handleCaptchaInput" placeholder="请输入6位数字验证码" class="captcha-input"
+            @keyup.enter="$emit('submitCaptcha')" maxlength="6" ref="captchaInput">
           <button @click="$emit('submitCaptcha')" class="captcha-submit-btn" :disabled="!isValidCaptcha">提交</button>
         </div>
       </div>
@@ -112,9 +104,15 @@ const handleCaptchaInput = (event) => {
 const modalClass = computed(() => {
   return props.type === 'captcha' ? 'captcha-modal' : ''
 })
-</script> 
+</script>
 
 <style scoped>
+.user-img {
+  position: absolute;
+  top: -73px;
+  right: -73px;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -136,76 +134,80 @@ const modalClass = computed(() => {
   visibility: visible;
 }
 
-.modal-content {
-  background: white;
-  border-radius: 15px;
-  padding: 30px;
-  max-width: 500px;
-  width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  position: relative;
-  transform: scale(0.8);
-  transition: all 0.3s ease;
+/* PC端显示，移动端隐藏 */
+.show-in-pc {
+  display: inline-flex;
 }
 
-.modal-overlay.show .modal-content {
-  transform: scale(1);
+/* 移动端显示，PC端隐藏 */
+.show-in-media {
+  display: none;
+}
+
+.modal-content {
+  position: relative;
+  background: url('/assets/backgrounds/popupBg-big.png')no-repeat;
+  border-radius: 15px;
+  max-width: 700px;
+  width: 100%;
+  overflow: visible;
+  transition: all 0.3s ease;
 }
 
 .close-btn {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  background: none;
-  border: none;
-  font-size: 24px;
   cursor: pointer;
-  color: #666;
-  transition: all 0.3s ease;
+  position: absolute;
+  bottom: -80px;
+  width: 50px;
+  height: 50px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-.close-btn:hover {
-  color: #333;
+.modal-info {
+  background: #ffffff;
+  margin-top: 160px;
+  border-radius: 60px;
+  padding: 32px 40px 57px 40px;
+}
+
+.modal-overlay.show .modal-content {
+  /* transform: scale(1); */
 }
 
 .modal-title {
-  margin: 0 0 20px 0;
   color: #1a75ff;
   font-size: 1.5em;
   font-weight: bold;
 }
 
 .modal-text {
-  margin: 0 0 15px 0;
-  line-height: 1.6;
+  line-height: 1.5;
+  font-size: 20px;
   color: #333;
 }
 
 .modal-stats {
-  margin-top: 20px;
-  padding: 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  display: flex;
+  gap: 30px;
 }
 
 .stat-row {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.stat-row:last-child {
-  margin-bottom: 0;
+  flex-direction: column;
+  padding: 12px 105px;
+  background: #F8F8F8;
+  line-height: 1.6;
+  border-radius: 37px;
+  align-items: center;
 }
 
 .stat-label {
-  font-weight: bold;
-  color: #666;
+  color: #627982;
 }
 
 .stat-value {
-  color: #1a75ff;
+  color: #1C2B31;
   font-weight: bold;
 }
 
@@ -310,4 +312,137 @@ const modalClass = computed(() => {
   background: #ccc;
   transform: none;
 }
-</style> 
+
+@media (max-width: 768px) {
+  .user-img {
+    position: absolute;
+    top: -73px;
+    right: -73px;
+    height: 107px;
+  }
+
+  .modal-content {
+    background: url('/assets/backgrounds/popupBg-big.png') no-repeat;
+    background-size: cover;
+  }
+
+  /* PC端显示，移动端隐藏 */
+  .show-in-pc {
+    display: none;
+  }
+
+  /* 移动端，PC端隐藏 */
+  .show-in-media {
+    display: inline-flex;
+
+  }
+
+  .modal-content {
+    border-radius: 15px;
+    width: 322px;
+  }
+
+  .modal-info {
+    margin-top: 78px;
+    border-radius: 28px;
+    padding: 32px 40px 57px 40px;
+  }
+
+  .modal-stats {
+    gap: 13px;
+  }
+
+  .stat-row {
+    padding: 3px 40px;
+    border-radius: 17px;
+  }
+
+  .modal-text {
+    line-height: 1.5;
+    font-size: 13px;
+    color: #333;
+  }
+
+  .stat-label {
+    color: #627982;
+    white-space: nowrap;
+  }
+
+  .stat-value {
+    color: #1C2B31;
+    font-weight: bold;
+  }
+
+  .close-btn {
+    cursor: pointer;
+    position: absolute;
+    bottom: -50px;
+    width: 28px;
+    height: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 480px) {
+  .user-img {
+    position: absolute;
+    top: -18px;
+    right: -25px;
+  }
+
+  .modal-content {
+    background: url('/assets/backgrounds/popupBg-big.png') no-repeat;
+    background-size: contain;
+  }
+
+  /* PC端显示，移动端隐藏 */
+  .show-in-pc {
+    display: none;
+  }
+
+  /* 移动端，PC端隐藏 */
+  .show-in-media {
+    display: inline-flex;
+
+  }
+
+  .modal-content {
+    border-radius: 15px;
+    width: 322px;
+    box-sizing: border-box;
+  }
+
+  .modal-info {
+    margin-top: 78px;
+    border-radius: 28px;
+    padding: 17px 17px 28px 19px;
+  }
+
+  .modal-stats {
+    gap: 13px;
+  }
+
+  .stat-row {
+    padding: 3px 40px;
+    border-radius: 17px;
+  }
+
+  .modal-text {
+    line-height: 1.5;
+    font-size: 13px;
+    color: #333;
+  }
+
+  .stat-label {
+    color: #627982;
+    font-size: 12px;
+  }
+
+  .stat-value {
+    color: #1C2B31;
+    font-weight: bold;
+    font-size: 12px;
+  }
+}
+</style>

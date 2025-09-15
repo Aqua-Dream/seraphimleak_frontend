@@ -14,14 +14,11 @@
         <div class="display-controls">
           <div class="switch-item">
             <span class="switch-label">邮戳</span>
-            <el-switch v-model="showAvatar" class="show-in-pc" />
-            <el-switch size="small" v-model="showAvatar" class="show-in-media" />
+            <el-switch v-model="showAvatar" />
           </div>
           <div class="switch-item">
             <span class="switch-label">弹幕</span>
-            <el-switch v-model="showDanmaku" @change="handleDanmakuVisibilityChange" class="show-in-pc" />
-            <el-switch size="small" v-model="showDanmaku" @change="handleDanmakuVisibilityChange"
-              class="show-in-media" />
+            <el-switch v-model="showDanmaku" @change="handleDanmakuVisibilityChange" />
           </div>
         </div>
       </div>
@@ -37,17 +34,11 @@
     <!-- 内容区域 - 包含头像和弹幕 -->
     <div class="content-area">
       <!-- 背景图片轮播 - 覆盖整个content-area -->
+
       <div class="background-carousel">
-        <el-carousel 
-          :trigger="windowWidth <= 768 ? 'click' : 'hover'" 
-          arrow="always" 
-          height="100%" 
-          :autoplay="false" 
-          indicator-position="none"
-          :touch="true"
-          @change="handleCarouselChange">
+        <el-carousel trigger="click" arrow="always" height="100%" :autoplay="false" indicator-position="none">
           <el-carousel-item v-for="(image, index) in selectedTieba.backgroundImages" indicator-position="none"
-            :key="index">
+            @change="handleCarouselChange" :key="index">
             <div class="background-content">
               <img :src="image" alt="" class="carousel-image" />
             </div>
@@ -132,13 +123,12 @@ const handleCarouselChange = (index) => {
   if (props.selectedTieba) {
     props.selectedTieba.currentBackgroundIndex = index
   }
-  console.log('轮播图切换到第', index, '张')
 }
 
 // 处理弹幕显示/隐藏
 const handleDanmakuVisibilityChange = (value) => {
   if (!danmakuRef.value) return
-
+  
   if (value) {
     danmakuRef.value.show()
   } else {
@@ -155,15 +145,15 @@ const handleDownload = async () => {
 const downloadBackground = async (showAvatar, showDanmaku) => {
   const backgroundImages = props.selectedTieba?.backgroundImages
   const currentIndex = props.selectedTieba?.currentBackgroundIndex || 0
-
+  
   if (!backgroundImages && !props.selectedTieba?.avatar) {
     return
   }
-
-  const backgroundImageUrl = (backgroundImages && backgroundImages.length > 0)
-    ? (backgroundImages[currentIndex] || backgroundImages[0])
+  
+  const backgroundImageUrl = (backgroundImages && backgroundImages.length > 0) 
+    ? (backgroundImages[currentIndex] || backgroundImages[0]) 
     : props.selectedTieba.avatar
-
+  
   // 根据显示邮戳和弹幕的状态生成文件名
   let fileName = props.selectedTieba.name
   if (showAvatar && showDanmaku) {
@@ -175,7 +165,7 @@ const downloadBackground = async (showAvatar, showDanmaku) => {
   } else {
     fileName += '_纯背景'
   }
-
+  
   // 检测原始图片格式
   const getImageExtension = (url) => {
     const urlLower = url.toLowerCase()
@@ -186,7 +176,7 @@ const downloadBackground = async (showAvatar, showDanmaku) => {
     // 默认返回.jpg
     return '.jpg'
   }
-
+  
   // 如果是直接下载原图，保持原始格式；否则使用jpg（因为合成图片固定为jpg）
   const shouldKeepOriginalFormat = !showAvatar && !showDanmaku
   if (shouldKeepOriginalFormat) {
@@ -194,7 +184,7 @@ const downloadBackground = async (showAvatar, showDanmaku) => {
   } else {
     fileName += '.jpg'
   }
-
+  
   try {
     if (showAvatar && props.selectedTieba?.avatar) {
       // 需要合成图片（包含头像和弹幕）
@@ -228,27 +218,27 @@ const drawDanmakus = (ctx, canvas, scale) => {
   if (!danmakuRef.value || !danmakuRef.value.dmContainer) {
     return
   }
-
+  
   // 获取当前屏幕上的弹幕元素
   const danmuElements = danmakuRef.value.dmContainer.getElementsByClassName('dm')
-
+  
   // 设置弹幕样式（与网页样式一致）
   const baseFontSize = 20 * scale // 20px * scale
   ctx.font = `${baseFontSize}px "Microsoft YaHei", sans-serif`
   ctx.textBaseline = 'top'
-
+  
   // 绘制每个弹幕
   for (let i = 0; i < danmuElements.length; i++) {
     const danmuEl = danmuElements[i]
-
+    
     // 获取弹幕内容
     const content = danmuEl.textContent || danmuEl.innerText || ''
     if (!content.trim()) continue
-
+    
     // 获取弹幕位置信息
     const channelIndex = parseInt(danmuEl.dataset.channel) || 0
     const top = parseFloat(danmuEl.style.top) || 0
-
+    
     // 计算弹幕在Canvas中的位置
     const danmuHeight = 20 * scale // 弹幕高度：20 * 1.92 = 38.4
     const danmuTop = 4 * scale // 弹幕间距：4 * 1.92 = 7.68
@@ -256,10 +246,10 @@ const drawDanmakus = (ctx, canvas, scale) => {
     // 网页中main-area有1px border，导致内容向内缩进1px
     const borderOffset = 8
     const y = top * scale + borderOffset // 垂直位置按比例缩放，然后加上border偏移
-
+    
     // 计算弹幕的水平位置（根据当前移动进度）
     let x = canvas.width // 默认从右侧开始
-
+    
     // 获取弹幕的当前transform位置
     const transform = danmuEl.style.transform
     if (transform && transform.includes('translateX')) {
@@ -273,10 +263,10 @@ const drawDanmakus = (ctx, canvas, scale) => {
         x = canvas.width + (translateX * scale) + borderOffset
       }
     }
-
+    
     // 如果弹幕已经移出屏幕左侧，跳过绘制
     if (x < -200 * scale) continue
-
+    
     // 绘制弹幕文字阴影（黑色边框效果，与网页样式一致）
     ctx.save()
     ctx.shadowColor = 'black'
@@ -285,22 +275,22 @@ const drawDanmakus = (ctx, canvas, scale) => {
     ctx.shadowOffsetY = 1 * scale
     ctx.fillStyle = 'white'
     ctx.fillText(content, x, y)
-
+    
     // 绘制第二层阴影
     ctx.shadowOffsetX = -1 * scale
     ctx.shadowOffsetY = 1 * scale
     ctx.fillText(content, x, y)
-
+    
     // 绘制第三层阴影
     ctx.shadowOffsetX = 1 * scale
     ctx.shadowOffsetY = -1 * scale
     ctx.fillText(content, x, y)
-
+    
     // 绘制第四层阴影
     ctx.shadowOffsetX = -1 * scale
     ctx.shadowOffsetY = -1 * scale
     ctx.fillText(content, x, y)
-
+    
     // 绘制主文字
     ctx.shadowColor = 'transparent'
     ctx.fillStyle = 'white'
@@ -314,11 +304,11 @@ const createCompositeImage = async (backgroundUrl, avatarUrl, fileName, showDanm
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
-
+    
     // 设置画布尺寸（可以根据需要调整）
     canvas.width = 1920
     canvas.height = 1080
-
+    
     // 加载背景图片
     const backgroundImg = new Image()
     backgroundImg.crossOrigin = 'anonymous'
@@ -329,16 +319,16 @@ const createCompositeImage = async (backgroundUrl, avatarUrl, fileName, showDanm
       const scaledHeight = backgroundImg.height * scale
       const x = (canvas.width - scaledWidth) / 2
       const y = (canvas.height - scaledHeight) / 2
-
+      
       ctx.drawImage(backgroundImg, x, y, scaledWidth, scaledHeight)
-
+      
       // 如果没有头像，直接绘制弹幕
       if (!avatarUrl) {
         if (showDanmaku) {
           // 使用固定的网页到Canvas比例，而不是背景图片的scale
           drawDanmakus(ctx, canvas, 1.92)
         }
-
+        
         // 转换为blob并下载
         canvas.toBlob((blob) => {
           const url = URL.createObjectURL(blob)
@@ -353,7 +343,7 @@ const createCompositeImage = async (backgroundUrl, avatarUrl, fileName, showDanm
         }, 'image/jpeg', 0.9)
         return
       }
-
+      
       // 加载头像
       const avatarImg = new Image()
       avatarImg.crossOrigin = 'anonymous'
@@ -364,7 +354,7 @@ const createCompositeImage = async (backgroundUrl, avatarUrl, fileName, showDanm
         const avatarSize = 80 * scale // 头像大小：80 * 1.92 = 153.6
         const margin = 30 * scale // 边距：40 * 1.92 = 76.8
         let avatarX, avatarY
-
+        
         // 根据当前头像位置计算邮戳位置
         const currentPosition = currentAvatarPosition.value
         switch (currentPosition) {
@@ -388,26 +378,26 @@ const createCompositeImage = async (backgroundUrl, avatarUrl, fileName, showDanm
             avatarX = margin
             avatarY = margin
         }
-
+        
         // 绘制头像背景（方形，带阴影效果，与网页样式一致）
         ctx.save()
         ctx.shadowColor = 'rgba(26, 117, 255, 0.3)'
         ctx.shadowBlur = 20 * scale // 阴影模糊：20 * 1.92 = 38.4
         ctx.shadowOffsetX = 0
         ctx.shadowOffsetY = 4 * scale // 阴影偏移：4 * 1.92 = 7.68
-
+        
         // 绘制方形头像背景（圆角矩形）
         ctx.beginPath()
         ctx.roundRect(avatarX, avatarY, avatarSize, avatarSize, 10 * scale) // 圆角：10 * 1.92 = 19.2
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
         ctx.fill()
         ctx.restore()
-
+        
         // 绘制弹幕（如果需要）- 在头像之前绘制，确保弹幕在头像下层
         if (showDanmaku) {
           drawDanmakus(ctx, canvas, 1.92)
         }
-
+        
         // 绘制头像图片
         ctx.save()
         ctx.beginPath()
@@ -415,14 +405,14 @@ const createCompositeImage = async (backgroundUrl, avatarUrl, fileName, showDanm
         ctx.clip()
         ctx.drawImage(avatarImg, avatarX + 3 * scale, avatarY + 3 * scale, avatarSize - 6 * scale, avatarSize - 6 * scale)
         ctx.restore()
-
+        
         // 添加邮戳边框（与网页样式一致）
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
         ctx.lineWidth = 3 * scale // 边框宽度：3 * 1.92 = 5.76
         ctx.beginPath()
         ctx.roundRect(avatarX, avatarY, avatarSize, avatarSize, 10 * scale)
         ctx.stroke()
-
+        
         // 转换为blob并下载
         canvas.toBlob((blob) => {
           const url = URL.createObjectURL(blob)
@@ -436,13 +426,13 @@ const createCompositeImage = async (backgroundUrl, avatarUrl, fileName, showDanm
           resolve()
         }, 'image/jpeg', 0.9)
       }
-
+      
       avatarImg.onerror = () => {
         reject(new Error('头像加载失败'))
       }
       avatarImg.src = avatarUrl
     }
-
+    
     backgroundImg.onerror = () => {
       reject(new Error('背景图片加载失败'))
     }
@@ -459,7 +449,7 @@ const reloadDanmakus = (comments) => {
 
   // 设置debounce值
   var danmakuNum = comments.length
-  if (danmakuNum < 30)
+  if(danmakuNum < 30)
     danmakuNum = 30;
   if (danmakuNum > 300)
     danmakuNum = 300;
@@ -499,7 +489,7 @@ defineExpose({
 // 生命周期钩子
 onMounted(() => {
   // 移除原有的点击外部关闭逻辑，Element Plus的dropdown会自动处理
-
+  
   // 初始化弹幕显示状态
   nextTick(() => {
     if (danmakuRef.value) {
@@ -510,7 +500,7 @@ onMounted(() => {
       }
     }
   })
-
+  
   // 监听窗口大小变化
   const handleResize = () => {
     windowWidth.value = window.innerWidth
@@ -529,7 +519,7 @@ onUnmounted(() => {
 const contentAreaStyle = computed(() => {
   const backgroundImages = props.selectedTieba?.backgroundImages
   const currentIndex = props.selectedTieba?.currentBackgroundIndex || 0
-
+  
   if (backgroundImages && backgroundImages.length > 0) {
     const currentBackground = backgroundImages[currentIndex] || backgroundImages[0]
     return { background: `url('${currentBackground}') left top/cover` }
@@ -540,30 +530,30 @@ const contentAreaStyle = computed(() => {
 
 // 计算当前头像位置和展开方向
 const currentAvatarPosition = computed(() => {
-  console.log(props.selectedTieba,'props.selectedTieba')
   const avatarPositions = props.selectedTieba?.avatarPosition
   const currentIndex = props.selectedTieba?.currentBackgroundIndex || 0
+  
   if (avatarPositions && avatarPositions.length > 0) {
     return avatarPositions[currentIndex] || avatarPositions[0]
   }
-  return 'right-bottom' // 默认位置
+  return 'right-up' // 默认位置
 })
 
 // 计算头像位置样式
 const avatarPositionStyle = computed(() => {
   const position = currentAvatarPosition.value
-  console.log(position,'头像定位')
   const isLeft = position.startsWith('left')
+  
   const baseStyle = {
     flexDirection: isLeft ? 'row-reverse' : 'row'
   }
-
+  
   switch (position) {
     case 'left-up':
       return {
         ...baseStyle,
-        top: 'var(--main-title-tb-margin)',
-        left: 'var(--main-title-lr-margin)',
+        top: 'var(--main-title-margin)',
+        left: 'var(--main-title-margin)',
         right: 'auto',
         bottom: 'auto'
       }
@@ -571,25 +561,25 @@ const avatarPositionStyle = computed(() => {
       return {
         ...baseStyle,
         top: 'auto',
-        left: 'var(--main-title-lr-margin)',
+        left: 'var(--main-title-margin)',
         right: 'auto',
-        bottom: 'var(--main-title-tb-margin)'
+        bottom: 'var(--main-title-margin)'
       }
     case 'right-bottom':
       return {
         ...baseStyle,
         top: 'auto',
         left: 'auto',
-        right: 'var(--main-title-lr-margin)',
-        bottom: 'var(--main-title-tb-margin)'
+        right: 'var(--main-title-margin)',
+        bottom: 'var(--main-title-margin)'
       }
     case 'right-up':
     default:
       return {
         ...baseStyle,
-        top: 'var(--main-title-tb-margin)',
+        top: 'var(--main-title-margin)',
         left: 'auto',
-        right: 'var(--main-title-lr-margin)',
+        right: 'var(--main-title-margin)',
         bottom: 'auto'
       }
   }
@@ -613,14 +603,14 @@ const textContentStyle = computed(() => {
   var useBlackFont = false
   const blackFonts = props.selectedTieba?.blackFonts
   const currentIndex = props.selectedTieba?.currentBackgroundIndex || 0
-
+  
   if (blackFonts && blackFonts.length > 0) {
     useBlackFont = blackFonts[currentIndex] === true
   }
   return {
     textAlign: isLeft ? 'left' : 'right',
     color: useBlackFont ? 'black' : 'white',
-    textShadow: useBlackFont ? '0 0 4px white, 0 0 6px white, 0 0 8px white' : '2px 2px 4px rgba(0, 0, 0, 0.3)'
+    textShadow: useBlackFont ? '0 0 4px white, 0 0 6px white, 0 0 8px white': '2px 2px 4px rgba(0, 0, 0, 0.3)'
   }
 })
 
@@ -654,7 +644,7 @@ function goToTieba() {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 14 / 9;
   background-image: url('/assets/backgrounds/rotating-background.png');
   background-size: contain;
   background-position: center;
@@ -678,9 +668,7 @@ function goToTieba() {
   gap: 20px;
   cursor: pointer;
   z-index: 4;
-  --main-title-margin: 0px;
-  --main-title-lr-margin: 135px;
-    --main-title-tb-margin: 65px;
+  --main-title-margin: 180px;
   --main2-title-margin: 132px;
   --main3-title-margin: 60px;
   --main4-title-margin: 132px;
@@ -766,29 +754,22 @@ function goToTieba() {
   display: none !important;
 }
 
-/* 弹幕容器 - 只覆盖banner图内容区域，不影响箭头点击和触摸滑动 */
+/* 弹幕容器 - 全屏显示 */
 .danmaku-container {
   position: absolute;
-  top: 35px; /* 对应 .el-carousel 的 top: 15px + .background-content 的位置调整 */
-  left: 120px; /* 对应轮播图的 padding: 20px 95px + background-content 的 padding: 25px */
-  right: 120px; /* 对应轮播图的 padding: 20px 95px + background-content 的 padding: 25px */
-  bottom: 45px; /* 对应 .el-carousel 的底部位置 + background-content 的 padding: 25px */
-  z-index: 3;
-  /* 放在图片上层，但在头像下层 */
-  pointer-events: none;
-  /* 关键：不拦截鼠标事件和触摸事件 */
-  touch-action: none;
-  /* 确保触摸事件能正确传递给轮播图 */
-  border-radius: 20px; /* 匹配 background-content 的圆角 */
-  overflow: hidden; /* 确保弹幕不会超出圆角边界 */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
 }
 
-
 .danmu-text {
-  background: rgba(0, 0, 0, 0.5)!important;
+  background: rgba(0, 0, 0, 0.5);
   padding: 10px 20px;
-  border-radius: 100px;
-  pointer-events: auto;
+  border-radius: 100px
 }
 
 /* 隐藏默认图标 */
@@ -869,12 +850,7 @@ function goToTieba() {
   bottom: 0;
   z-index: 3;
 }
-::v-deep .el-carousel__item{
-  /* top:50%;
-  transform: translateY(-50%); */
-  padding: 0 !important;
-  margin: 0 !important;
-}
+
 .carousel-image {
   width: 100%;
   height: auto;
@@ -884,7 +860,7 @@ function goToTieba() {
 /* 确保轮播图箭头相对于content-area定位 */
 :deep(.el-carousel) {
   position: absolute;
-  top: 15px;
+  top: 0;
   bottom: 0;
   left: 0;
   right: 0;
@@ -961,48 +937,15 @@ function goToTieba() {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .danmu-text {
-      background: rgba(0, 0, 0, 0.5) !important;
-      padding:4px 8px;
-      border-radius: 21px;
-      pointer-events: auto;
-    }
-  
-  /* 移动端弹幕容器调整 */
-  .danmaku-container {
-    top: 8px; /* 对应移动端 content-area margin-top: 8px */
-    left: 10px; /* 对应移动端轮播图 padding: 0 6px + background-content padding: 4px */
-    right: 10px; /* 对应移动端轮播图 padding: 0 6px + background-content padding: 4px */
-    bottom: 8px; /* 对应移动端底部间距 */
-    border-radius: 4px; /* 匹配移动端 background-content 的圆角 */
-  }
   .main-title {
-    --main-title-margin: 0px;
-    --main-title-lr-margin: 15px;
-    --main-title-tb-margin: 15px;
-    /* --main-title-margin: 158px; */
+    --main-title-margin: 158px;
     --main2-title-margin: 14px;
     --main3-title-margin: -26px;
     --main4-title-margin: 282px;
   }
 
-  /* 移动端轮播图箭头样式 - 显示但优化样式 */
   :deep(.el-carousel__arrow) {
-    display: flex !important;
-    width: 32px;
-    height: 32px;
-    background: rgba(48, 181, 238, 0.8);
-    border-radius: 50%;
-    backdrop-filter: blur(4px);
-  }
-  
-  /* 确保箭头在移动端更容易点击且位置合适 */
-  :deep(.el-carousel__arrow--left) {
-    left: 16px;
-  }
-  
-  :deep(.el-carousel__arrow--right) {
-    right: 16px;
+    display: none !important;
   }
 
   .bottom-controls {
@@ -1044,7 +987,7 @@ function goToTieba() {
     line-height: 16px;
   }
 
-  /* :deep(.el-switch__core) {
+  :deep(.el-switch__core) {
     min-width: 20px;
     height: 10px;
     border-radius: 5px;
@@ -1054,7 +997,7 @@ function goToTieba() {
     width: 8px;
     height: 8px;
     left: calc(100% - 9px);
-  } */
+  }
 
   ::v-deep(.el-button) {
     height: 28px;
@@ -1101,35 +1044,12 @@ function goToTieba() {
 }
 
 @media (max-width: 480px) {
-  /* 小屏幕轮播图箭头样式 - 稍微小一些 */
   :deep(.el-carousel__arrow) {
-    display: flex !important;
-    width: 28px;
-    height: 28px;
-    background: rgba(48, 181, 238, 0.9);
-    border-radius: 50%;
-    backdrop-filter: blur(4px);
-  }
-  
-  :deep(.el-carousel__arrow--left) {
-    left: 12px;
-  }
-  
-  :deep(.el-carousel__arrow--right) {
-    right: 12px;
+    display: none !important;
   }
 
   .bottom-controls {
     padding: 0;
-  }
-
-  /* 小屏幕弹幕容器调整 */
-  .danmaku-container {
-    top: 8px; /* 对应小屏幕 content-area margin-top: 8px */
-    left: 10px; /* 对应小屏幕轮播图 padding: 0 6px + background-content padding: 4px */
-    right: 10px; /* 对应小屏幕轮播图 padding: 0 6px + background-content padding: 4px */
-    bottom: 8px; /* 对应小屏幕底部间距 */
-    border-radius: 4px; /* 匹配小屏幕 background-content 的圆角 */
   }
 
   .carousel-image {
@@ -1166,7 +1086,7 @@ function goToTieba() {
     font-size: 12px;
   }
 
-  /* :deep(.el-switch__core) {
+  :deep(.el-switch__core) {
     border-color: rgba(255, 255, 255, 0.3);
   }
 
@@ -1174,7 +1094,7 @@ function goToTieba() {
     width: 8px;
     height: 8px;
     left: calc(100% - 9px);
-  } */
+  }
 
   ::v-deep(.el-button) {
     margin: 0;

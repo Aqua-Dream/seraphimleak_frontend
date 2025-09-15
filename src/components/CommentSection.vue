@@ -1,87 +1,77 @@
 <template>
-  <div class="comment-section">
-    <div class="comment-input-area">
-      <input :value="newComment" @input="$emit('update:newComment', $event.target.value)" placeholder="输入你的留言..."
-        class="comment-input" @keyup.enter="handleSubmitComment">
-      <button @click="handleSubmitComment" class="submit-btn">
-        提交
-      </button>
-    </div>
-
-    <div class="comments-container">
-      <div class="comments-list">
-        <!-- 空状态 -->
-        <div v-if="comments.length === 0" class="empty-state">
-          <div class="empty-icon">💬</div>
-          <div class="empty-text">还没有评论，快来发表第一条评论吧！</div>
-        </div>
-
-        <!-- 评论列表 -->
-        <div v-else v-for="(msg, index) in paginatedComments" :key="msg.id" class="comment-item">
-          <div class="comment-body">
-            <span class="comment-content">{{ msg.content }}</span>
-          </div>
-          <div class="comment-footer" :title="getFullFormattedTime(msg)">
-            第{{ msg.id }}楼 {{ getFormattedTime(msg) }}
-          </div>
-        </div>
+  <div class="comment-area">
+    <div class="comment-section">
+      <div class="comment-input-area">
+        <el-input :value="newComment" @input="$emit('update:newComment', $event.target.value)" placeholder="输入你的留言..."
+          @keyup.enter="handleSubmitComment">
+          <template #append> <span @click="handleSubmitComment">提交</span> </template>
+        </el-input>
       </div>
+      <div class="comments-container">
+        <div class="comments-list">
+          <div v-if="comments.length === 0" class="empty-state">
+            <div class="empty-icon">💬</div>
+            <div class="empty-text">还没有评论，快来发表第一条评论吧！</div>
+          </div>
 
-      <!-- 分页控件 -->
-      <div v-if="totalPages > 1" class="pagination">
-        <!-- 分页信息 -->
-        <span class="page-info">
-          <span>{{ comments.length }}</span> 回复贴，共<span>{{ totalPages }}</span>页
-        </span>
+          <div v-else v-for="(msg, index) in paginatedComments" :key="msg.id" class="comment-item">
+            <div class="comment-body">
+              <span class="comment-content">{{ msg.content }}</span>
+            </div>
+            <div class="comment-footer" :title="getFullFormattedTime(msg)" :style="{ backgroundColor: getFloorBackgroundColor(msg.id) }">
+              第{{ msg.id }}楼 {{ getFormattedTime(msg) }}
+            </div>
+          </div>
+        </div>
 
-        <!-- 导航按钮组 -->
-        <div class="nav-buttons">
-          <!-- 首页按钮 -->
-          <button v-if="currentPage > 1" @click="currentPage = 1" class="page-btn">
-            首页
-          </button>
+        <div v-if="totalPages > 1" class="pagination">
+          <span class="page-info">
+            <span>{{ comments.length }}</span> 回复贴，共<span>{{ totalPages }}</span>页
+          </span>
 
-          <!-- 上一页按钮 -->
-          <button v-if="currentPage > 1" @click="currentPage--" class="page-btn">
-            上一页
-          </button>
+          <div class="nav-buttons">
+            <!-- <button v-if="currentPage > 1" @click="currentPage = 1" class="page-btn">
+              首页
+            </button> -->
 
-          <!-- 页码按钮 -->
-          <div class="page-numbers">
-            <button v-for="page in visiblePages" :key="page" @click="currentPage = page"
-              :class="['page-btn', { 'active': currentPage === page }]">
-              {{ page }}
+            <button v-if="currentPage > 1" @click="currentPage--" class="page-btn2">
+              上一页
+            </button>
+
+            <div class="page-numbers">
+              <button v-for="page in visiblePages" :key="page" @click="currentPage = page"
+                :class="['page-btn', { 'active': currentPage === page }]">
+                {{ page }}
+              </button>
+            </div>
+
+            <button v-if="currentPage < totalPages" @click="currentPage++" class="page-btn2">
+              下一页
+            </button>
+
+            <button v-if="currentPage < totalPages" @click="currentPage = totalPages" class="page-btn2">
+              尾页
             </button>
           </div>
 
-          <!-- 下一页按钮 -->
-          <button v-if="currentPage < totalPages" @click="currentPage++" class="page-btn">
-            下一页
-          </button>
-
-          <!-- 尾页按钮 -->
-          <button v-if="currentPage < totalPages" @click="currentPage = totalPages" class="page-btn">
-            尾页
-          </button>
-        </div>
-
-        <!-- 跳转控件 -->
-        <div class="jump-to-page">
-          <span>跳到</span>
-          <input v-model="jumpPage" type="number" min="1" :max="totalPages" class="jump-input"
-            @keyup.enter="jumpToPage">
-          <span>页</span>
-          <button @click="jumpToPage" class="jump-btn">确定</button>
+          <!-- <div class="jump-to-page">
+            <span>跳到</span>
+            <input v-model="jumpPage" type="number" min="1" :max="totalPages" class="jump-input"
+              @keyup.enter="jumpToPage">
+            <span>页</span>
+            <button @click="jumpToPage" class="jump-btn">确定</button>
+          </div> -->
         </div>
       </div>
+      <ModalDialog :visible="showCaptcha" type="captcha" title="验证码验证" :captcha-image="captchaImage"
+        :captcha-input="captchaInput" :is-valid-captcha="isValidCaptcha" @close="closeCaptcha"
+        @refresh-captcha="refreshCaptcha" @submit-captcha="submitCaptcha" @validate-captcha-input="validateCaptchaInput"
+        @update:captcha-input="captchaInput = $event" />
     </div>
-
-    <!-- 验证码对话框 -->
-    <ModalDialog :visible="showCaptcha" type="captcha" title="验证码验证" :captcha-image="captchaImage"
-      :captcha-input="captchaInput" :is-valid-captcha="isValidCaptcha" @close="closeCaptcha"
-      @refresh-captcha="refreshCaptcha" @submit-captcha="submitCaptcha" @validate-captcha-input="validateCaptchaInput"
-      @update:captcha-input="captchaInput = $event" />
+    <div class="line-top"></div>
+    <div class="line-bottom"></div>
   </div>
+
 </template>
 
 <script setup>
@@ -137,7 +127,7 @@ const isValidCaptcha = computed(() => {
 const getFormattedTime = (msg) => {
   // 使用 timeRefreshTrigger 来触发响应式更新
   timeRefreshTrigger.value
-  
+
   // 直接使用 created_at 字段作为原始时间进行实时计算
   return formatDateTime(msg.created_at)
 }
@@ -146,9 +136,16 @@ const getFormattedTime = (msg) => {
 const getFullFormattedTime = (msg) => {
   // 使用 timeRefreshTrigger 来触发响应式更新
   timeRefreshTrigger.value
-  
+
   // 直接使用 created_at 字段作为原始时间进行实时计算
   return formatFullDateTime(msg.created_at)
+}
+
+// 获取楼层背景颜色的函数
+const getFloorBackgroundColor = (floorNumber) => {
+  const colors = ['#64D2FF', '#48E4E4', '#6D84F7', '#2877E6', '#FF648B', '#FF8364']
+  const index = (floorNumber - 1) % colors.length
+  return colors[index]
 }
 
 // 启动时间刷新定时器
@@ -157,7 +154,7 @@ const startTimeRefresh = () => {
   if (timeRefreshTimer) {
     clearInterval(timeRefreshTimer)
   }
-  
+
   // 每分钟更新一次时间
   timeRefreshTimer = setInterval(() => {
     timeRefreshTrigger.value++
@@ -244,7 +241,7 @@ const submitCommentCore = async (commentText, captchaInput = null) => {
 
       // 显示成功消息
       console.log('评论提交成功');
-      
+
       // 自动跳转到最后一页，让用户看到自己刚发表的评论
       if (totalPages.value > 0) {
         currentPage.value = totalPages.value;
@@ -394,18 +391,65 @@ defineExpose({
 </script>
 
 <style scoped>
+.line-top {
+  position: absolute;
+  /* 相对于 comment-area 定位 */
+  top: -85px;
+  left: -120px;
+  /* 左边对齐 */
+  width: 300px;
+  /* 根据你的 line.png 宽度调整 */
+  height: 300px;
+  /* 根据你的 line.png 高度调整 */
+  background: url('/assets/backgrounds/line.png') no-repeat left top;
+  background-size: cover;
+  z-index: -1;
+  /* 或 contain，根据效果 */
+}
+
+.line-bottom {
+  position: absolute;
+  /* 相对于 comment-area 定位 */
+  bottom: 135px;
+  /* 顶部对齐 */
+  right: -80px;
+  /* 左边对齐 */
+  width: 300px;
+  /* 根据你的 line.png 宽度调整 */
+  height: 300px;
+  /* 根据你的 line.png 高度调整 */
+  background: url('/assets/backgrounds/line2.png') no-repeat;
+  background-size: cover;
+  z-index: -1;
+  /* 或 contain，根据效果 */
+}
+
+.comment-area {
+  position: relative;
+}
+
 .comment-section {
-  background: white;
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+  position: relative;
 }
 
 .comment-input-area {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+}
+
+::v-deep(.el-input) {
+  --el-input-inner-height: 70px;
+  --el-input-border-color: #64D2FF;
+  --el-input-border-radius: 16px;
+  --el-input-hover-border-color: #64D2FF;
+  --el-input-focus-border-color: #64D2FF;
+  font-size: large;
+}
+
+::v-deep(.el-input-group__append) {
+  padding: 0 34px;
+  background-color: #30B5EE;
+  color: #ffffff;
 }
 
 .comment-input {
@@ -454,22 +498,30 @@ defineExpose({
 .comments-container {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  background: #ffffff;
 }
 
 .comments-list {
-  max-height: 1200px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: 1300px;
   overflow-y: auto;
+  border-radius: 20px;
+  padding: 45px 42px;
+  gap: 30px;
 }
 
 .comment-item {
-  padding: 12px;
+  position: relative;
   border-bottom: 1px solid #f0f0f0;
   transition: all 0.3s ease;
-  border-radius: 12px;
-  margin-bottom: 6px;
+  border-radius: 8px;
   background: #fafafa;
-  min-height: 50px;
+  min-height: 100px;
+  display: flex;
+  padding: 0 25px;
+  align-items: center;
 }
 
 .comment-item:hover {
@@ -479,20 +531,23 @@ defineExpose({
 }
 
 .comment-body {
-  margin-bottom: 10px;
+  min-width: 0;
 }
 
 .comment-footer {
+  position: absolute;
   display: flex;
+  top: -11px;
+  left: 0;
   /* 使用 Flexbox 布局 */
   justify-content: flex-end;
   /* 将内容靠右对齐 */
   align-items: center;
   /* 垂直居中对齐（可选） */
-  padding-top: 6px;
-  margin-top: 8px;
-  color: #b4b4b4;
-  font-size: 12px;
+  color: #ffffff;
+  font-size: 16px;
+  padding: 4px 14px;
+  border-radius: 0px 8px 8px 0px;
 }
 
 
@@ -545,11 +600,15 @@ defineExpose({
 }
 
 .page-btn {
-  padding: 6px 12px;
-  background: white;
-  color: #1a75ff;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #F2F3F5;
+  color: #86909C;
+  border: none;
+  border-radius: 40px;
   cursor: pointer;
   font-size: 14px;
   transition: all 0.3s ease;
@@ -561,10 +620,22 @@ defineExpose({
   border-color: #1a75ff;
 }
 
+.page-btn2 {
+  background: transparent;
+  color: #30B5EE;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  min-width: 40px;
+
+}
+
 .page-btn.active {
-  background: #1a75ff;
+  background: #30B5EE;
   color: white;
-  border-color: #1a75ff;
+  border-color: #30B5EE;
   font-weight: bold;
 }
 
@@ -580,14 +651,13 @@ defineExpose({
 }
 
 .page-info {
-  font-size: 14px;
-  color: #333;
-  margin-left: 15px;
+  font-size: 16px;
+  color: #637085;
 }
 
 .page-info span {
-  color: #ff6b35;
-  font-weight: bold;
+  font-size: 16px;
+  color: #637085;
 }
 
 .jump-to-page {
@@ -601,6 +671,62 @@ defineExpose({
   .comment-section .pagination {
     flex-direction: column !important;
     gap: 15px !important;
+  }
+
+  .comment-input-area {
+    margin-bottom: 11px;
+  }
+
+  .comments-list {
+    border-radius: 8px;
+    padding: 16px 12px;
+    gap: 16px;
+  }
+
+  .comment-item {
+    border-radius: 6x;
+    min-height: 58px;
+    padding: 0 10px;
+  }
+
+  .comment-content {
+    font-size: 13px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .comment-footer {
+    top: -7px;
+    left: 0;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 0px 2px 2px 0px;
+  }
+
+  .line-top {
+    top: -36px;
+    left: -22px;
+    width: 140px;
+    height: 198px;
+    background: url('/assets/backgrounds/line-small.png') no-repeat left top;
+  }
+
+  .line-bottom {
+    bottom: 116px;
+    right: -46px;
+    width: 180px;
+    height: 180px;
+    background: url('/assets/backgrounds/line2-small.png') no-repeat center top;
+  }
+
+  ::v-deep(.el-input) {
+    --el-input-inner-height: 40px;
+    font-size: small;
+  }
+
+  ::v-deep(.el-input-group__append) {
+    padding: 0 14px;
   }
 
   .comment-section .page-numbers {
