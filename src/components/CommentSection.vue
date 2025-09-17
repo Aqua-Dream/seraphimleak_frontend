@@ -2,9 +2,12 @@
   <div class="comment-area">
     <div class="comment-section">
       <div class="comment-input-area">
-        <el-input :value="newComment" @input="$emit('update:newComment', $event.target.value)" placeholder="输入你的留言..."
+        <el-input 
+          :model-value="newComment" 
+          @update:model-value="$emit('update:newComment', $event)"
+          placeholder="输入你的留言..."
           @keyup.enter="handleSubmitComment">
-          <template #append> <span @click="handleSubmitComment">提交</span> </template>
+          <template #append> <span @click="handleSubmitComment" style="cursor: pointer;">提交</span> </template>
         </el-input>
       </div>
       <div class="comments-container">

@@ -38,19 +38,12 @@
     <div class="content-area">
       <!-- 背景图片轮播 - 覆盖整个content-area -->
       <div class="background-carousel">
-        <el-carousel 
-          :trigger="windowWidth <= 768 ? 'click' : 'hover'" 
-          arrow="always" 
-          height="100%" 
-          :autoplay="false" 
-          indicator-position="none"
-          :touch="true"
-          @change="handleCarouselChange">
+        <el-carousel :trigger="windowWidth <= 768 ? 'click' : 'hover'"
+          :arrow="selectedTieba?.backgroundImages?.length > 1 ? 'always' : 'never'" height="100%" :autoplay="false"
+          indicator-position="none" :touch="true" @change="handleCarouselChange">
           <el-carousel-item v-for="(image, index) in selectedTieba.backgroundImages" indicator-position="none"
             :key="index">
-            <div class="background-content">
-              <img :src="image" alt="" class="carousel-image" />
-            </div>
+            <img :src="image" alt="" class="carousel-image" />
           </el-carousel-item>
         </el-carousel>
       </div>
@@ -785,9 +778,6 @@ function goToTieba() {
 
 
 .danmu-text {
-  background: rgba(0, 0, 0, 0.5)!important;
-  padding: 10px 20px;
-  border-radius: 100px;
   pointer-events: auto;
 }
 
@@ -896,7 +886,7 @@ function goToTieba() {
 
 :deep(.el-carousel--horizontal,
   .el-carousel--vertical) {
-  padding: 20px 95px;
+  padding: 0 75px;
 }
 
 /* 显示控制样式 */

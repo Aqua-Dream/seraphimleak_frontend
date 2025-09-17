@@ -146,7 +146,7 @@ const modalClass = computed(() => {
 
 .modal-content {
   position: relative;
-  background: url('/assets/backgrounds/popupBg-big.png')no-repeat;
+  background: url('/assets/backgrounds/popupBg-big.png') no-repeat;
   border-radius: 15px;
   max-width: 700px;
   width: 100%;
@@ -316,14 +316,14 @@ const modalClass = computed(() => {
 @media (max-width: 768px) {
   .user-img {
     position: absolute;
-    top: -73px;
-    right: -73px;
-    height: 107px;
+    top: -11%;
+    right: -15%;
+    height: 117px;
   }
 
   .modal-content {
     background: url('/assets/backgrounds/popupBg-big.png') no-repeat;
-    background-size: cover;
+    background-size: contain;
   }
 
   /* PC端显示，移动端隐藏 */
@@ -345,7 +345,7 @@ const modalClass = computed(() => {
   .modal-info {
     margin-top: 78px;
     border-radius: 28px;
-    padding: 32px 40px 57px 40px;
+    padding: 17px 17px 28px 19px;
   }
 
   .modal-stats {
@@ -357,21 +357,22 @@ const modalClass = computed(() => {
     border-radius: 17px;
   }
 
-  .modal-text {
-    line-height: 1.5;
-    font-size: 13px;
-    color: #333;
-  }
-
-  .stat-label {
-    color: #627982;
-    white-space: nowrap;
-  }
-
-  .stat-value {
-    color: #1C2B31;
-    font-weight: bold;
-  }
+    .modal-text {
+      line-height: 1.5;
+      font-size: 13px;
+      color: #333;
+    }
+  
+    .stat-label {
+      color: #627982;
+      font-size: 12px;
+    }
+  
+    .stat-value {
+      color: #1C2B31;
+      font-weight: bold;
+      font-size: 12px;
+    }
 
   .close-btn {
     cursor: pointer;
@@ -387,8 +388,9 @@ const modalClass = computed(() => {
 @media (max-width: 480px) {
   .user-img {
     position: absolute;
-    top: -18px;
-    right: -25px;
+    top: -11%;
+    right: -15%;
+    height: 117px;
   }
 
   .modal-content {
