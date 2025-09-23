@@ -170,6 +170,9 @@ onMounted(async () => {
       loadComments(),
       loadStats()
     ])
+    
+    // 在数据加载完成后，开始预加载背景图片
+    apiAdapter.preloadBackgroundImages()
   } catch (error) {
     console.error('页面初始化失败:', error)
   }

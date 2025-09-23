@@ -73,6 +73,75 @@ class ApiAdapter {
     const response = await fetch(`${this.apiUrl}/captcha`);
     return await response.json();
   }
+
+  // 预加载背景图片
+  preloadBackgroundImages() {
+    // 检查浏览器是否支持 requestIdleCallback
+    if (!window.requestIdleCallback) {
+      return;
+    }
+
+    // 使用 requestIdleCallback 在浏览器空闲时预加载图片
+    // 只在浏览器真正空闲时才执行，不强制执行
+    window.requestIdleCallback(() => {
+      this._preloadImages();
+    });
+  }
+
+  // 实际的图片预加载逻辑
+  async _preloadImages() {
+    try {
+      // 动态导入 tieba-list.json
+      const tiebaListModule = await import('../data/tieba-list.json');
+      const tiebaList = tiebaListModule.default || tiebaListModule;
+      
+      // 收集所有背景图片URL
+      const backgroundImages = [];
+      tiebaList.forEach(tieba => {
+        if (tieba.backgroundImages && Array.isArray(tieba.backgroundImages)) {
+          backgroundImages.push(...tieba.backgroundImages);
+        }
+      });
+
+      console.log(`开始预加载 ${backgroundImages.length} 张背景图片`);
+
+      // 使用 Promise.allSettled 来预加载所有图片，即使某些失败也不影响其他图片
+      const preloadPromises = backgroundImages.map((imageUrl, index) => 
+        this._preloadSingleImage(imageUrl, index + 1, backgroundImages.length)
+      );
+
+      const results = await Promise.allSettled(preloadPromises);
+      
+      // 统计预加载结果
+      const successful = results.filter(result => result.status === 'fulfilled').length;
+      const failed = results.filter(result => result.status === 'rejected').length;
+      
+      console.log(`背景图片预加载完成: 成功 ${successful} 张, 失败 ${failed} 张`);
+      
+    } catch (error) {
+      console.error('预加载背景图片时发生错误:', error);
+    }
+  }
+
+  // 预加载单张图片
+  _preloadSingleImage(imageUrl, currentIndex, totalCount) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      
+      img.onload = () => {
+        console.log(`预加载完成 (${currentIndex}/${totalCount}): ${imageUrl}`);
+        resolve(imageUrl);
+      };
+      
+      img.onerror = () => {
+        console.warn(`预加载失败 (${currentIndex}/${totalCount}): ${imageUrl}`);
+        reject(new Error(`Failed to load image: ${imageUrl}`));
+      };
+      
+      // 设置图片源，开始加载
+      img.src = imageUrl;
+    });
+  }
 }
 
 export default new ApiAdapter(); 
