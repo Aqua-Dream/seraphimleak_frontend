@@ -37,7 +37,6 @@
     <!-- 内容区域 - 包含头像和弹幕 -->
     <div class="content-area">
       <!-- 背景图片轮播 - 覆盖整个content-area -->
-      <div class="background-carousel">
         <el-carousel :trigger="windowWidth <= 768 ? 'click' : 'hover'"
           :arrow="selectedTieba?.backgroundImages?.length > 1 ? 'always' : 'never'" height="100%" :autoplay="false"
           indicator-position="none" :touch="true" @change="handleCarouselChange">
@@ -46,7 +45,6 @@
             <img :src="image" alt="" class="carousel-image" />
           </el-carousel-item>
         </el-carousel>
-      </div>
       <div class="main-title" @click="goToTieba" v-if="showAvatar" :style="avatarPositionStyle">
         <div class="text-content" :style="textContentStyle">
           <h1>{{ selectedTieba?.name || '加载中...' }}</h1>
@@ -60,7 +58,12 @@
         <VueDanmaku ref="danmakuRef" :danmus="[]" :loop="true" random-channel :debounce="debounce" :isSuspend="true"
           :speeds="adaptiveSpeed">
           <template #danmu="{ danmu }">
-            <span class="danmu-text">
+            <span
+              class="danmu-text"
+              :data-color="getDanmakuStyle(danmu).text"
+              :data-shadow-color="getDanmakuStyle(danmu).shadow"
+              :style="getDanmakuInlineStyle(danmu)"
+            >
               {{ danmu.content }}
             </span>
           </template>
@@ -74,6 +77,7 @@
 import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import VueDanmaku from 'vue-danmaku'
 import { Download } from '@element-plus/icons-vue'
+import { namedColorsList, defaultColor } from '../utils/colors.js'
 
 // Props
 const props = defineProps({
@@ -99,6 +103,45 @@ const debounce = ref(200)
 const showAvatar = ref(true)
 const showDanmaku = ref(true)
 const windowWidth = ref(window.innerWidth)
+
+// 弹幕颜色与阴影计算 - 从共享配置导入
+
+const normalizeDanmakuColor = (value) => {
+  if (!value) return defaultColor
+  const lower = String(value).trim().toLowerCase()
+  
+  // 从 namedColorsList 中查找匹配的颜色
+  const colorItem = namedColorsList.find(item => 
+    item.value.toLowerCase() === lower
+  )
+  
+  if (colorItem) return colorItem.value
+  return defaultColor
+}
+
+const getContrastShadowColor = (hex) => {
+  // 依据亮度选择黑/白阴影
+  const h = (hex || defaultColor).replace('#', '')
+  const r = parseInt(h.substring(0, 2), 16)
+  const g = parseInt(h.substring(2, 4), 16)
+  const b = parseInt(h.substring(4, 6), 16)
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+  return luminance > 120 ? '#000000' : '#ffffff'
+}
+
+const getDanmakuStyle = (danmu) => {
+  const hex = normalizeDanmakuColor(danmu?.color)
+  const shadow = getContrastShadowColor(hex)
+  return { text: hex, shadow }
+}
+
+const getDanmakuInlineStyle = (danmu) => {
+  const { text, shadow } = getDanmakuStyle(danmu)
+  return {
+    color: text,
+    textShadow: `-0.7px -0.7px 0.7px ${shadow}, 0.7px -0.7px 0.7px ${shadow}, -0.7px 0.7px 0.7px ${shadow}, 0.7px 0.7px 0.7px ${shadow}`
+  }
+}
 
 // 计算当前选中的贴吧ID
 const selectedTiebaId = computed({
@@ -270,13 +313,18 @@ const drawDanmakus = (ctx, canvas, scale) => {
     // 如果弹幕已经移出屏幕左侧，跳过绘制
     if (x < -200 * scale) continue
 
-    // 绘制弹幕文字阴影（黑色边框效果，与网页样式一致）
+    // 取出网页节点上的颜色与阴影颜色（从子元素 .danmu-text 上读取）
+    const textNode = danmuEl.querySelector('.danmu-text')
+    const textColor = (textNode && textNode.getAttribute('data-color')) || 'white'
+    const shadowColor = (textNode && textNode.getAttribute('data-shadow-color')) || 'black'
+
+    // 绘制弹幕文字阴影（与网页样式一致）
     ctx.save()
-    ctx.shadowColor = 'black'
+    ctx.shadowColor = shadowColor
     ctx.shadowBlur = 0
     ctx.shadowOffsetX = 1 * scale
     ctx.shadowOffsetY = 1 * scale
-    ctx.fillStyle = 'white'
+    ctx.fillStyle = textColor
     ctx.fillText(content, x, y)
 
     // 绘制第二层阴影
@@ -296,7 +344,7 @@ const drawDanmakus = (ctx, canvas, scale) => {
 
     // 绘制主文字
     ctx.shadowColor = 'transparent'
-    ctx.fillStyle = 'white'
+    ctx.fillStyle = textColor
     ctx.fillText(content, x, y)
     ctx.restore()
   }
@@ -468,7 +516,8 @@ const insertDanmakus = (comment) => {
 
   // 添加单条弹幕
   danmakuRef.value.addDanmu({
-    content: comment.content
+    content: comment.content,
+    color: comment.color
   }, 'current')
   if (!props.isPlaying) {
     danmakuRef.value.pause()
@@ -646,8 +695,8 @@ function goToTieba() {
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
   aspect-ratio: 16 / 9;
+  overflow: hidden;
   background-image: url('/assets/backgrounds/rotating-background.png');
   background-size: contain;
   background-position: center;
@@ -677,6 +726,24 @@ function goToTieba() {
   --main2-title-margin: 132px;
   --main3-title-margin: 60px;
   --main4-title-margin: 132px;
+  transition: z-index 0s; /* 确保z-index变化有过渡效果 */
+}
+
+/* 鼠标悬浮时提高层级 */
+.main-title:hover {
+  z-index: 5;
+}
+
+/* 扩大邮戳的悬浮区域，增加一个透明的悬浮区域 */
+.main-title::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  z-index: 1;
+  pointer-events: auto;
 }
 
 /* 隐藏默认箭头图标 */
@@ -762,23 +829,26 @@ function goToTieba() {
 /* 弹幕容器 - 只覆盖banner图内容区域，不影响箭头点击和触摸滑动 */
 .danmaku-container {
   position: absolute;
-  top: 35px; /* 对应 .el-carousel 的 top: 15px + .background-content 的位置调整 */
-  left: 120px; /* 对应轮播图的 padding: 20px 95px + background-content 的 padding: 25px */
-  right: 120px; /* 对应轮播图的 padding: 20px 95px + background-content 的 padding: 25px */
-  bottom: 45px; /* 对应 .el-carousel 的底部位置 + background-content 的 padding: 25px */
-  z-index: 3;
+  top: calc(15px + 20px); /* 距离图片顶部20px */
+  left: 75px; /* 对应 .el-carousel 的 padding: 0 75px */
+  width: calc(100% - 150px); /* 总宽度减去左右各75px的padding */
+  height: calc(100% - 40px - 61px); /* 总高度减去上下各20px的边距，还有轮播图多出来的61px */
+  z-index: 4;
   /* 放在图片上层，但在头像下层 */
   pointer-events: none;
   /* 关键：不拦截鼠标事件和触摸事件 */
   touch-action: none;
   /* 确保触摸事件能正确传递给轮播图 */
-  border-radius: 20px; /* 匹配 background-content 的圆角 */
+  border-radius: 16px; /* 匹配 carousel-image 的圆角 */
   overflow: hidden; /* 确保弹幕不会超出圆角边界 */
 }
 
 
 .danmu-text {
   pointer-events: auto;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 100px
 }
 
 /* 隐藏默认图标 */
@@ -786,16 +856,9 @@ function goToTieba() {
   display: inline;
 }
 
-/* 弹幕文字样式 - 白色字体，黑色边框提高可读性 */
-/* 确保弹幕容器内的所有文字都有白色字体和黑色边框 */
+/* 弹幕文字样式 - 使用每条弹幕的动态颜色与阴影 */
 :deep(.danmaku-container *) {
-  color: #8FEEFF !important;
   font-size: clamp(12px, 2vw, 20px) !important;
-  /* text-shadow:
-    -1px -1px 1px #000,
-    1px -1px 1px #000,
-    -1px 1px 1px #000,
-    1px 1px 1px #000; */
   background: none;
   border: none !important;
 }
@@ -868,6 +931,7 @@ function goToTieba() {
 .carousel-image {
   width: 100%;
   height: auto;
+  object-fit: cover;
   border-radius: 16px;
 }
 
@@ -951,13 +1015,6 @@ function goToTieba() {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .danmu-text {
-      background: rgba(0, 0, 0, 0.5) !important;
-      padding:4px 8px;
-      border-radius: 21px;
-      pointer-events: auto;
-    }
-  
   /* 移动端弹幕容器调整 */
   .danmaku-container {
     top: 8px; /* 对应移动端 content-area margin-top: 8px */
@@ -1067,6 +1124,8 @@ function goToTieba() {
 
   .carousel-image {
     border-radius: 4px;
+    aspect-ratio: 16 / 7;
+    object-fit: cover;
   }
 
   ::v-deep(.el-select__wrapper) {
@@ -1124,6 +1183,8 @@ function goToTieba() {
 
   .carousel-image {
     border-radius: 4px;
+    aspect-ratio: 16 / 7;
+    object-fit: cover;
   }
 
   .content-area {

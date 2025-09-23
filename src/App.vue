@@ -245,7 +245,7 @@ body {
 }
 
 .message-center {
-  font-size: 50px;
+  font-size: 30px;
   font-weight: bold;
   color: #323334;
   padding: 0 52px;

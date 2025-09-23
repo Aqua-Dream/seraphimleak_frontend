@@ -1,11 +1,11 @@
 <template>
   <div class="modal-overlay" :class="{ show: visible }" @click="$emit('close')">
-    <div class="modal-content" :class="modalClass" @click.stop>
+    <div class="modal-content" @click.stop>
       <img src="/assets/backgrounds/popupIcon-big.png" class="user-img show-in-pc" alt="">
       <img src="/assets/backgrounds/popupIcon-big.png" class="user-img show-in-media" alt="">
       <img src="/assets/backgrounds/close-button.png" @click="$emit('close')" class="close-btn" alt="">
       <!-- 网站信息内容 -->
-      <div class="modal-info" v-if="type === 'info'">
+      <div class="modal-info">
         <p class="modal-text">
           本网站为粉丝纪念网站，所有内容仅供交流学习使用，不涉及任何商业行为。
           所有图片、音乐等素材版权归原作者所有，如有侵权请联系我们删除。
@@ -27,44 +27,17 @@
           </div>
         </div>
       </div>
-      <!-- 验证码内容 -->
-      <div v-else-if="type === 'captcha'" class="captcha-container">
-        <div class="captcha-image-container">
-          <img :src="captchaImage" alt="验证码" class="captcha-image" v-if="captchaImage">
-          <button @click="$emit('refreshCaptcha')" class="captcha-refresh-btn" title="刷新验证码">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M1 4V10H7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round" />
-              <path d="M23 20V14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round" />
-              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14L18.36 18.36A9 9 0 0 1 3.51 15" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </button>
-        </div>
-        <div class="captcha-input-area">
-          <input :value="captchaInput" @input="handleCaptchaInput" placeholder="请输入6位数字验证码" class="captcha-input"
-            @keyup.enter="$emit('submitCaptcha')" maxlength="6" ref="captchaInput">
-          <button @click="$emit('submitCaptcha')" class="captcha-submit-btn" :disabled="!isValidCaptcha">提交</button>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
 
 // Props
 const props = defineProps({
   visible: {
     type: Boolean,
     default: false
-  },
-  type: {
-    type: String,
-    default: 'info', // 'info' | 'captcha'
-    validator: (value) => ['info', 'captcha'].includes(value)
   },
   title: {
     type: String,
@@ -77,33 +50,11 @@ const props = defineProps({
       userCount: 0
     })
   },
-  captchaImage: {
-    type: String,
-    default: ''
-  },
-  captchaInput: {
-    type: String,
-    default: ''
-  },
-  isValidCaptcha: {
-    type: Boolean,
-    default: false
-  }
 })
 
 // Emits
-const emit = defineEmits(['close', 'refreshCaptcha', 'submitCaptcha', 'validateCaptchaInput', 'update:captchaInput'])
+const emit = defineEmits(['close'])
 
-// 方法
-const handleCaptchaInput = (event) => {
-  emit('update:captchaInput', event.target.value)
-  emit('validateCaptchaInput')
-}
-
-// 计算属性
-const modalClass = computed(() => {
-  return props.type === 'captcha' ? 'captcha-modal' : ''
-})
 </script>
 
 <style scoped>
@@ -171,9 +122,6 @@ const modalClass = computed(() => {
   padding: 32px 40px 57px 40px;
 }
 
-.modal-overlay.show .modal-content {
-  /* transform: scale(1); */
-}
 
 .modal-title {
   color: #1a75ff;
@@ -211,107 +159,6 @@ const modalClass = computed(() => {
   font-weight: bold;
 }
 
-.captcha-modal {
-  max-width: 400px;
-}
-
-.captcha-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.captcha-image-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: center;
-}
-
-.captcha-image {
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 5px;
-  background: #f8f9fa;
-  max-width: 200px;
-  height: auto;
-}
-
-.captcha-refresh-btn {
-  background: #1a75ff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.captcha-refresh-btn:hover {
-  background: #4da6ff;
-  transform: scale(1.1);
-}
-
-.captcha-refresh-btn svg {
-  width: 16px;
-  height: 16px;
-}
-
-.captcha-input-area {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.captcha-input {
-  flex: 1;
-  padding: 10px;
-  border: 2px solid #e0e0e0;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  outline: none;
-}
-
-.captcha-input:focus {
-  border-color: #1a75ff;
-  box-shadow: 0 0 0 3px rgba(26, 117, 255, 0.1);
-}
-
-.captcha-submit-btn {
-  padding: 10px 20px;
-  background: #1a75ff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.captcha-submit-btn:hover {
-  background: #4da6ff;
-  transform: translateY(-2px);
-}
-
-.captcha-submit-btn:active {
-  transform: translateY(0);
-}
-
-.captcha-submit-btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.captcha-submit-btn:disabled:hover {
-  background: #ccc;
-  transform: none;
-}
 
 @media (max-width: 768px) {
   .user-img {

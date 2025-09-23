@@ -10,8 +10,7 @@ class ApiAdapter {
   constructor() {
     // 检测是否为本地开发环境
     this.isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    // this.apiUrl = this.isLocalDev ? 'http://localhost:8001' : '/api';
-    this.apiUrl = this.isLocalDev ? 'http://seraphimleak.com/api' : '/api';
+    this.apiUrl = this.isLocalDev ? 'http://localhost:8001' : '/api';
   }
 
   // 获取统计数据
@@ -28,7 +27,7 @@ class ApiAdapter {
   }
 
   // 提交评论
-  async submitComment(content, captcha = null, captchaId = null) {
+  async submitComment(content, color="#ffffff", captcha = null, captchaId = null) {
     // 构建请求URL，验证码参数作为query参数
     let url = `${this.apiUrl}/comments`;
     
@@ -44,7 +43,10 @@ class ApiAdapter {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ content })
+      body: JSON.stringify({ 
+        content,
+        color
+      })
     });
 
     const result = await response.json();

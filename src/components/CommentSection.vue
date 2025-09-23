@@ -3,11 +3,43 @@
     <div class="comment-section">
       <div class="comment-input-area">
         <el-input 
+          size="large"
           :model-value="newComment" 
           @update:model-value="$emit('update:newComment', $event)"
           placeholder="输入你的留言..."
+          :minlength="1"
+          :maxlength="100"
+          :show-word-limit="true"
           @keyup.enter="handleSubmitComment">
-          <template #append> <span @click="handleSubmitComment" style="cursor: pointer;">提交</span> </template>
+          <template #append> <el-button @click="handleSubmitComment">提交</el-button> </template>
+          <template #prefix>
+            <el-select
+              v-model="selectedColor"
+              suffix-icon=""
+              :style="{
+                width: '28px',
+                height: '28px',
+                backgroundColor: selectedColor?.value || '#ffffff',
+                border: selectedColor?.value === '#ffffff' ? '1px solid #ccc' : 'none',
+                borderRadius: '6px'
+              }"
+            >
+              <el-option
+                v-for="item in namedColorsList"
+                :key="item.value"
+                :value="item"
+                :label="item.label"
+              >
+                <div class="flex items-center">
+                  <el-tag :color="item.value"  :style="{
+                    marginRight: '8px',
+                    border: item.value === '#ffffff' ? '1px solid #ccc' : 'none'
+                  }" size="small" />
+                  <span>{{ item.label }}</span>
+                </div>
+              </el-option>
+            </el-select>
+          </template>
         </el-input>
       </div>
       <div class="comments-container">
@@ -66,7 +98,7 @@
           </div> -->
         </div>
       </div>
-      <ModalDialog :visible="showCaptcha" type="captcha" title="验证码验证" :captcha-image="captchaImage"
+      <Captcha :visible="showCaptcha" title="验证码验证" :captcha-image="captchaImage"
         :captcha-input="captchaInput" :is-valid-captcha="isValidCaptcha" @close="closeCaptcha"
         @refresh-captcha="refreshCaptcha" @submit-captcha="submitCaptcha" @validate-captcha-input="validateCaptchaInput"
         @update:captcha-input="captchaInput = $event" />
@@ -80,7 +112,8 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { formatDateTime, formatFullDateTime } from '../utils/dateFormatter.js'
-import ModalDialog from './ModalDialog.vue'
+import { namedColorsList } from '../utils/colors.js'
+import Captcha from './Captcha.vue'
 
 // Props
 const props = defineProps({
@@ -108,6 +141,11 @@ const emit = defineEmits([
 const currentPage = ref(1)
 const pageSize = ref(10)
 const jumpPage = ref('')
+
+// 弹幕颜色相关 - 从共享配置导入
+
+const selectedColor = ref({ label: '白色弹幕', value: '#ffffff' });
+
 
 
 
@@ -221,13 +259,15 @@ const submitCommentCore = async (commentText, captchaInput = null) => {
   try {
     // 如果提供了验证码输入，同时传递验证码ID
     const captchaIdToSend = captchaInput !== null ? captchaId.value : null;
-    const result = await props.apiAdapter.submitComment(commentText, captchaInput, captchaIdToSend);
+    console.log(selectedColor.value);
+    const result = await props.apiAdapter.submitComment(commentText, selectedColor.value.value, captchaInput, captchaIdToSend);
 
     if (result.success) {
       // 添加新评论到列表
       const newComment = {
         id: result.id,
         content: result.content,
+        color: result.color,
         created_at: result.created_at || new Date().toLocaleString('zh-CN')
       };
 
@@ -441,16 +481,13 @@ defineExpose({
 }
 
 ::v-deep(.el-input) {
-  --el-input-inner-height: 70px;
   --el-input-border-color: #64D2FF;
   --el-input-border-radius: 16px;
   --el-input-hover-border-color: #64D2FF;
   --el-input-focus-border-color: #64D2FF;
-  font-size: large;
 }
 
 ::v-deep(.el-input-group__append) {
-  padding: 0 34px;
   background-color: #30B5EE;
   color: #ffffff;
 }
@@ -779,5 +816,31 @@ defineExpose({
 
 .jump-btn:hover {
   background: #f0f0f0;
+}
+
+.el-tag {
+  border: none;
+  aspect-ratio: 1;
+}
+
+/* 颜色选择器样式 */
+::v-deep(.el-select__wrapper) {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+::v-deep(.el-select__selected-item) {
+  display: none !important;
+}
+
+::v-deep(.el-select__placeholder) {
+  display: none !important;
+}
+
+::v-deep(.el-select__suffix) {
+  display: none !important;
 }
 </style>
