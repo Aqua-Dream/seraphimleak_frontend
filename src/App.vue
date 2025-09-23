@@ -178,82 +178,84 @@ onMounted(async () => {
 
 <template>
   <div id="app">
-    <div class="site-title">原神天堂内鬼吧二周年共创纪念</div>
-    
+    <div class="site-title">
+      <img src="../public/assets/backgrounds/banner1.webp" alt="" class="title-image">
+    </div>
+
     <!-- 加载状态 -->
     <div v-if="isLoading" class="loading-container">
       <div class="loading-spinner"></div>
       <div class="loading-text">正在加载页面内容...</div>
     </div>
-    
+
     <div v-else class="container">
       <!-- 主体区域 -->
-      <MainArea 
-        :selected-tieba="selectedTieba" 
-        :is-playing="isPlaying"
-        :tieba-list="tiebaList"
-        @switch-tieba="switchTieba"
+      <MainArea :selected-tieba="selectedTieba" :is-playing="isPlaying" :tieba-list="tiebaList"
+        @switch-tieba="switchTieba" ref="mainAreaRef" />
 
-        ref="mainAreaRef"
-      />
-      
       <!-- 音乐播放器 -->
-      <MusicPlayer 
-        :selected-tieba="selectedTieba"
-        ref="musicPlayerRef"
-        @music-state-change="handleMusicStateChange"
-      />
+      <MusicPlayer :selected-tieba="selectedTieba" ref="musicPlayerRef" @music-state-change="handleMusicStateChange" />
 
       <!-- 留言区域 -->
-      <CommentSection 
-        :new-comment="newComment"
-        :comments="comments"
-        :api-adapter="apiAdapter"
-        @update:new-comment="newComment = $event"
-        @new-comment="handleNewComment"
-        ref="commentSectionRef"
-      />
+      <div class="message-title">
+        <span><img src="../public/assets/backgrounds/left-star.png" class="show-in-pc"></span>
+        <span><img src="/assets/backgrounds/small-left-star.png" class="show-in-media"></span>
+        <span class="message-center">快来写下您的宝贵留言吧</span>
+        <span><img src="../public/assets/backgrounds/right-star.png" class="show-in-pc"></span>
+        <span><img src="/assets/backgrounds/small-right-star.png" class="show-in-media"></span>
+      </div>
+      <CommentSection :new-comment="newComment" :comments="comments" :api-adapter="apiAdapter"
+        @update:new-comment="newComment = $event" @new-comment="handleNewComment" ref="commentSectionRef" />
     </div>
 
     <!-- 网站声明弹窗 -->
-    <ModalDialog 
-      :visible="showBanner"
-      type="info"
-      title="网站信息"
-      :stats="{ clickCount, userCount }"
-      @close="closeBanner"
-    />
-    
+    <ModalDialog :visible="showBanner" type="info" title="网站信息" :stats="{ clickCount, userCount }"
+      @close="closeBanner" />
+
     <!-- 底部信息 -->
     <Footer />
   </div>
 </template>
 
 <style>
+#app {
+  overflow-x: hidden;
+}
 body {
   margin: 0;
   font-family: "Microsoft YaHei", sans-serif;
-  background-color: #e6f3ff;
-  background-image: linear-gradient(135deg, #e6f3ff 0%, #b3d9ff 50%, #80c0ff 100%);
+  background: #EEF9FF;
   overflow-x: hidden;
 }
 
 .container {
-  max-width: 1000px;
+  max-width: 1300px;
   margin: 0 auto;
-  padding: 20px;
 }
 
 .site-title {
   text-align: center;
   font-size: 2em;
   font-weight: bold;
-  color: #1a75ff;
-  margin: 20px 0;
-  transition: all 0.3s ease;
-  text-shadow: 2px 2px 4px rgba(26, 117, 255, 0.2);
+}
+/* 留言标题 */
+.message-title {
+  padding-bottom: 64px;
+  text-align: center;
 }
 
+.message-center {
+  font-size: 30px;
+  font-weight: bold;
+  color: #323334;
+  padding: 0 52px;
+}
+.title-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
 /* 加载状态样式 */
 .loading-container {
   display: flex;
@@ -283,5 +285,51 @@ body {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .message-title {
+    padding: 0 0 20px 0;
+  }
+
+  .message-center {
+    font-size: 18px;
+    padding: 0 13px;
+  }
+
+  /* PC端显示，移动端隐藏 */
+  .show-in-pc {
+    display: none;
+  }
+
+  /* 移动端，PC端隐藏 */
+  .show-in-media {
+    display: inline-flex;
+
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .message-title {
+    padding: 0 0 20px 0;
+  }
+
+  /* PC端显示，移动端隐藏 */
+  .show-in-pc {
+    display: none;
+  }
+
+  /* 移动端，PC端隐藏 */
+  .show-in-media {
+    display: inline-flex;
+
+  }
 }
 </style>

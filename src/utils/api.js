@@ -1,3 +1,10 @@
+/*
+ * @Author: 刘凯欣 18532285824@163.com
+ * @Date: 2025-09-11 11:41:15
+ * @LastEditors: 刘凯欣 18532285824@163.com
+ * @LastEditTime: 2025-09-11 14:06:27
+ * @Description: 
+ */
 // API适配器 - 根据环境自动选择数据源
 class ApiAdapter {
   constructor() {
@@ -20,7 +27,7 @@ class ApiAdapter {
   }
 
   // 提交评论
-  async submitComment(content, captcha = null, captchaId = null) {
+  async submitComment(content, color="#ffffff", captcha = null, captchaId = null) {
     // 构建请求URL，验证码参数作为query参数
     let url = `${this.apiUrl}/comments`;
     
@@ -36,7 +43,10 @@ class ApiAdapter {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ content })
+      body: JSON.stringify({ 
+        content,
+        color
+      })
     });
 
     const result = await response.json();

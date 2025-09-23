@@ -67,6 +67,7 @@
   .footer-container {
     flex-direction: column;
     gap: 10px;
+    font-size: 12px;
   }
 }
-</style> 
+</style>
