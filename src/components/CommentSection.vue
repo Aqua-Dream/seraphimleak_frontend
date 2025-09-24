@@ -558,7 +558,6 @@ defineExpose({
   transition: all 0.3s ease;
   border-radius: 8px;
   background: #fafafa;
-  min-height: 100px;
   display: flex;
   padding: 0 25px;
   align-items: center;
@@ -572,6 +571,11 @@ defineExpose({
 
 .comment-body {
   min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 40px 0 30px 0;
 }
 
 .comment-footer {
@@ -598,8 +602,7 @@ defineExpose({
   word-break: break-all;
   display: block;
   margin-bottom: 0;
-  max-height: 40px;
-  overflow: hidden;
+  white-space: pre-wrap;
 }
 
 /* 空状态样式 */
@@ -724,16 +727,20 @@ defineExpose({
   }
 
   .comment-item {
-    border-radius: 6x;
+    border-radius: 6px;
     min-height: 58px;
     padding: 0 10px;
+    align-items: center;
   }
 
   .comment-content {
     font-size: 13px;
-    overflow: hidden;
-    white-space: nowrap;
+    white-space: pre-wrap;
     text-overflow: ellipsis;
+  }
+
+  .comment-body {
+    margin: 16px 0 8px 0;
   }
 
   .comment-footer {

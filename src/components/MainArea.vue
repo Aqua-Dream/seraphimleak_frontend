@@ -697,10 +697,7 @@ function goToTieba() {
   height: 100%;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  background-image: url('/assets/backgrounds/rotating-background.png');
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+
 }
 
 .background-content {

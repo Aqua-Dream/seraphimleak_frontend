@@ -202,10 +202,8 @@ onMounted(async () => {
       <!-- 留言区域 -->
       <div class="message-title">
         <span><img src="../public/assets/backgrounds/left-star.png" class="show-in-pc"></span>
-        <span><img src="/assets/backgrounds/small-left-star.png" class="show-in-media"></span>
         <span class="message-center">快来写下您的宝贵留言吧</span>
         <span><img src="../public/assets/backgrounds/right-star.png" class="show-in-pc"></span>
-        <span><img src="/assets/backgrounds/small-right-star.png" class="show-in-media"></span>
       </div>
       <CommentSection :new-comment="newComment" :comments="comments" :api-adapter="apiAdapter"
         @update:new-comment="newComment = $event" @new-comment="handleNewComment" ref="commentSectionRef" />
@@ -248,13 +246,26 @@ body {
 }
 
 .message-center {
-  font-size: 30px;
+  font-size: clamp(10px, 3vw, 40px);
   font-weight: bold;
   color: #323334;
-  padding: 0 52px;
+  width: 60%;
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 星星图片样式 */
+.message-title img {
+  width: 15%;
+  height: auto;
+  object-fit: contain;
 }
 .title-image {
-  max-width: 100%;
+  max-width: 1300px;
+  width: 100%;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -285,6 +296,15 @@ body {
   font-weight: 500;
 }
 
+.show-in-pc {
+  display: inline-flex;
+  }
+
+/* 移动端隐藏 */
+.show-in-media {
+  display: none;
+}
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -297,22 +317,6 @@ body {
   .message-title {
     padding: 0 0 20px 0;
   }
-
-  .message-center {
-    font-size: 18px;
-    padding: 0 13px;
-  }
-
-  /* PC端显示，移动端隐藏 */
-  .show-in-pc {
-    display: none;
-  }
-
-  /* 移动端，PC端隐藏 */
-  .show-in-media {
-    display: inline-flex;
-
-  }
 }
 
 @media (max-width: 480px) {
@@ -322,17 +326,6 @@ body {
 
   .message-title {
     padding: 0 0 20px 0;
-  }
-
-  /* PC端显示，移动端隐藏 */
-  .show-in-pc {
-    display: none;
-  }
-
-  /* 移动端，PC端隐藏 */
-  .show-in-media {
-    display: inline-flex;
-
   }
 }
 </style>
