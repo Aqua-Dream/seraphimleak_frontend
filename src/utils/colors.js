@@ -1,11 +1,11 @@
 // 弹幕颜色选项列表（用于下拉选择器和颜色映射）
 export const namedColorsList = [
-  { label: '白色弹幕', value: '#ffffff' },
-  { label: '黑色弹幕', value: '#000000' },
-  { label: '红色弹幕', value: '#ff6e6e' },
-  { label: '橙色弹幕', value: '#ffa500' },
-  { label: '蓝色弹幕', value: '#8bc0ff' },
-  { label: '绿色弹幕', value: '#4a7e4a' },
+  { label: '白色弹幕', value: '#FFFFFF' },
+  { label: '红色弹幕', value: '#FF7204' },
+  { label: '橙色弹幕', value: '#FFAA02' },
+  { label: '黄色弹幕', value: '#FFFF00' },
+  { label: '蓝色弹幕', value: '#4266BE' },
+  { label: '绿色弹幕', value: '#00CD00' },
 ]
 
-export const defaultColor = '#ffffff';
+export const defaultColor = namedColorsList[0].value;

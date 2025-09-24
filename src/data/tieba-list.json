@@ -92,7 +92,7 @@
     "id": 2,
     "name": "原神内鬼吧",
     "description": "二游玩家终点站，宅男资讯小茶馆",
-    "avatar": "assets/avatar/2.jpeg",
+    "avatar": "assets/avatar/2.jpg",
     "backgroundImages": [
       "assets/backgrounds/原神内鬼吧.png"
     ],
@@ -116,7 +116,6 @@
       "assets/backgrounds/崩坏星穹铁道吧.png"
     ],
     "avatarPosition": [
-      "left-bottom",
       "left-up"
     ],
     "songs": [
@@ -131,7 +130,7 @@
     "id": 4,
     "name": "鸣潮内鬼吧",
     "description": "因热爱相聚，为鸣潮共鸣。",
-    "avatar": "assets/avatar/4.jpeg",
+    "avatar": "assets/avatar/4.jpg",
     "backgroundImages": [
       "assets/backgrounds/鸣潮内鬼吧.png"
     ],
@@ -150,12 +149,11 @@
     "id": 5,
     "name": "芙宁娜吧",
     "description": "喜欢芙宁娜的真爱聚集地",
-    "avatar": "assets/avatar/5.jpeg",
+    "avatar": "assets/avatar/5.jpg",
     "backgroundImages": [
       "assets/backgrounds/芙宁娜吧.png"
     ],
     "avatarPosition": [
-      "left-bottom",
       "left-up"
     ],
     "songs": [
@@ -194,7 +192,6 @@
       "assets/backgrounds/原神芙宁娜吧.png"
     ],
     "avatarPosition": [
-      "left-bottom",
       "left-up"
     ],
     "songs": [
@@ -307,7 +304,7 @@
     "blackFonts": [
       true
     ],
-    "avatar": "assets/avatar/13.jpeg",
+    "avatar": "assets/avatar/13.jpg",
     "backgroundImages": [
       "assets/backgrounds/二游联萌吧.png"
     ],

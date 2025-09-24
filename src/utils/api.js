@@ -74,21 +74,21 @@ class ApiAdapter {
     return await response.json();
   }
 
-  // 预加载背景图片
+  // 预加载背景图片和音频文件
   preloadBackgroundImages() {
     // 检查浏览器是否支持 requestIdleCallback
     if (!window.requestIdleCallback) {
       return;
     }
 
-    // 使用 requestIdleCallback 在浏览器空闲时预加载图片
+    // 使用 requestIdleCallback 在浏览器空闲时预加载图片和音频
     // 只在浏览器真正空闲时才执行，不强制执行
     window.requestIdleCallback(() => {
       this._preloadImages();
     });
   }
 
-  // 实际的图片预加载逻辑
+  // 实际的图片和音频预加载逻辑
   async _preloadImages() {
     try {
       // 动态导入 tieba-list.json
@@ -103,23 +103,42 @@ class ApiAdapter {
         }
       });
 
-      console.log(`开始预加载 ${backgroundImages.length} 张背景图片`);
+      // 收集所有音频文件URL
+      const audioFiles = [];
+      tiebaList.forEach(tieba => {
+        if (tieba.songs && Array.isArray(tieba.songs)) {
+          tieba.songs.forEach(song => {
+            if (song.url) {
+              audioFiles.push(song.url);
+            }
+          });
+        }
+      });
 
-      // 使用 Promise.allSettled 来预加载所有图片，即使某些失败也不影响其他图片
-      const preloadPromises = backgroundImages.map((imageUrl, index) => 
+      console.log(`开始预加载 ${backgroundImages.length} 张背景图片和 ${audioFiles.length} 个音频文件`);
+
+      // 预加载图片
+      const imagePreloadPromises = backgroundImages.map((imageUrl, index) => 
         this._preloadSingleImage(imageUrl, index + 1, backgroundImages.length)
       );
 
-      const results = await Promise.allSettled(preloadPromises);
+      // 预加载音频
+      const audioPreloadPromises = audioFiles.map((audioUrl, index) => 
+        this._preloadSingleAudio(audioUrl, index + 1, audioFiles.length)
+      );
+
+      // 合并所有预加载任务
+      const allPreloadPromises = [...imagePreloadPromises, ...audioPreloadPromises];
+      const results = await Promise.allSettled(allPreloadPromises);
       
       // 统计预加载结果
       const successful = results.filter(result => result.status === 'fulfilled').length;
       const failed = results.filter(result => result.status === 'rejected').length;
       
-      console.log(`背景图片预加载完成: 成功 ${successful} 张, 失败 ${failed} 张`);
+      console.log(`资源预加载完成: 成功 ${successful} 个, 失败 ${failed} 个`);
       
     } catch (error) {
-      console.error('预加载背景图片时发生错误:', error);
+      console.error('预加载资源时发生错误:', error);
     }
   }
 
@@ -140,6 +159,27 @@ class ApiAdapter {
       
       // 设置图片源，开始加载
       img.src = imageUrl;
+    });
+  }
+
+  // 预加载单个音频文件
+  _preloadSingleAudio(audioUrl, currentIndex, totalCount) {
+    return new Promise((resolve, reject) => {
+      const audio = new Audio();
+      
+      audio.oncanplaythrough = () => {
+        console.log(`音频预加载完成 (${currentIndex}/${totalCount}): ${audioUrl}`);
+        resolve(audioUrl);
+      };
+      
+      audio.onerror = () => {
+        console.warn(`音频预加载失败 (${currentIndex}/${totalCount}): ${audioUrl}`);
+        reject(new Error(`Failed to load audio: ${audioUrl}`));
+      };
+      
+      // 设置音频源，开始加载
+      audio.src = audioUrl;
+      audio.preload = 'auto';
     });
   }
 }
