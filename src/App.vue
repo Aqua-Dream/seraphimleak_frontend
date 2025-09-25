@@ -310,22 +310,14 @@ body {
   100% { transform: rotate(360deg); }
 }
 @media (max-width: 768px) {
-  .container {
-    padding: 0 16px;
-  }
-
   .message-title {
-    padding: 0 0 20px 0;
+    padding-bottom: 30px;
   }
 }
 
 @media (max-width: 480px) {
-  .container {
-    padding: 0 16px;
-  }
-
   .message-title {
-    padding: 0 0 20px 0;
+    padding-bottom: 15px;
   }
 }
 </style>

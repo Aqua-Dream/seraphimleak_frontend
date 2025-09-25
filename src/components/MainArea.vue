@@ -14,14 +14,11 @@
         <div class="display-controls">
           <div class="switch-item">
             <span class="switch-label">邮戳</span>
-            <el-switch v-model="showAvatar" class="show-in-pc" />
-            <el-switch size="small" v-model="showAvatar" class="show-in-media" />
+            <el-switch v-model="showAvatar"/>
           </div>
           <div class="switch-item">
             <span class="switch-label">弹幕</span>
-            <el-switch v-model="showDanmaku" @change="handleDanmakuVisibilityChange" class="show-in-pc" />
-            <el-switch size="small" v-model="showDanmaku" @change="handleDanmakuVisibilityChange"
-              class="show-in-media" />
+            <el-switch v-model="showDanmaku" @change="handleDanmakuVisibilityChange" />
           </div>
         </div>
       </div>
@@ -37,14 +34,13 @@
     <!-- 内容区域 - 包含头像和弹幕 -->
     <div class="content-area">
       <!-- 背景图片轮播 - 覆盖整个content-area -->
-        <el-carousel :trigger="windowWidth <= 768 ? 'click' : 'hover'"
-          :arrow="selectedTieba?.backgroundImages?.length > 1 ? 'always' : 'never'" height="100%" :autoplay="false"
-          indicator-position="none" :touch="true" @change="handleCarouselChange">
-          <el-carousel-item v-for="(image, index) in selectedTieba.backgroundImages" indicator-position="none"
-            :key="index">
-            <img :src="image" alt="" class="carousel-image" />
-          </el-carousel-item>
-        </el-carousel>
+      <el-carousel arrow="never" height="100%" :autoplay="false"
+        indicator-position="none" @change="handleCarouselChange">
+        <el-carousel-item v-for="(image, index) in selectedTieba.backgroundImages"
+          :key="index">
+          <img :src="image" alt="" class="carousel-image" />
+        </el-carousel-item>
+      </el-carousel>
       <div class="main-title" @click="goToTieba" v-if="showAvatar" :style="avatarPositionStyle">
         <div class="text-content" :style="textContentStyle">
           <h1>{{ selectedTieba?.name || '加载中...' }}</h1>
@@ -68,6 +64,21 @@
             </span>
           </template>
         </VueDanmaku>
+      </div>
+      <div class="bottom-controls">
+      <div class="left-controls">
+          <!-- 显示控制 -->
+        <div class="display-controls">
+          <div class="switch-item">
+            <span class="switch-label">邮戳</span>
+            <el-switch v-model="showAvatar"/>
+          </div>
+          <div class="switch-item">
+            <span class="switch-label">弹幕</span>
+            <el-switch v-model="showDanmaku" @change="handleDanmakuVisibilityChange" />
+          </div>
+        </div>
+        </div>
       </div>
     </div>
   </div>
@@ -677,27 +688,17 @@ function goToTieba() {
 
 </script>
 <style scoped>
-/* 主体区域 */
+
 .main-area {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-sizing: border-box;
+  padding: 0 2%;
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
 }
 
 .content-area {
-  flex: 1;
-  margin-top: 18px;
   position: relative;
   width: 100%;
-  height: 100%;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-
+  aspect-ratio: 12 / 7;
 }
 
 .background-content {
@@ -741,31 +742,6 @@ function goToTieba() {
   bottom: -10px;
   z-index: 1;
   pointer-events: auto;
-}
-
-/* 隐藏默认箭头图标 */
-:deep(.el-carousel__arrow i) {
-  display: none !important;
-}
-
-/* 使用伪元素添加图片 */
-:deep(.el-carousel__arrow--left)::before,
-:deep(.el-carousel__arrow--right)::before {
-  content: '';
-  display: block;
-  width: 100%;
-  height: 100%;
-  background-size: contain;
-  background-repeat: no-repeat;
-  opacity: 0.57;
-}
-
-:deep(.el-carousel__arrow--left)::before {
-  background-image: url("/assets/backgrounds/left-arrow.png");
-}
-
-:deep(.el-carousel__arrow--right)::before {
-  background-image: url("/assets/backgrounds/right-arrow.png");
 }
 
 .text-content {
@@ -849,9 +825,9 @@ function goToTieba() {
 }
 
 /* 隐藏默认图标 */
-:deep(.el-carousel__arrow i) {
+/* :deep(.el-carousel__arrow i) {
   display: inline;
-}
+} */
 
 /* 弹幕文字样式 - 使用每条弹幕的动态颜色与阴影 */
 :deep(.danmaku-container *) {
@@ -865,8 +841,6 @@ function goToTieba() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 95px;
-  /* border-radius: 10px; */
   overflow: visible;
   flex-wrap: wrap;
 }
@@ -874,10 +848,6 @@ function goToTieba() {
 .left-controls {
   display: flex;
   gap: 16px;
-}
-
-::v-deep(.el-carousel__arrow svg) {
-  stroke-width: 3;
 }
 
 /* 贴吧选择器样式 */
@@ -927,9 +897,7 @@ function goToTieba() {
 }
 .carousel-image {
   width: 100%;
-  height: auto;
   object-fit: cover;
-  border-radius: 16px;
 }
 
 /* 确保轮播图箭头相对于content-area定位 */
@@ -939,15 +907,6 @@ function goToTieba() {
   bottom: 0;
   left: 0;
   right: 0;
-}
-
-:deep(.el-carousel__arrow) {
-  background: #30b5ee;
-}
-
-:deep(.el-carousel--horizontal,
-  .el-carousel--vertical) {
-  padding: 0 75px;
 }
 
 /* 显示控制样式 */
@@ -1029,26 +988,7 @@ function goToTieba() {
     --main3-title-margin: -26px;
     --main4-title-margin: 282px;
   }
-
-  /* 移动端轮播图箭头样式 - 显示但优化样式 */
-  :deep(.el-carousel__arrow) {
-    display: flex !important;
-    width: 32px;
-    height: 32px;
-    background: rgba(48, 181, 238, 0.8);
-    border-radius: 50%;
-    backdrop-filter: blur(4px);
-  }
   
-  /* 确保箭头在移动端更容易点击且位置合适 */
-  :deep(.el-carousel__arrow--left) {
-    left: 16px;
-  }
-  
-  :deep(.el-carousel__arrow--right) {
-    right: 16px;
-  }
-
   .bottom-controls {
     padding: 0;
   }
@@ -1147,24 +1087,6 @@ function goToTieba() {
 }
 
 @media (max-width: 480px) {
-  /* 小屏幕轮播图箭头样式 - 稍微小一些 */
-  :deep(.el-carousel__arrow) {
-    display: flex !important;
-    width: 28px;
-    height: 28px;
-    background: rgba(48, 181, 238, 0.9);
-    border-radius: 50%;
-    backdrop-filter: blur(4px);
-  }
-  
-  :deep(.el-carousel__arrow--left) {
-    left: 12px;
-  }
-  
-  :deep(.el-carousel__arrow--right) {
-    right: 12px;
-  }
-
   .bottom-controls {
     padding: 0;
   }
@@ -1180,7 +1102,7 @@ function goToTieba() {
 
   .carousel-image {
     border-radius: 4px;
-    aspect-ratio: 16 / 7;
+    aspect-ratio: 12 / 7;
     object-fit: cover;
   }
 
