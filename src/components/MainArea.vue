@@ -10,84 +10,96 @@
             <el-option v-for="item in tiebaList" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
         </div>
-        <!-- 显示控制 -->
-        <div class="display-controls">
-          <div class="switch-item">
-            <span class="switch-label">邮戳</span>
-            <el-switch v-model="showAvatar"/>
+      </div>
+
+      <el-button-group>
+        <el-button type="primary" :icon="CaretLeft"  class="icon-large" plain @click="prevCarousel" :disabled="!canSwitchCarousel"></el-button>
+        <el-button type="primary" :icon="CaretRight" class="icon-large" plain @click="nextCarousel" :disabled="!canSwitchCarousel"></el-button>
+      </el-button-group>
+      <!-- 内容区域 - 包含头像和弹幕 -->
+      <div class="content-area">
+        <!-- 背景图片轮播 - 覆盖整个content-area -->
+        <el-carousel ref="carouselRef" arrow="never" height="100%" :autoplay="false" indicator-position="none"
+          @change="handleCarouselChange">
+          <el-carousel-item v-for="(image, index) in selectedTieba.backgroundImages" :key="index">
+            <img :src="image" alt="" class="carousel-image" />
+          </el-carousel-item>
+        </el-carousel>
+        <div class="main-title" @click="goToTieba" v-if="showAvatar" :style="avatarPositionStyle">
+          <div class="text-content" :style="textContentStyle" v-if="showTiebaName">
+            <h1>{{ selectedTieba?.name || '加载中...' }}</h1>
+            <p>{{ selectedTieba?.description || '正在加载贴吧信息...' }}</p>
           </div>
-          <div class="switch-item">
-            <span class="switch-label">弹幕</span>
-            <el-switch v-model="showDanmaku" @change="handleDanmakuVisibilityChange" />
-          </div>
+          <img v-if="selectedTieba?.avatar" :src="selectedTieba.avatar" :alt="selectedTieba.name" class="avatar-large">
+          <div v-else class="avatar-placeholder">📷</div>
         </div>
-      </div>
-      <!-- 下载控制 -->
-      <div class="download-controls"
-        v-if="(selectedTieba?.backgroundImages && selectedTieba.backgroundImages.length > 0) || selectedTieba?.avatar">
-        <el-button :icon="Download" @click="handleDownload" class="show-in-pc">
-          下载
-        </el-button>
-        <el-button :icon="Download" @click="handleDownload" class="show-in-media"></el-button>
-      </div>
-    </div>
-    <!-- 内容区域 - 包含头像和弹幕 -->
-    <div class="content-area">
-      <!-- 背景图片轮播 - 覆盖整个content-area -->
-      <el-carousel arrow="never" height="100%" :autoplay="false"
-        indicator-position="none" @change="handleCarouselChange">
-        <el-carousel-item v-for="(image, index) in selectedTieba.backgroundImages"
-          :key="index">
-          <img :src="image" alt="" class="carousel-image" />
-        </el-carousel-item>
-      </el-carousel>
-      <div class="main-title" @click="goToTieba" v-if="showAvatar" :style="avatarPositionStyle">
-        <div class="text-content" :style="textContentStyle">
-          <h1>{{ selectedTieba?.name || '加载中...' }}</h1>
-          <p>{{ selectedTieba?.description || '正在加载贴吧信息...' }}</p>
+        <!-- 弹幕区域 -->
+        <div class="danmaku-container">
+          <VueDanmaku ref="danmakuRef" :danmus="[]" :loop="true" random-channel :debounce="debounce" :isSuspend="true"
+            :speeds="adaptiveSpeed">
+            <template #danmu="{ danmu }">
+              <span class="danmu-text" :data-color="getDanmakuStyle(danmu).text"
+                :data-shadow-color="getDanmakuStyle(danmu).shadow" :style="getDanmakuInlineStyle(danmu)">
+                {{ danmu.content }}
+              </span>
+            </template>
+          </VueDanmaku>
         </div>
-        <img v-if="selectedTieba?.avatar" :src="selectedTieba.avatar" :alt="selectedTieba.name" class="avatar-large">
-        <div v-else class="avatar-placeholder">📷</div>
-      </div>
-      <!-- 弹幕区域 -->
-      <div class="danmaku-container">
-        <VueDanmaku ref="danmakuRef" :danmus="[]" :loop="true" random-channel :debounce="debounce" :isSuspend="true"
-          :speeds="adaptiveSpeed">
-          <template #danmu="{ danmu }">
-            <span
-              class="danmu-text"
-              :data-color="getDanmakuStyle(danmu).text"
-              :data-shadow-color="getDanmakuStyle(danmu).shadow"
-              :style="getDanmakuInlineStyle(danmu)"
-            >
-              {{ danmu.content }}
-            </span>
-          </template>
-        </VueDanmaku>
       </div>
       <div class="bottom-controls">
-      <div class="left-controls">
-          <!-- 显示控制 -->
-        <div class="display-controls">
-          <div class="switch-item">
-            <span class="switch-label">邮戳</span>
-            <el-switch v-model="showAvatar"/>
-          </div>
-          <div class="switch-item">
-            <span class="switch-label">弹幕</span>
-            <el-switch v-model="showDanmaku" @change="handleDanmakuVisibilityChange" />
-          </div>
+        <div class="left-controls">
+          <!-- 设置按钮 -->
+          <el-button plain @click="settingsDialogVisible = true" class="settings-button">
+            设置
+          </el-button>
         </div>
+        <!-- 下载控制 -->
+        <div class="download-controls"
+          v-if="(selectedTieba?.backgroundImages && selectedTieba.backgroundImages.length > 0) || selectedTieba?.avatar">
+          <el-button :icon="Download" type="primary" @click="handleDownload" class="show-in-pc" plain>
+            下载
+          </el-button>
+          <el-button :icon="Download" type="primary" @click="handleDownload" class="show-in-media" plain></el-button>
         </div>
       </div>
     </div>
+
+    <!-- 设置对话框 -->
+    <el-dialog
+      v-model="settingsDialogVisible"
+      title="显示设置"
+      width="130"
+      :show-close="false"
+    >
+      <div class="settings-content">
+        <div class="switch-item">
+          <span class="switch-label">弹幕</span>
+          <el-switch v-model="showDanmaku" @change="handleDanmakuVisibilityChange" />
+        </div>
+        <div class="switch-item">
+          <span class="switch-label">邮戳</span>
+          <el-switch v-model="showAvatar" @change="handleAvatarChange" />
+        </div>
+        <div class="switch-item">
+          <span class="switch-label">标题</span>
+          <el-switch v-model="showTiebaName" :disabled="!showAvatar" />
+        </div>
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="settingsDialogVisible = false">
+            关闭
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import VueDanmaku from 'vue-danmaku'
-import { Download } from '@element-plus/icons-vue'
+import { Download, CaretLeft, CaretRight } from '@element-plus/icons-vue'
 import { namedColorsList, defaultColor } from '../utils/colors.js'
 
 // Props
@@ -110,22 +122,25 @@ const props = defineProps({
 const emit = defineEmits(['switchTieba'])
 
 const danmakuRef = ref(null)
+const carouselRef = ref(null)
 const debounce = ref(200)
 const showAvatar = ref(true)
 const showDanmaku = ref(true)
+const showTiebaName = ref(true)
 const windowWidth = ref(window.innerWidth)
+const settingsDialogVisible = ref(false)
 
 // 弹幕颜色与阴影计算 - 从共享配置导入
 
 const normalizeDanmakuColor = (value) => {
   if (!value) return defaultColor
   const lower = String(value).trim().toLowerCase()
-  
+
   // 从 namedColorsList 中查找匹配的颜色
-  const colorItem = namedColorsList.find(item => 
+  const colorItem = namedColorsList.find(item =>
     item.value.toLowerCase() === lower
   )
-  
+
   if (colorItem) return colorItem.value
   return defaultColor
 }
@@ -165,6 +180,11 @@ const selectedTiebaId = computed({
   }
 })
 
+// 计算是否可以切换轮播图（当背景图片数量大于1时）
+const canSwitchCarousel = computed(() => {
+  return props.selectedTieba?.backgroundImages?.length > 1
+})
+
 // 处理贴吧切换
 const handleTiebaChange = (value) => {
   const selectedTieba = props.tiebaList.find(tieba => tieba.id === value)
@@ -182,6 +202,20 @@ const handleCarouselChange = (index) => {
   console.log('轮播图切换到第', index, '张')
 }
 
+// 切换到上一张轮播图
+const prevCarousel = () => {
+  if (carouselRef.value) {
+    carouselRef.value.prev()
+  }
+}
+
+// 切换到下一张轮播图
+const nextCarousel = () => {
+  if (carouselRef.value) {
+    carouselRef.value.next()
+  }
+}
+
 // 处理弹幕显示/隐藏
 const handleDanmakuVisibilityChange = (value) => {
   if (!danmakuRef.value) return
@@ -190,6 +224,14 @@ const handleDanmakuVisibilityChange = (value) => {
     danmakuRef.value.show()
   } else {
     danmakuRef.value.hide()
+  }
+}
+
+// 处理邮戳显示/隐藏
+const handleAvatarChange = (value) => {
+  // 如果邮戳被关闭，标题也自动关闭
+  if (!value) {
+    showTiebaName.value = false
   }
 }
 
@@ -593,7 +635,7 @@ const contentAreaStyle = computed(() => {
 
 // 计算当前头像位置和展开方向
 const currentAvatarPosition = computed(() => {
-  console.log(props.selectedTieba,'props.selectedTieba')
+  console.log(props.selectedTieba, 'props.selectedTieba')
   const avatarPositions = props.selectedTieba?.avatarPosition
   const currentIndex = props.selectedTieba?.currentBackgroundIndex || 0
   if (avatarPositions && avatarPositions.length > 0) {
@@ -605,7 +647,7 @@ const currentAvatarPosition = computed(() => {
 // 计算头像位置样式
 const avatarPositionStyle = computed(() => {
   const position = currentAvatarPosition.value
-  console.log(position,'头像定位')
+  console.log(position, '头像定位')
   const isLeft = position.startsWith('left')
   const baseStyle = {
     flexDirection: isLeft ? 'row-reverse' : 'row'
@@ -688,7 +730,6 @@ function goToTieba() {
 
 </script>
 <style scoped>
-
 .main-area {
   padding: 0 2%;
   display: flex;
@@ -720,11 +761,12 @@ function goToTieba() {
   z-index: 4;
   --main-title-margin: 0px;
   --main-title-lr-margin: 135px;
-    --main-title-tb-margin: 65px;
+  --main-title-tb-margin: 65px;
   --main2-title-margin: 132px;
   --main3-title-margin: 60px;
   --main4-title-margin: 132px;
-  transition: z-index 0s; /* 确保z-index变化有过渡效果 */
+  transition: z-index 0s;
+  /* 确保z-index变化有过渡效果 */
 }
 
 /* 鼠标悬浮时提高层级 */
@@ -802,18 +844,24 @@ function goToTieba() {
 /* 弹幕容器 - 只覆盖banner图内容区域，不影响箭头点击和触摸滑动 */
 .danmaku-container {
   position: absolute;
-  top: calc(15px + 20px); /* 距离图片顶部20px */
-  left: 75px; /* 对应 .el-carousel 的 padding: 0 75px */
-  width: calc(100% - 150px); /* 总宽度减去左右各75px的padding */
-  height: calc(100% - 40px - 61px); /* 总高度减去上下各20px的边距，还有轮播图多出来的61px */
+  top: calc(15px + 20px);
+  /* 距离图片顶部20px */
+  left: 75px;
+  /* 对应 .el-carousel 的 padding: 0 75px */
+  width: calc(100% - 150px);
+  /* 总宽度减去左右各75px的padding */
+  height: calc(100% - 40px - 61px);
+  /* 总高度减去上下各20px的边距，还有轮播图多出来的61px */
   z-index: 4;
   /* 放在图片上层，但在头像下层 */
   pointer-events: none;
   /* 关键：不拦截鼠标事件和触摸事件 */
   touch-action: none;
   /* 确保触摸事件能正确传递给轮播图 */
-  border-radius: 16px; /* 匹配 carousel-image 的圆角 */
-  overflow: hidden; /* 确保弹幕不会超出圆角边界 */
+  border-radius: 16px;
+  /* 匹配 carousel-image 的圆角 */
+  overflow: hidden;
+  /* 确保弹幕不会超出圆角边界 */
 }
 
 
@@ -866,7 +914,7 @@ function goToTieba() {
 }
 
 ::v-deep(.el-select__placeholder) {
-  color: #30B5EE;
+  color: #409EFF;
 }
 
 .tieba-select {
@@ -889,12 +937,14 @@ function goToTieba() {
   bottom: 0;
   z-index: 3;
 }
-::v-deep .el-carousel__item{
+
+::v-deep .el-carousel__item {
   /* top:50%;
   transform: translateY(-50%); */
   padding: 0 !important;
   margin: 0 !important;
 }
+
 .carousel-image {
   width: 100%;
   object-fit: cover;
@@ -909,30 +959,44 @@ function goToTieba() {
   right: 0;
 }
 
-/* 显示控制样式 */
-.display-controls {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
+/* 设置按钮样式 */
+.settings-button {
+  border: 1px solid #64D2FF;
+  color: #409EFF;
+  background: #ecf5ff;
+}
+
+.settings-button:hover {
+  background: #d9ecff;
+  border-color: #409EFF;
+}
+
+/* 设置对话框内容样式 */
+.settings-content {
+  padding: 10px 0;
 }
 
 .switch-item {
   display: flex;
   align-items: center;
-  gap: 13px;
-  border: 1px solid #64D2FF;
-  padding: 0 5px;
-  border-radius: 5px;
-  background: #ffffff;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.switch-item:last-child {
+  border-bottom: none;
 }
 
 .switch-label {
-  color: #606266;
   font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-  color: #30B5EE;
+  color: #606266;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
 /* Switch 开关样式自定义 */
@@ -952,12 +1016,16 @@ function goToTieba() {
   overflow: visible;
 }
 
-::v-deep(.el-button) {
-  border: 1px solid #64D2FF;
-  box-shadow: none;
-  background: #ffffff;
-  color: #30B5EE;
+.icon-large {
+  font-size: 24px;
 }
+
+/* 按钮组分割线颜色与边框一致 */
+:deep(.el-button-group .el-button) {
+  --el-button-divide-border-color: var(--el-button-border-color);
+}
+
+
 
 /* PC端显示带文字的按钮，移动端隐藏 */
 .show-in-pc {
@@ -971,14 +1039,21 @@ function goToTieba() {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+
   /* 移动端弹幕容器调整 */
   .danmaku-container {
-    top: 8px; /* 对应移动端 content-area margin-top: 8px */
-    left: 10px; /* 对应移动端轮播图 padding: 0 6px + background-content padding: 4px */
-    right: 10px; /* 对应移动端轮播图 padding: 0 6px + background-content padding: 4px */
-    bottom: 8px; /* 对应移动端底部间距 */
-    border-radius: 4px; /* 匹配移动端 background-content 的圆角 */
+    top: 8px;
+    /* 对应移动端 content-area margin-top: 8px */
+    left: 10px;
+    /* 对应移动端轮播图 padding: 0 6px + background-content padding: 4px */
+    right: 10px;
+    /* 对应移动端轮播图 padding: 0 6px + background-content padding: 4px */
+    bottom: 8px;
+    /* 对应移动端底部间距 */
+    border-radius: 4px;
+    /* 匹配移动端 background-content 的圆角 */
   }
+
   .main-title {
     --main-title-margin: 0px;
     --main-title-lr-margin: 15px;
@@ -988,7 +1063,7 @@ function goToTieba() {
     --main3-title-margin: -26px;
     --main4-title-margin: 282px;
   }
-  
+
   .bottom-controls {
     padding: 0;
   }
@@ -1011,15 +1086,9 @@ function goToTieba() {
     gap: 6px;
   }
 
-  .display-controls {
-    gap: 6px;
-  }
-
-  .switch-item {
-    gap: 4px;
-  }
-
-  .switch-label {
+  .settings-button {
+    height: 28px;
+    padding: 8px 12px;
     font-size: 12px;
   }
 
@@ -1073,7 +1142,7 @@ function goToTieba() {
   }
 
   ::v-deep(.el-select__placeholder) {
-    color: #30B5EE;
+    color: #409EFF;
   }
 
   /* 在768px以下，PC端按钮隐藏，移动端按钮显示 */
@@ -1093,11 +1162,16 @@ function goToTieba() {
 
   /* 小屏幕弹幕容器调整 */
   .danmaku-container {
-    top: 8px; /* 对应小屏幕 content-area margin-top: 8px */
-    left: 10px; /* 对应小屏幕轮播图 padding: 0 6px + background-content padding: 4px */
-    right: 10px; /* 对应小屏幕轮播图 padding: 0 6px + background-content padding: 4px */
-    bottom: 8px; /* 对应小屏幕底部间距 */
-    border-radius: 4px; /* 匹配小屏幕 background-content 的圆角 */
+    top: 8px;
+    /* 对应小屏幕 content-area margin-top: 8px */
+    left: 10px;
+    /* 对应小屏幕轮播图 padding: 0 6px + background-content padding: 4px */
+    right: 10px;
+    /* 对应小屏幕轮播图 padding: 0 6px + background-content padding: 4px */
+    bottom: 8px;
+    /* 对应小屏幕底部间距 */
+    border-radius: 4px;
+    /* 匹配小屏幕 background-content 的圆角 */
   }
 
   .carousel-image {
@@ -1119,21 +1193,15 @@ function goToTieba() {
     gap: 6px;
   }
 
-  .display-controls {
-    gap: 6px;
-  }
-
-  .switch-item {
-    gap: 4px;
+  .settings-button {
+    height: 28px;
+    padding: 8px 12px;
+    font-size: 12px;
   }
 
   :deep(.el-carousel--horizontal,
     .el-carousel--vertical) {
     padding: 0 6px;
-  }
-
-  .switch-label {
-    font-size: 12px;
   }
 
   /* :deep(.el-switch__core) {

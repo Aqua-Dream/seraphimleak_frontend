@@ -10,7 +10,8 @@ class ApiAdapter {
   constructor() {
     // 检测是否为本地开发环境
     this.isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    this.apiUrl = this.isLocalDev ? 'http://localhost:8001' : '/api';
+    // this.apiUrl = this.isLocalDev ? 'http://localhost:8001' : '/api';
+    this.apiUrl = 'http://seraphimleak.com/api';
   }
 
   // 获取统计数据
