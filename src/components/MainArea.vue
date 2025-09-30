@@ -439,16 +439,16 @@ function goToTieba() {
 </script>
 <style scoped>
 .main-area {
-  margin: 0 2%;
   display: flex;
   flex-direction: column;
+  box-shadow: var(--el-box-shadow);
 }
 
 .content-area {
   position: relative;
   width: 100%;
   aspect-ratio: 12 / 7;
-  margin: 15px 0;
+  margin: 0;
   overflow: hidden;
 }
 
@@ -534,6 +534,7 @@ function goToTieba() {
   justify-content: space-between;
   overflow: visible;
   flex-wrap: wrap;
+  padding: 1vw;
 }
 
 .left-controls {

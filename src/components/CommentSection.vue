@@ -431,6 +431,7 @@ defineExpose({
 
 .comment-area {
   position: relative;
+  margin-top: 2vw;
 }
 
 .comment-section {
