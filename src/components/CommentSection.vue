@@ -19,8 +19,8 @@
               :style="{
                 width: '28px',
                 height: '28px',
-                backgroundColor: selectedColor?.value || '#ffffff',
-                border: selectedColor?.value === '#ffffff' ? '1px solid #ccc' : 'none',
+                backgroundColor: selectedColor?.value || '#FFFFFF',
+                border: selectedColor?.value === '#FFFFFF' ? '1px solid #ccc' : 'none',
                 borderRadius: '6px'
               }"
             >
@@ -33,7 +33,7 @@
                 <div class="flex items-center">
                   <el-tag :color="item.value"  :style="{
                     marginRight: '8px',
-                    border: item.value === '#ffffff' ? '1px solid #ccc' : 'none'
+                    border: item.value === '#FFFFFF' ? '1px solid #ccc' : 'none'
                   }" size="small" />
                   <span>{{ item.label }}</span>
                 </div>
@@ -59,43 +59,20 @@
           </div>
         </div>
 
-        <div v-if="totalPages > 1" class="pagination">
+        <div class="pagination">
           <span class="page-info">
-            <span>{{ comments.length }}</span> 回复贴，共<span>{{ totalPages }}</span>页
+            <span>{{ comments.length }}</span> 回复贴，共 <span>{{ totalPages }}</span> 页
           </span>
-
-          <div class="nav-buttons">
-            <!-- <button v-if="currentPage > 1" @click="currentPage = 1" class="page-btn">
-              首页
-            </button> -->
-
-            <button v-if="currentPage > 1" @click="currentPage--" class="page-btn2">
-              上一页
-            </button>
-
-            <div class="page-numbers">
-              <button v-for="page in visiblePages" :key="page" @click="currentPage = page"
-                :class="['page-btn', { 'active': currentPage === page }]">
-                {{ page }}
-              </button>
-            </div>
-
-            <button v-if="currentPage < totalPages" @click="currentPage++" class="page-btn2">
-              下一页
-            </button>
-
-            <button v-if="currentPage < totalPages" @click="currentPage = totalPages" class="page-btn2">
-              尾页
-            </button>
-          </div>
-
-          <!-- <div class="jump-to-page">
-            <span>跳到</span>
-            <input v-model="jumpPage" type="number" min="1" :max="totalPages" class="jump-input"
-              @keyup.enter="jumpToPage">
-            <span>页</span>
-            <button @click="jumpToPage" class="jump-btn">确定</button>
-          </div> -->
+          
+          <el-pagination
+            v-model:current-page="currentPage"
+            :total="comments.length"
+            :page-size="pageSize"
+            :background="true"
+            layout="prev, pager, next"
+            :size="isMobile ? 'small' : 'default'"
+            class="pagination-component"
+          />
         </div>
       </div>
       <Captcha :visible="showCaptcha" title="验证码验证" :captcha-image="captchaImage"
@@ -140,11 +117,18 @@ const emit = defineEmits([
 // 分页相关
 const currentPage = ref(1)
 const pageSize = ref(10)
-const jumpPage = ref('')
+
+// 响应式检测
+const isMobile = ref(false)
+
+// 检测屏幕尺寸
+const checkScreenSize = () => {
+  isMobile.value = window.innerWidth <= 768
+}
 
 // 弹幕颜色相关 - 从共享配置导入
 
-const selectedColor = ref({ label: '白色弹幕', value: '#ffffff' });
+const selectedColor = ref({ label: '白色弹幕', value: '#FFFFFF' });
 
 
 
@@ -220,23 +204,6 @@ const paginatedComments = computed(() => {
   return props.comments.slice(start, end)
 })
 
-// 计算可见的页码
-const visiblePages = computed(() => {
-  const pages = []
-  const maxVisible = 5
-  let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2))
-  let end = Math.min(totalPages.value, start + maxVisible - 1)
-
-  if (end - start + 1 < maxVisible) {
-    start = Math.max(1, end - maxVisible + 1)
-  }
-
-  for (let i = start; i <= end; i++) {
-    pages.push(i)
-  }
-
-  return pages
-})
 
 // 提交评论的核心逻辑
 const submitCommentCore = async (commentText, captchaInput = null) => {
@@ -393,14 +360,6 @@ const submitCaptcha = async () => {
   await submitCommentCore(props.newComment, captchaInput.value);
 }
 
-// 跳转到指定页
-const jumpToPage = () => {
-  const page = parseInt(jumpPage.value)
-  if (page && page >= 1 && page <= totalPages.value) {
-    currentPage.value = page
-    jumpPage.value = ''
-  }
-}
 
 // 滚动到页面底部
 const scrollToBottom = () => {
@@ -420,11 +379,14 @@ const scrollToBottom = () => {
 // 组件挂载时启动时间刷新
 onMounted(() => {
   startTimeRefresh()
+  checkScreenSize()
+  window.addEventListener('resize', checkScreenSize)
 })
 
 // 组件卸载时停止时间刷新
 onUnmounted(() => {
   stopTimeRefresh()
+  window.removeEventListener('resize', checkScreenSize)
 })
 
 // 暴露方法给父组件
@@ -489,7 +451,7 @@ defineExpose({
 
 ::v-deep(.el-input-group__append) {
   background-color: #30B5EE;
-  color: #ffffff;
+  color: #FFFFFF;
 }
 
 .comment-input {
@@ -538,7 +500,8 @@ defineExpose({
 .comments-container {
   display: flex;
   flex-direction: column;
-  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: var(--el-box-shadow);
 }
 
 .comments-list {
@@ -557,7 +520,7 @@ defineExpose({
   border-bottom: 1px solid #f0f0f0;
   transition: all 0.3s ease;
   border-radius: 8px;
-  background: #fafafa;
+  background: #fff;
   display: flex;
   padding: 0 25px;
   align-items: center;
@@ -588,7 +551,7 @@ defineExpose({
   /* 将内容靠右对齐 */
   align-items: center;
   /* 垂直居中对齐（可选） */
-  color: #ffffff;
+  color: #FFFFFF;
   font-size: 16px;
   padding: 4px 14px;
   border-radius: 0px 8px 8px 0px;
@@ -634,79 +597,16 @@ defineExpose({
   justify-content: center;
   align-items: center;
   gap: 8px;
-  padding: 15px;
-  border-top: 1px solid #f0f0f0;
-  background: #fafafa;
-  border-radius: 8px;
+  margin: 15px 25px;
   flex-wrap: wrap;
   row-gap: 10px;
 }
 
-.page-btn {
-  width: 42px;
-  height: 42px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #F2F3F5;
-  color: #86909C;
-  border: none;
-  border-radius: 40px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  min-width: 40px;
-}
-
-.page-btn:hover {
-  background: #f0f8ff;
-  border-color: #1a75ff;
-}
-
-.page-btn2 {
-  background: transparent;
-  color: #30B5EE;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  min-width: 40px;
-
-}
-
-.page-btn.active {
-  background: #30B5EE;
-  color: white;
-  border-color: #30B5EE;
-  font-weight: bold;
-}
-
-.nav-buttons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.page-numbers {
-  display: flex;
-  gap: 4px;
-}
-
 .page-info {
-  font-size: 16px;
   color: #637085;
 }
 
-.page-info span {
-  font-size: 16px;
-  color: #637085;
-}
-
-.jump-to-page {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+.pagination-component {
   margin-left: 15px;
 }
 
@@ -776,54 +676,21 @@ defineExpose({
     padding: 0 14px;
   }
 
-  .comment-section .page-numbers {
-    display: none !important;
-  }
-
-  .comment-section .jump-to-page {
-    display: none !important;
-  }
-
   .comment-section .page-info {
     margin-left: 0 !important;
     text-align: center !important;
     width: 100% !important;
   }
 
-  .comment-section .nav-buttons {
-    display: flex !important;
-    justify-content: center !important;
-    gap: 8px !important;
-    flex-wrap: wrap !important;
+  .pagination-component {
+    margin-left: 0 !important;
   }
 
-  .comment-section .page-btn {
-    flex: 0 0 auto !important;
+  .page-info {
+    font-size: 13px;
   }
 }
 
-.jump-input {
-  width: 50px;
-  padding: 4px 8px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  text-align: center;
-  font-size: 14px;
-}
-
-.jump-btn {
-  padding: 4px 8px;
-  background: white;
-  color: #333;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.jump-btn:hover {
-  background: #f0f0f0;
-}
 
 .el-tag {
   border: none;

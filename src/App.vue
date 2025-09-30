@@ -200,11 +200,6 @@ onMounted(async () => {
       <MusicPlayer :selected-tieba="selectedTieba" ref="musicPlayerRef" @music-state-change="handleMusicStateChange" />
 
       <!-- 留言区域 -->
-      <div class="message-title">
-        <span><img src="../public/assets/backgrounds/left-star.png" class="show-in-pc"></span>
-        <span class="message-center">快来写下您的宝贵留言吧</span>
-        <span><img src="../public/assets/backgrounds/right-star.png" class="show-in-pc"></span>
-      </div>
       <CommentSection :new-comment="newComment" :comments="comments" :api-adapter="apiAdapter"
         @update:new-comment="newComment = $event" @new-comment="handleNewComment" ref="commentSectionRef" />
     </div>
@@ -241,7 +236,7 @@ body {
 }
 /* 留言标题 */
 .message-title {
-  padding-bottom: 64px;
+  margin: 32px 0;
   text-align: center;
 }
 
@@ -294,15 +289,6 @@ body {
   font-size: 18px;
   color: #666;
   font-weight: 500;
-}
-
-.show-in-pc {
-  display: inline-flex;
-  }
-
-/* 移动端隐藏 */
-.show-in-media {
-  display: none;
 }
 
 @keyframes spin {

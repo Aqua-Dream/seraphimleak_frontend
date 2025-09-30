@@ -470,13 +470,13 @@ function goToTieba() {
 }
 
 .text-content h1 {
-  margin: 1vw 0;
+  margin: 0 0 0.4vw 0;
   font-size: clamp(15px, 3vw, 30px);
   font-weight: bold;
 }
 
 .text-content p {
-  margin: 1vw 0;
+  margin: 0 0 0.4vw 0;
   font-size: clamp(9px, 2vw, 20px);
   opacity: 0.9;
 }
