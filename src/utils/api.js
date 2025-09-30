@@ -116,8 +116,6 @@ class ApiAdapter {
         }
       });
 
-      console.log(`开始预加载 ${backgroundImages.length} 张背景图片和 ${audioFiles.length} 个音频文件`);
-
       // 预加载图片
       const imagePreloadPromises = backgroundImages.map((imageUrl, index) => 
         this._preloadSingleImage(imageUrl, index + 1, backgroundImages.length)
@@ -149,7 +147,6 @@ class ApiAdapter {
       const img = new Image();
       
       img.onload = () => {
-        console.log(`预加载完成 (${currentIndex}/${totalCount}): ${imageUrl}`);
         resolve(imageUrl);
       };
       
@@ -169,7 +166,6 @@ class ApiAdapter {
       const audio = new Audio();
       
       audio.oncanplaythrough = () => {
-        console.log(`音频预加载完成 (${currentIndex}/${totalCount}): ${audioUrl}`);
         resolve(audioUrl);
       };
       

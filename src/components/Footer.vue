@@ -2,13 +2,16 @@
   <div class="footer-info">
     <div class="footer-container">
       <div class="footer-row">
+        <el-link type="primary" href="https://tieba.baidu.com/p/10073816671" target="_blank">原神天堂内鬼吧二周年纪念活动帖</el-link>
+      </div>
+      <div class="footer-row">
         <span class="author-text">Made by @风靡义磊</span>
       </div>
       <div class="footer-row">
         <span class="author-text">Sponsored by @费德里科~吉亚洛</span>
       </div>
       <div class="footer-row">
-        <a href="https://beian.miit.gov.cn/" target="_blank" class="beian-link">鲁ICP备2025179278号-1</a>
+        <el-link type="info" target="_blank">鲁ICP备2025179278号-1</el-link>
       </div>
     </div>
   </div>
