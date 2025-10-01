@@ -6,6 +6,7 @@ import CommentSection from './components/CommentSection.vue'
 import ModalDialog from './components/ModalDialog.vue'
 import Footer from './components/Footer.vue'
 import apiAdapter from './utils/api.js'
+import preloader from './utils/preloader.js'
 import tiebaListData from './data/tieba-list.json'
 
 // 响应式数据
@@ -184,7 +185,7 @@ onMounted(async () => {
     await loadComments()
     
     // 在数据加载完成后，开始预加载背景图片
-    apiAdapter.preloadBackgroundImages()
+    preloader.preloadAllResources()
   } catch (error) {
     console.error('页面初始化失败:', error)
   }
