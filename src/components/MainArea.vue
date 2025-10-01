@@ -477,13 +477,13 @@ function goToTieba() {
 
 .text-content h1 {
   margin: 0 0 0.4vw 0;
-  font-size: clamp(15px, 3vw, 30px);
+  font-size: clamp(15px, 3vw, 40px);
   font-weight: bold;
 }
 
 .text-content p {
   margin: 0 0 0.4vw 0;
-  font-size: clamp(9px, 2vw, 20px);
+  font-size: clamp(9px, 2vw, 25px);
   opacity: 0.9;
 }
 
@@ -540,7 +540,7 @@ function goToTieba() {
   justify-content: space-between;
   overflow: visible;
   flex-wrap: wrap;
-  padding: 1vw;
+  padding: calc(1vw + 5px);
 }
 
 .left-controls {
