@@ -70,8 +70,8 @@ const isStatsLoading = computed(() => {
 <style scoped>
 .user-img {
   position: absolute;
-  top: -73px;
-  right: -73px;
+  top: -135px;
+  right: -25%;
 }
 
 .modal-overlay {
@@ -108,9 +108,11 @@ const isStatsLoading = computed(() => {
 .modal-content {
   position: relative;
   background: url('/assets/backgrounds/popupBg-big.png') no-repeat;
+  background-size: contain;
+  background-position: center top;
   border-radius: 15px;
-  max-width: 700px;
-  width: 100%;
+  max-width: 500px;
+  width: 90%;
   overflow: visible;
   transition: all 0.3s ease;
 }
@@ -118,17 +120,17 @@ const isStatsLoading = computed(() => {
 .close-btn {
   cursor: pointer;
   position: absolute;
-  bottom: -80px;
-  width: 50px;
-  height: 50px;
+  bottom: -50px;
+  width: 40px;
+  height: 40px;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .modal-info {
   background: #ffffff;
-  margin-top: 160px;
-  border-radius: 60px;
+  margin-top: 25%;
+  border-radius: 10%;
   padding: 32px 40px 57px 40px;
 }
 
@@ -141,21 +143,22 @@ const isStatsLoading = computed(() => {
 
 .modal-text {
   line-height: 1.5;
-  font-size: 20px;
+  font-size: 16px;
   color: #333;
 }
 
 .modal-stats {
   display: flex;
-  gap: 30px;
+  gap: 50px;
+  justify-content: center;
+  margin-top: 8%;
 }
 
 .stat-row {
   display: flex;
   flex-direction: column;
-  padding: 12px 105px;
+  padding: 12px 45px;
   background: #F8F8F8;
-  line-height: 1.6;
   border-radius: 37px;
   align-items: center;
 }
