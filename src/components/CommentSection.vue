@@ -11,7 +11,16 @@
           :maxlength="100"
           :show-word-limit="true"
           @keyup.enter="handleSubmitComment">
-          <template #append> <el-button @click="handleSubmitComment">提交</el-button> </template>
+          <template #append> 
+            <el-button 
+              @click="handleSubmitComment" 
+              :loading="isSubmitting"
+              type="primary"
+              size="large"
+            >
+              提交
+            </el-button> 
+          </template>
           <template #prefix>
             <el-select
               v-model="selectedColor"
@@ -75,10 +84,20 @@
           />
         </div>
       </div>
-      <Captcha :visible="showCaptcha" title="验证码验证" :captcha-image="captchaImage"
-        :captcha-input="captchaInput" :is-valid-captcha="isValidCaptcha" @close="closeCaptcha"
-        @refresh-captcha="refreshCaptcha" @submit-captcha="submitCaptcha" @validate-captcha-input="validateCaptchaInput"
-        @update:captcha-input="captchaInput = $event" />
+      <Captcha 
+        :visible="showCaptcha" 
+        title="验证码验证" 
+        :captcha-image="captchaImage"
+        :captcha-input="captchaInput" 
+        :is-valid-captcha="isValidCaptcha" 
+        :is-submitting="isSubmitting"
+        :is-refreshing="isRefreshingCaptcha"
+        @close="closeCaptcha"
+        @refresh-captcha="refreshCaptcha" 
+        @submit-captcha="submitCaptcha" 
+        @validate-captcha-input="validateCaptchaInput"
+        @update:captcha-input="captchaInput = $event" 
+      />
     </div>
     <div class="line-top"></div>
     <div class="line-bottom"></div>
@@ -127,8 +146,11 @@ const checkScreenSize = () => {
 }
 
 // 弹幕颜色相关 - 从共享配置导入
-
 const selectedColor = ref({ label: '白色弹幕', value: '#FFFFFF' });
+
+// 提交状态管理
+const isSubmitting = ref(false);
+const isRefreshingCaptcha = ref(false);
 
 
 
@@ -223,6 +245,9 @@ const submitCommentCore = async (commentText, captchaInput = null) => {
     return;
   }
 
+  // 设置提交状态为 true
+  isSubmitting.value = true;
+
   try {
     // 如果提供了验证码输入，同时传递验证码ID
     const captchaIdToSend = captchaInput !== null ? captchaId.value : null;
@@ -275,21 +300,24 @@ const submitCommentCore = async (commentText, captchaInput = null) => {
         } else { //没能获得验证码，被限流了
           alert('请求过于频繁，请稍后再试');
         }
-      } else {
-        alert(result.error || '提交失败，请重试');
-      }
-    }
-  } catch (error) {
-    console.error('提交评论失败:', error);
-
-    // 处理限流错误
-    if (error.status === 429) {
-      const retryAfter = error.retry_after || 60;
-      alert(`请求过于频繁，请${retryAfter}秒后再试`);
     } else {
-      alert('提交失败，请重试');
+      alert(result.error || '提交失败，请重试');
     }
   }
+} catch (error) {
+  console.error('提交评论失败:', error);
+
+  // 处理限流错误
+  if (error.status === 429) {
+    const retryAfter = error.retry_after || 60;
+    alert(`请求过于频繁，请${retryAfter}秒后再试`);
+  } else {
+    alert('提交失败，请重试');
+  }
+} finally {
+  // 无论成功还是失败，都要重置提交状态
+  isSubmitting.value = false;
+}
 }
 
 // 提交评论
@@ -309,6 +337,8 @@ const showCaptchaDialog = (result) => {
 
 // 刷新验证码
 const refreshCaptcha = async () => {
+  isRefreshingCaptcha.value = true;
+  
   try {
     const result = await props.apiAdapter.getCaptcha();
     if (result.success) {
@@ -323,6 +353,8 @@ const refreshCaptcha = async () => {
   } catch (error) {
     console.error('刷新验证码失败:', error);
     alert('刷新验证码失败，请重试');
+  } finally {
+    isRefreshingCaptcha.value = false;
   }
 }
 
@@ -470,33 +502,6 @@ defineExpose({
   box-shadow: 0 0 0 3px rgba(26, 117, 255, 0.1);
 }
 
-.submit-btn {
-  padding: 12px 24px;
-  background: #1a75ff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.submit-btn:hover {
-  background: #4da6ff;
-  transform: translateY(-2px);
-}
-
-.submit-btn:disabled {
-  background: #cccccc;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.submit-btn:disabled:hover {
-  background: #cccccc;
-  transform: none;
-}
 
 .comments-container {
   display: flex;
@@ -673,9 +678,6 @@ defineExpose({
     font-size: small;
   }
 
-  ::v-deep(.el-input-group__append) {
-    padding: 0 14px;
-  }
 
   .comment-section .page-info {
     margin-left: 0 !important;
