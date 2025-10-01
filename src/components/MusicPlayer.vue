@@ -40,7 +40,7 @@ const initPlayer = () => {
     autoplay: false,
     theme: '#1a75ff',
     loop: 'all',
-    order: 'list',
+    order: 'random',
     preload: 'auto',
     volume: 0.7,
     mutex: true,
@@ -72,13 +72,9 @@ const initPlayer = () => {
     emit('music-state-change', false)
   })
 
-  // 鼠标悬浮展开/收起功能
-  aplayerContainer.addEventListener('mouseenter', () => {
-    aplayer.value.setMode('normal')
-  })
-
-  aplayerContainer.addEventListener('mouseleave', () => {
-    aplayer.value.setMode('mini')
+  // 阻止播放器内部点击事件冒泡
+  aplayerContainer.addEventListener('click', (event) => {
+    event.stopPropagation()
   })
 }
 
@@ -97,11 +93,6 @@ const updatePlayer = () => {
 
     aplayer.value.list.clear()
     aplayer.value.list.add(songs)
-    var index = 0
-    if (songs.length > 1) {
-      index = Math.floor(Math.random() * songs.length)
-    }
-    aplayer.value.list.switch(index)
     if (wasPlaying) {
       aplayer.value.play()
     }
@@ -113,15 +104,29 @@ watch(() => props.selectedTieba?.id, () => {
   updatePlayer()
 })
 
+// 点击外部区域收起播放器
+const handleClickOutside = (event) => {
+  if (aplayer.value) {
+    const aplayerContainer = document.getElementById('aplayer')
+    if (aplayerContainer && !aplayerContainer.contains(event.target)) {
+      aplayer.value.list.hide()
+      aplayer.value.setMode('mini')
+    }
+  }
+}
+
 // 生命周期
 onMounted(() => {
   initPlayer()
+  document.addEventListener('click', handleClickOutside)
 })
 
 onUnmounted(() => {
   if (aplayer.value) {
     aplayer.value.destroy()
   }
+  // 移除事件监听器
+  document.removeEventListener('click', handleClickOutside)
 })
 
 // 暴露方法给父组件
@@ -132,35 +137,18 @@ defineExpose({
 </script>
 
 <style>
-/* APlayer 样式调整 */
-.aplayer .aplayer-narrow,
-.aplayer-narrow .aplayer-body {
+
+.aplayer-fixed {
   background: transparent !important;
 }
 
-/* 折叠状态下的样式 */
-.aplayer.aplayer-narrow .aplayer-body {
-  background: transparent !important;
-  backdrop-filter: none !important;
-  padding-right: 0 !important;
-  box-shadow: none !important;
-}
-
-/* 确保折叠状态下所有背景元素都是透明的 */
-.aplayer.aplayer-narrow .aplayer-info {
-  background: transparent !important;
-}
-
-.aplayer.aplayer-narrow .aplayer-controller {
-  background: transparent !important;
-}
-
-/* 展开状态下的样式 */
-.aplayer:not(.aplayer-narrow) .aplayer-body {
-  padding-right: 8px !important;
-  border-radius: 12px !important;
+.aplayer-body {
   background: rgba(255, 255, 255, 0.5) !important;
   backdrop-filter: blur(10px) !important;
+}
+
+.aplayer-list {
+  background: #fff;
 }
 
 .aplayer-pic {
@@ -175,36 +163,24 @@ defineExpose({
   transition: transform 0.3s ease;
 }
 
-.aplayer-pic img {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  border: 4px solid #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  object-fit: cover;
-  background: #fff;
-}
-
-.aplayer-playing img {
-  animation: vinyl-spin 4s linear infinite;
-}
-
 .aplayer-playing .aplayer-pic,
 .aplayer.aplayer-playing .aplayer-pic,
 .aplayer .aplayer-pic.playing {
   animation: vinyl-spin 4s linear infinite;
 }
 
-.aplayer-pic .aplayer-button,
+/* 让按钮不跟随父元素旋转 */
+.aplayer-pause {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
 .aplayer-icon-lrc,
 .aplayer-icon-back,
 .aplayer-icon-forward,
 .aplayer-icon-play,
-.aplayer-miniswitcher,
 .aplayer-icon-order {
   display: none !important;
 }
@@ -218,4 +194,5 @@ defineExpose({
     transform: rotate(360deg);
   }
 }
+
 </style>

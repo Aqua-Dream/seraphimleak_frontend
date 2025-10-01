@@ -148,12 +148,9 @@ const handleMusicStateChange = (playing) => {
   isPlaying.value = playing
 }
 
-
-
-
-
 const closeBanner = () => {
   showBanner.value = false
+  musicPlayerRef.value.aplayer.list.switch(0)
   musicPlayerRef.value.aplayer.play()
 }
 
