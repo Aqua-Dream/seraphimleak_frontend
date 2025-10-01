@@ -142,9 +142,18 @@ defineExpose({
   background: transparent !important;
 }
 
-.aplayer-body {
-  background: rgba(255, 255, 255, 0.5) !important;
+.aplayer-fixed:not(.aplayer-narrow) .aplayer-body {
+  background: rgba(255, 255, 255, 0.8) !important;
   backdrop-filter: blur(10px) !important;
+  max-width: calc(100% - 18px) !important;
+}
+
+.aplayer-fixed .aplayer-narrow .aplayer-body {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.aplayer-info {
+  border: none !important;
 }
 
 .aplayer-list {
@@ -185,9 +194,9 @@ defineExpose({
   display: none !important;
 }
 
-aplayer-miniswitcher{
-  box-shadow: var(--el-box-shadow);
-  background-color: rgb(150, 150, 150, 0.5);
+.aplayer-miniswitcher{
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border: 0.5px solid rgba(201, 201, 201) !important;
 }
 
 @keyframes vinyl-spin {
