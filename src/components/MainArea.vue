@@ -231,10 +231,16 @@ const handleDownload = async () => {
     const contentElement = document.querySelector("#content")
     const rect = contentElement.getBoundingClientRect()
     
+    // 计算scale，使输出宽度固定为2304像素
+    const targetWidth = 2304
+    var scale = targetWidth / rect.width
+    if (scale > 3) {
+      scale = 3
+    }
     const canvas = await html2canvas(contentElement, {
       width: rect.width,
       height: rect.height,
-      scale: 1,
+      scale: scale,
       useCORS: true,
       allowTaint: true,
       backgroundColor: null,
