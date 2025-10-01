@@ -69,6 +69,11 @@ const loadTiebaList = async () => {
 
 const loadComments = async () => {
   try {
+    // 显示评论加载状态
+    if (commentSectionRef.value) {
+      commentSectionRef.value.setCommentsLoading(true)
+    }
+    
     const data = await apiAdapter.getAllComments()
     comments.value = (data.comments || []).reverse()
     
@@ -92,6 +97,11 @@ const loadComments = async () => {
   } catch (error) {
     console.error('加载评论数据失败:', error)
     comments.value = []
+  } finally {
+    // 隐藏评论加载状态
+    if (commentSectionRef.value) {
+      commentSectionRef.value.setCommentsLoading(false)
+    }
   }
 }
 
@@ -161,12 +171,17 @@ onMounted(async () => {
   // 完成组件加载
   isLoading.value = false 
   try {
-    // 加载所有数据
+    // 先加载贴吧列表和统计数据
     await Promise.all([
       loadTiebaList(),
-      loadComments(),
       loadStats()
     ])
+    
+    // 等待下一个tick确保组件已渲染
+    await new Promise(resolve => setTimeout(resolve, 100))
+    
+    // 然后加载评论数据（会显示loading状态）
+    await loadComments()
     
     // 在数据加载完成后，开始预加载背景图片
     apiAdapter.preloadBackgroundImages()
@@ -197,7 +212,7 @@ onMounted(async () => {
       <MusicPlayer :selected-tieba="selectedTieba" ref="musicPlayerRef" @music-state-change="handleMusicStateChange" />
 
       <!-- 留言区域 -->
-      <CommentSection :new-comment="newComment" :comments="comments" :api-adapter="apiAdapter"
+      <CommentSection :new-comment="newComment" :comments="comments" :api-adapter="apiAdapter" :show-modal="showBanner"
         @update:new-comment="newComment = $event" @new-comment="handleNewComment" ref="commentSectionRef" />
     </div>
 

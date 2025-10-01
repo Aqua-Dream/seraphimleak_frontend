@@ -52,8 +52,8 @@
         </el-input>
       </div>
       <div class="comments-container">
-        <div class="comments-list">
-          <div v-if="comments.length === 0" class="empty-state">
+        <div class="comments-list" v-loading="isCommentsLoading && !showModal" element-loading-text="加载中..." element-loading-background="rgba(255, 255, 255, 0.8)">
+          <div v-if="comments.length === 0 && !isCommentsLoading" class="empty-state">
             <div class="empty-icon">💬</div>
             <div class="empty-text">还没有评论，快来发表第一条评论吧！</div>
           </div>
@@ -124,6 +124,10 @@ const props = defineProps({
   apiAdapter: {
     type: Object,
     required: true
+  },
+  showModal: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -151,6 +155,7 @@ const selectedColor = ref({ label: '白色弹幕', value: '#FFFFFF' });
 // 提交状态管理
 const isSubmitting = ref(false);
 const isRefreshingCaptcha = ref(false);
+const isCommentsLoading = ref(false);
 
 
 
@@ -421,9 +426,15 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkScreenSize)
 })
 
+// 设置评论加载状态的方法
+const setCommentsLoading = (loading) => {
+  isCommentsLoading.value = loading;
+}
+
 // 暴露方法给父组件
 defineExpose({
-  handleSubmitComment
+  handleSubmitComment,
+  setCommentsLoading
 })
 </script>
 
@@ -519,6 +530,7 @@ defineExpose({
   border-radius: 20px;
   padding: 45px 42px;
   gap: 30px;
+  min-height: 200px;
 }
 
 .comment-item {

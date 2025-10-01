@@ -16,13 +16,13 @@
         <p class="modal-text">
           祝愿原神越做越好，玩家们游戏愉快！
         </p>
-        <div class="modal-stats">
+        <div class="modal-stats" v-loading="isStatsLoading" element-loading-text="加载中..." element-loading-background="rgba(255, 255, 255, 0.8)">
           <div class="stat-row">
-            <span class="stat-label">访问量(次)</span>
+            <span class="stat-label">访问量</span>
             <span class="stat-value">{{ stats.clickCount }} 次</span>
           </div>
           <div class="stat-row">
-            <span class="stat-label">用户量(人)</span>
+            <span class="stat-label">用户量</span>
             <span class="stat-value">{{ stats.userCount }} 人</span>
           </div>
         </div>
@@ -32,6 +32,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 
 // Props
 const props = defineProps({
@@ -50,10 +51,19 @@ const props = defineProps({
       userCount: 0
     })
   },
+  loading: {
+    type: Boolean,
+    default: false
+  }
 })
 
 // Emits
 const emit = defineEmits(['close'])
+
+// 计算 loading 状态
+const isStatsLoading = computed(() => {
+  return props.loading || (props.stats.clickCount === 0 && props.stats.userCount === 0)
+})
 
 </script>
 

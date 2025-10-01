@@ -185,6 +185,11 @@ defineExpose({
   display: none !important;
 }
 
+aplayer-miniswitcher{
+  box-shadow: var(--el-box-shadow);
+  background-color: rgb(150, 150, 150, 0.5);
+}
+
 @keyframes vinyl-spin {
   0% {
     transform: rotate(0deg);

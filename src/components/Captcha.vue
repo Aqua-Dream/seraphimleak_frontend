@@ -10,7 +10,7 @@
     >
       <!-- 验证码内容 -->
       <div class="captcha-container">
-        <div class="captcha-image-container">
+        <div class="captcha-image-container" v-loading="isRefreshing" element-loading-text="加载中..." element-loading-background="rgba(255, 255, 255, 0.8)">
           <img :src="captchaImage" alt="验证码" class="captcha-image" v-if="captchaImage">
           <el-button 
             @click="$emit('refreshCaptcha')" 
@@ -129,6 +129,8 @@ const handleCaptchaInput = (value) => {
   align-items: center;
   gap: 10px;
   justify-content: center;
+  min-height: 60px;
+  position: relative;
 }
 
 .captcha-image {
