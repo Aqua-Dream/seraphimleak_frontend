@@ -146,6 +146,7 @@ defineExpose({
   background: rgba(255, 255, 255, 0.8) !important;
   backdrop-filter: blur(10px) !important;
   max-width: calc(100% - 18px) !important;
+  width: 400px !important;
 }
 
 .aplayer-fixed .aplayer-narrow .aplayer-body {
