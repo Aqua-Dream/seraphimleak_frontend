@@ -4,7 +4,7 @@
     <div class="bottom-controls">
       <!-- 贴吧选择器 -->
       <div class="tieba-selector">
-        <el-select v-model="selectedTiebaId" @change="handleTiebaChange" placeholder="选择贴吧" class="tieba-select"
+        <el-select ref="tiebaSelectorRef" v-model="selectedTiebaId" @change="handleTiebaChange" placeholder="选择贴吧" class="tieba-select"
           :size="componentSize">
           <el-option v-for="item in tiebaList" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
@@ -34,13 +34,13 @@
             <el-switch v-model="showTiebaName" :disabled="!showAvatar" />
           </div>
             <template #reference>
-              <el-button :icon="Setting" plain type="primary" :size="componentSize" :style="{ fontSize: windowWidth <= 480 ? '20px' : '' }">
+              <el-button ref="settingsButtonRef" :icon="Setting" plain type="primary" :size="componentSize" :style="{ fontSize: windowWidth <= 480 ? '20px' : '' }">
                 <span v-if="windowWidth > 480" class="button-text">设置</span>
               </el-button>
             </template>
           </el-popover>
           <!-- 下载控制 -->
-          <el-button :icon="Download" type="primary" @click="handleDownload" plain :size="componentSize" :style="{ fontSize: windowWidth <= 480 ? '20px' : '' }">
+          <el-button ref="downloadButtonRef" :icon="Download" type="primary" @click="handleDownload" plain :size="componentSize" :style="{ fontSize: windowWidth <= 480 ? '20px' : '' }">
             <span v-if="windowWidth > 480" class="button-text">下载</span>
           </el-button>
       </el-button-group>

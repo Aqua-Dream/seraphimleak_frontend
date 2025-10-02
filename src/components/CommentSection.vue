@@ -3,6 +3,7 @@
     <div class="comment-section">
       <div class="comment-input-area">
         <el-input 
+          ref="commentInputRef"
           size="large"
           :model-value="newComment" 
           @update:model-value="$emit('update:newComment', $event)"
@@ -23,6 +24,7 @@
           </template>
           <template #prefix>
             <el-select
+              ref="colorSelectorRef"
               v-model="selectedColor"
               suffix-icon=""
               :style="{

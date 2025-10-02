@@ -1,9 +1,9 @@
 <template>
-  <div class="modal-overlay" :class="{ show: visible }" @click="$emit('close')">
+  <div class="modal-overlay" :class="{ show: visible }" @click="handleOverlayClick">
     <div class="modal-content" @click.stop>
       <img src="/assets/backgrounds/popupIcon-big.png" class="user-img show-in-pc" alt="">
       <img src="/assets/backgrounds/popupIcon-big.png" class="user-img show-in-media" alt="">
-      <img src="/assets/backgrounds/close-button.png" @click="$emit('close')" class="close-btn" alt="">
+      <!-- <img src="/assets/backgrounds/close-button.png" @click="$emit('close')" class="close-btn" alt=""> -->
       <!-- 网站信息内容 -->
       <div class="modal-info">
         <p class="modal-text">
@@ -16,7 +16,7 @@
         <p class="modal-text">
           祝愿原神越做越好，玩家们游戏愉快！
         </p>
-        <div class="modal-stats" v-loading="isStatsLoading" element-loading-text="加载中..." element-loading-background="rgba(255, 255, 255, 0.8)">
+        <div class="modal-stats" v-loading="isStatsLoading" element-loading-background="rgba(255, 255, 255, 0.8)">
           <div class="stat-row">
             <span class="stat-label">访问量</span>
             <span class="stat-value">{{ stats.clickCount }} 次</span>
@@ -26,13 +26,17 @@
             <span class="stat-value">{{ stats.userCount }} 人</span>
           </div>
         </div>
+        <div class="modal-buttons">
+          <el-button type="primary" @click="handleGuideClick">查看引导</el-button>
+          <el-button @click="handleCloseClick" v-if="!isFirstLoad">关闭</el-button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 
 // Props
 const props = defineProps({
@@ -58,12 +62,49 @@ const props = defineProps({
 })
 
 // Emits
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'guide'])
+
+// 检查是否为第一次加载
+const isFirstLoad = ref(true)
 
 // 计算 loading 状态
 const isStatsLoading = computed(() => {
   return props.loading || (props.stats.clickCount === 0 && props.stats.userCount === 0)
 })
+
+// 检查localStorage中的用户状态
+onMounted(() => {
+  const hasVisited = localStorage.getItem('hasVisited')
+  if (hasVisited) {
+    isFirstLoad.value = false
+  }
+})
+
+// 处理查看引导点击
+const handleGuideClick = () => {
+  // 标记用户已访问过
+  localStorage.setItem('hasVisited', 'true')
+  isFirstLoad.value = false
+  
+  // 触发引导事件
+  emit('guide')
+}
+
+// 处理关闭按钮点击
+const handleCloseClick = () => {
+  emit('close')
+}
+
+// 处理弹窗外部点击
+const handleOverlayClick = () => {
+  if (isFirstLoad.value) {
+    // 第一次加载时，视为点击查看引导
+    handleGuideClick()
+  } else {
+    // 非第一次加载时，正常关闭弹窗
+    emit('close')
+  }
+}
 
 </script>
 
@@ -131,7 +172,7 @@ const isStatsLoading = computed(() => {
   background: #ffffff;
   margin-top: 25%;
   border-radius: 10%;
-  padding: 32px 40px 57px 40px;
+  padding: 32px 40px 30px 40px;
 }
 
 
@@ -170,6 +211,13 @@ const isStatsLoading = computed(() => {
 .stat-value {
   color: #1C2B31;
   font-weight: bold;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 8%;
 }
 
 
@@ -215,6 +263,11 @@ const isStatsLoading = computed(() => {
   .stat-row {
     padding: 3px 40px;
     border-radius: 17px;
+  }
+
+  .modal-buttons {
+    gap: 10px;
+    margin-top: 15px;
   }
 
     .modal-text {
@@ -288,6 +341,11 @@ const isStatsLoading = computed(() => {
   .stat-row {
     padding: 3px 40px;
     border-radius: 17px;
+  }
+
+  .modal-buttons {
+    gap: 10px;
+    margin-top: 15px;
   }
 
   .modal-text {

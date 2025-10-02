@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import MainArea from './components/MainArea.vue'
 import MusicPlayer from './components/MusicPlayer.vue'
 import CommentSection from './components/CommentSection.vue'
@@ -34,6 +34,9 @@ const isLoading = ref(true)
 const mainAreaRef = ref(null)
 const musicPlayerRef = ref(null)
 const commentSectionRef = ref(null)
+
+// Tour相关
+const showTour = ref(false)
 
 // 加载tieba列表
 const loadTiebaList = async () => {
@@ -165,7 +168,20 @@ const closeBanner = () => {
   musicPlayerRef.value.aplayer.play()
 }
 
+// 处理引导点击
+const handleGuideClick = async () => {
+  showBanner.value = false
+  // 等待下一个tick确保组件已渲染
+  await nextTick()
+  // 启动引导
+  showTour.value = true
+}
 
+// 处理Tour完成或关闭
+const handleTourEnd = () => {
+  musicPlayerRef.value.aplayer.list.switch(0)
+  musicPlayerRef.value.aplayer.play()
+}
 
 // 生命周期
 onMounted(async () => {
@@ -219,10 +235,49 @@ onMounted(async () => {
 
     <!-- 网站声明弹窗 -->
     <ModalDialog :visible="showBanner" type="info" title="网站信息" :stats="{ clickCount, userCount }"
-      @close="closeBanner" />
+      @close="closeBanner" @guide="handleGuideClick" />
 
     <!-- 底部信息 -->
     <Footer />
+
+    <!-- Tour引导 -->
+    <el-tour v-model="showTour" @finish="handleTourEnd" @close="handleTourEnd">
+      <el-tour-step
+        :target="() => mainAreaRef?.$refs?.tiebaSelectorRef?.$el"
+        title="选择主题贴吧"
+        description="切换主题贴吧后，明信片和音乐会随之改变"
+      />
+      <el-tour-step
+        :target="() => mainAreaRef?.$refs?.settingsButtonRef?.$el"
+        title="设置"
+        description="调整明信片式样，开启或隐藏弹幕、邮戳、标题"
+      />
+      <el-tour-step
+        :target="() => mainAreaRef?.$refs?.downloadButtonRef?.$el"
+        title="下载"
+        description="下载明信片到本地"
+      />
+      <el-tour-step
+        :target="() => commentSectionRef?.$refs?.commentInputRef?.$el"
+        title="留言"
+        description="留言会同步到下方评论区和上方明信片弹幕"
+      />
+      <el-tour-step
+        :target="() => commentSectionRef?.$refs?.colorSelectorRef?.$el"
+        title="颜色"
+        description="选择这条留言在明信片上显示的弹幕颜色"
+      />
+      <el-tour-step
+        :target="() => musicPlayerRef?.aplayerPicRef"
+        title="音乐"
+        description="播放或暂停音乐；音乐播放时，弹幕会滚动，暂停时，弹幕会暂停"
+      />
+      <el-tour-step
+        :target="() => musicPlayerRef?.miniswitcherRef"
+        title="迷你开关"
+        description="展开或收起音乐播放器"
+      />
+    </el-tour>
   </div>
 </template>
 

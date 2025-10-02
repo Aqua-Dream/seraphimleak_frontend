@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import APlayer from 'aplayer'
 
 // Props
@@ -19,6 +19,8 @@ const emit = defineEmits(['music-state-change'])
 
 // 响应式数据
 const aplayer = ref(null)
+const miniswitcherRef = ref(null)
+const aplayerPicRef = ref(null)
 
 // 初始化播放器
 const initPlayer = () => {
@@ -76,6 +78,19 @@ const initPlayer = () => {
   aplayerContainer.addEventListener('click', (event) => {
     event.stopPropagation()
   })
+
+  // 获取miniswitcher和aplayer-body元素引用
+  nextTick(() => {
+    const miniswitcher = aplayerContainer.querySelector('.aplayer-miniswitcher')
+    if (miniswitcher) {
+      miniswitcherRef.value = miniswitcher
+    }
+    
+    const aplayerPic = aplayerContainer.querySelector('.aplayer-pic')
+    if (aplayerPic) {
+      aplayerPicRef.value = aplayerPic
+    }
+  })
 }
 
 // 更新播放器
@@ -132,7 +147,9 @@ onUnmounted(() => {
 // 暴露方法给父组件
 defineExpose({
   updatePlayer,
-  aplayer
+  aplayer,
+  miniswitcherRef,
+  aplayerPicRef
 })
 </script>
 
