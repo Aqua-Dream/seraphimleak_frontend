@@ -2,47 +2,25 @@
   <div class="comment-area">
     <div class="comment-section">
       <div class="comment-input-area">
-        <el-input 
-          ref="commentInputRef"
-          size="large"
-          :model-value="newComment" 
-          @update:model-value="$emit('update:newComment', $event)"
-          placeholder="输入你的留言..."
-          :minlength="1"
-          :maxlength="100"
-          :show-word-limit="true"
-          @keyup.enter="handleSubmitComment">
-          <template #append> 
-            <el-button 
-              @click="handleSubmitComment" 
-              :loading="isSubmitting"
-              type="primary"
-              size="large"
-            >
+        <el-input ref="commentInputRef" size="large" :model-value="newComment"
+          @update:model-value="$emit('update:newComment', $event)" placeholder="输入你的留言..." :minlength="1"
+          :maxlength="100" :show-word-limit="true" @keyup.enter="handleSubmitComment">
+          <template #append>
+            <el-button @click="handleSubmitComment" :loading="isSubmitting" type="primary" size="large">
               提交
-            </el-button> 
+            </el-button>
           </template>
           <template #prefix>
-            <el-select
-              ref="colorSelectorRef"
-              v-model="selectedColor"
-              suffix-icon=""
-              :style="{
-                width: '28px',
-                height: '28px',
-                backgroundColor: selectedColor?.value || '#FFFFFF',
-                border: selectedColor?.value === '#FFFFFF' ? '1px solid #ccc' : 'none',
-                borderRadius: '6px'
-              }"
-            >
-              <el-option
-                v-for="item in namedColorsList"
-                :key="item.value"
-                :value="item"
-                :label="item.label"
-              >
+            <el-select ref="colorSelectorRef" v-model="selectedColor" suffix-icon="" :style="{
+              width: '28px',
+              height: '28px',
+              backgroundColor: selectedColor?.value || '#FFFFFF',
+              border: selectedColor?.value === '#FFFFFF' ? '1px solid #ccc' : 'none',
+              borderRadius: '6px'
+            }">
+              <el-option v-for="item in namedColorsList" :key="item.value" :value="item" :label="item.label">
                 <div class="flex items-center">
-                  <el-tag :color="item.value"  :style="{
+                  <el-tag :color="item.value" :style="{
                     marginRight: '8px',
                     border: item.value === '#FFFFFF' ? '1px solid #ccc' : 'none'
                   }" size="small" />
@@ -54,7 +32,8 @@
         </el-input>
       </div>
       <div class="comments-container">
-        <div class="comments-list" v-loading="isCommentsLoading && !showModal" element-loading-text="加载中..." element-loading-background="rgba(255, 255, 255, 0.8)">
+        <div class="comments-list" v-loading="isCommentsLoading && !showModal" element-loading-text="加载中..."
+          element-loading-background="rgba(255, 255, 255, 0.8)">
           <div v-if="comments.length === 0 && !isCommentsLoading" class="empty-state">
             <div class="empty-icon">💬</div>
             <div class="empty-text">还没有评论，快来发表第一条评论吧！</div>
@@ -64,7 +43,8 @@
             <div class="comment-body">
               <span class="comment-content">{{ msg.content }}</span>
             </div>
-            <div class="comment-footer" :title="getFullFormattedTime(msg)" :style="{ backgroundColor: getFloorBackgroundColor(msg.id) }">
+            <div class="comment-footer" :title="getFullFormattedTime(msg)"
+              :style="{ backgroundColor: getFloorBackgroundColor(msg.id) }">
               第{{ msg.id }}楼 {{ getFormattedTime(msg) }}
             </div>
           </div>
@@ -74,32 +54,16 @@
           <span class="page-info">
             <span>{{ comments.length }}</span> 回复贴，共 <span>{{ totalPages }}</span> 页
           </span>
-          
-          <el-pagination
-            v-model:current-page="currentPage"
-            :total="comments.length"
-            :page-size="pageSize"
-            :background="true"
-            layout="prev, pager, next"
-            :size="isMobile ? 'small' : 'default'"
-            class="pagination-component"
-          />
+
+          <el-pagination v-model:current-page="currentPage" :total="comments.length" :page-size="pageSize"
+            :background="true" layout="prev, pager, next" :size="isMobile ? 'small' : 'default'"
+            class="pagination-component" />
         </div>
       </div>
-      <Captcha 
-        :visible="showCaptcha" 
-        title="验证码验证" 
-        :captcha-image="captchaImage"
-        :captcha-input="captchaInput" 
-        :is-valid-captcha="isValidCaptcha" 
-        :is-submitting="isSubmitting"
-        :is-refreshing="isRefreshingCaptcha"
-        @close="closeCaptcha"
-        @refresh-captcha="refreshCaptcha" 
-        @submit-captcha="submitCaptcha" 
-        @validate-captcha-input="validateCaptchaInput"
-        @update:captcha-input="captchaInput = $event" 
-      />
+      <Captcha :visible="showCaptcha" title="验证码验证" :captcha-image="captchaImage" :captcha-input="captchaInput"
+        :is-valid-captcha="isValidCaptcha" :is-submitting="isSubmitting" :is-refreshing="isRefreshingCaptcha"
+        @close="closeCaptcha" @refresh-captcha="refreshCaptcha" @submit-captcha="submitCaptcha"
+        @validate-captcha-input="validateCaptchaInput" @update:captcha-input="captchaInput = $event" />
     </div>
     <div class="line-top"></div>
     <div class="line-bottom"></div>
@@ -109,6 +73,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ElMessage } from 'element-plus'
 import { formatDateTime, formatFullDateTime } from '../utils/dateFormatter.js'
 import { namedColorsList } from '../utils/colors.js'
 import Captcha from './Captcha.vue'
@@ -237,18 +202,18 @@ const paginatedComments = computed(() => {
 // 提交评论的核心逻辑
 const submitCommentCore = async (commentText, captchaInput = null) => {
   if (!commentText.trim()) {
-    alert('请输入留言内容');
+    ElMessage.warning('请输入留言内容');
     return;
   }
 
   if (commentText.length > 100) {
-    alert('留言不能超过100字');
+    ElMessage.warning('留言不能超过100字');
     return;
   }
 
   // 验证码格式验证（仅在提供验证码时）
   if (captchaInput !== null && !validateCaptchaFormat(captchaInput)) {
-    alert('验证码必须是6位数字');
+    ElMessage.error('验证码必须是6位数字');
     return;
   }
 
@@ -282,7 +247,7 @@ const submitCommentCore = async (commentText, captchaInput = null) => {
       }
 
       // 显示成功消息
-      console.log('评论提交成功');
+      ElMessage.success('评论提交成功');
 
       // 自动跳转到最后一页，让用户看到自己刚发表的评论
       if (totalPages.value > 0) {
@@ -299,32 +264,33 @@ const submitCommentCore = async (commentText, captchaInput = null) => {
         if (result.captchaData) {
           if (showCaptcha.value) {
             // 验证码对话框已经展示
-            alert('验证码错误或已过期，请重新输入或刷新验证码');
+            ElMessage.error('验证码错误或已过期，请重新输入或刷新验证码');
           } else {
             // 展示验证码对话框
             showCaptchaDialog(result);
           }
         } else { //没能获得验证码，被限流了
-          alert('请求过于频繁，请稍后再试');
+          ElMessage.warning('请求过于频繁，请稍后再试');
         }
-    } else {
-      alert(result.error || '提交失败，请重试');
+      } else if ('retry_after' in result) {
+        if (result.retry_after <= 0) {
+          ElMessage.warning(`系统错误！`);
+        } else {
+          ElMessage.warning(`请求被限流，请${result.retry_after}秒后再试`);
+        }
+      }
+      else {
+        ElMessage.error('提交失败，请重试');
+      }
     }
-  }
-} catch (error) {
-  console.error('提交评论失败:', error);
+  } catch (error) {
+    console.error('提交评论失败:', error);
 
-  // 处理限流错误
-  if (error.status === 429) {
-    const retryAfter = error.retry_after || 60;
-    alert(`请求过于频繁，请${retryAfter}秒后再试`);
-  } else {
-    alert('提交失败，请重试');
+
+  } finally {
+    // 无论成功还是失败，都要重置提交状态
+    isSubmitting.value = false;
   }
-} finally {
-  // 无论成功还是失败，都要重置提交状态
-  isSubmitting.value = false;
-}
 }
 
 // 提交评论
@@ -345,7 +311,7 @@ const showCaptchaDialog = (result) => {
 // 刷新验证码
 const refreshCaptcha = async () => {
   isRefreshingCaptcha.value = true;
-  
+
   try {
     const result = await props.apiAdapter.getCaptcha();
     if (result.success) {
@@ -353,13 +319,13 @@ const refreshCaptcha = async () => {
       captchaId.value = result.data.captcha_id;
       captchaInput.value = '';
     } else if (result.error) {
-      alert(result.error);
+      ElMessage.error(result.error);
     } else {
-      alert('刷新验证码失败，请重试');
+      ElMessage.error('刷新验证码失败，请重试');
     }
   } catch (error) {
     console.error('刷新验证码失败:', error);
-    alert('刷新验证码失败，请重试');
+    ElMessage.error('刷新验证码失败，请重试');
   } finally {
     isRefreshingCaptcha.value = false;
   }
@@ -392,7 +358,7 @@ const submitCaptcha = async () => {
 
   // 确保有验证码ID
   if (!captchaId.value) {
-    alert('验证码ID无效，请刷新验证码');
+    ElMessage.error('验证码ID无效，请刷新验证码');
     return;
   }
 

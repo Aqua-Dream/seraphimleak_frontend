@@ -86,6 +86,7 @@
 
 <script setup>
 import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
+import { ElMessage } from 'element-plus'
 import VueDanmaku from 'vue-danmaku'
 import { Download, CaretLeft, CaretRight, Setting } from '@element-plus/icons-vue'
 import { namedColorsList, defaultColor } from '../utils/colors.js'
@@ -265,7 +266,7 @@ const handleDownload = async () => {
     }, 'image/png', 0.9)
   } catch (error) {
     console.error('下载失败:', error)
-    alert('下载失败，请尝试系统截屏功能')
+    ElMessage.error('下载失败，请尝试系统截屏功能')
   }
 }
 
