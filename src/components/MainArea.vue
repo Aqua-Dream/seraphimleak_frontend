@@ -63,8 +63,7 @@
               <h1>{{ selectedTieba?.name || '加载中...' }}</h1>
               <p>{{ selectedTieba?.description || '正在加载贴吧信息...' }}</p>
             </div>
-            <img v-if="selectedTieba?.avatar" :src="selectedTieba.avatar" :alt="selectedTieba.name" class="avatar-large">
-            <div v-else class="avatar-placeholder">📷</div>
+            <img :src="selectedTieba.avatar" :alt="selectedTieba.name" class="avatar-large">
           </div>
         </transition>
       </div>
@@ -489,28 +488,9 @@ function goToTieba() {
 }
 
 .avatar-large {
-  width: 7vw;
+  width: clamp(20px, 7vw, 90px);
   aspect-ratio: 1 / 1;
   border-radius: 1vw;
-  border: 0.3vw solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0.4vw 2vw rgba(26, 117, 255, 0.3);
-  flex-shrink: 0;
-}
-
-.avatar-placeholder {
-  width: 8vw;
-  height: 8vw;
-  max-width: 80px;
-  max-height: 80px;
-  min-width: 60px;
-  min-height: 60px;
-  border-radius: 1vw;
-  /* background-color: rgba(255, 255, 255, 0.2); */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5em;
-  color: white;
   border: 0.3vw solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 0.4vw 2vw rgba(26, 117, 255, 0.3);
   flex-shrink: 0;

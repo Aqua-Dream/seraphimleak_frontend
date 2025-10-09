@@ -7,14 +7,10 @@
       <!-- 网站信息内容 -->
       <div class="modal-info">
         <p class="modal-text">
-          本网站为粉丝纪念网站，所有内容仅供交流学习使用，不涉及任何商业行为。
-          所有图片、音乐等素材版权归原作者所有，如有侵权请联系我们删除。
+          本网站由百度贴吧<b>原神天堂内鬼吧</b>牵头，联合 14 个游戏主题贴吧共同搭建，是专为玩家打造的粉丝同人纪念平台。内容上以玩家自由发布的弹幕为核心，同时记录百度贴吧玩家社区的重要发展节点，见证社群成长中的精彩瞬间。
         </p>
         <p class="modal-text">
-          请各位玩家理性讨论，遵守相关法律法规，共同维护良好的网络环境。
-        </p>
-        <p class="modal-text">
-          祝愿原神越做越好，玩家们游戏愉快！
+          本网站全程无广告、付费订阅、商品销售等商业变现行为，无任何经济利益获取目的，既是玩家交流空间，更承载着民间社区的纪念价值，助力维系同好联结。此外，网站所有内容均为玩家自主创作分享，不代表游戏官方立场，也不承担官方信息发布职能；始终以维护积极友好的交流氛围为原则，鼓励玩家合规合法文明分享。
         </p>
         <div class="modal-stats" v-loading="isStatsLoading" element-loading-background="rgba(255, 255, 255, 0.8)">
           <div class="stat-row">
@@ -27,7 +23,7 @@
           </div>
         </div>
         <div class="modal-buttons">
-          <el-button type="primary" @click="handleGuideClick">查看引导</el-button>
+          <el-button type="primary" @click="handleGuideClick">网站导览</el-button>
           <el-button @click="handleCloseClick" v-if="!isFirstLoad">关闭</el-button>
         </div>
       </div>
