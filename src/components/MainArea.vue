@@ -10,7 +10,7 @@
         </el-select>
       </div>
 
-      <el-button-group>
+      <el-button-group ref="carouselButtonGroupRef">
         <el-button type="primary" :icon="CaretLeft" class="icon-large" plain @click="prevCarousel"
           :disabled="!canSwitchCarousel" :size="componentSize"></el-button>
         <el-button type="primary" :icon="CaretRight" class="icon-large" plain @click="nextCarousel"

@@ -248,6 +248,11 @@ onMounted(async () => {
         description="切换主题贴吧后，明信片和音乐会随之改变"
       />
       <el-tour-step
+        :target="() => mainAreaRef?.$refs?.carouselButtonGroupRef?.$el"
+        title="切换明信片"
+        description="点击切换不同的明信片图（仅原神天堂内鬼吧）"
+      />
+      <el-tour-step
         :target="() => mainAreaRef?.$refs?.settingsButtonRef?.$el"
         title="设置"
         description="调整明信片式样，开启或隐藏弹幕、邮戳、标题"
@@ -255,27 +260,31 @@ onMounted(async () => {
       <el-tour-step
         :target="() => mainAreaRef?.$refs?.downloadButtonRef?.$el"
         title="下载"
-        description="下载明信片到本地"
+        description="下载明信片到本地，配合左边设置，保存的明信片图可显示弹幕、邮戳、标题"
       />
       <el-tour-step
         :target="() => commentSectionRef?.$refs?.commentInputRef?.$el"
         title="留言"
         description="留言会同步到下方评论区和上方明信片弹幕"
+        placement="top"
       />
       <el-tour-step
         :target="() => commentSectionRef?.$refs?.colorSelectorRef?.$el"
         title="颜色"
         description="选择这条留言在明信片上显示的弹幕颜色"
+        placement="top"
       />
       <el-tour-step
         :target="() => musicPlayerRef?.aplayerPicRef"
         title="音乐"
         description="播放或暂停音乐；音乐播放时，弹幕会滚动，暂停时，弹幕会暂停"
+        placement="top"
       />
       <el-tour-step
         :target="() => musicPlayerRef?.miniswitcherRef"
         title="迷你开关"
         description="展开或收起音乐播放器"
+        placement="top"
       />
     </el-tour>
   </div>
