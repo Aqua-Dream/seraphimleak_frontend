@@ -183,6 +183,17 @@ const handleTourEnd = () => {
   musicPlayerRef.value.aplayer.play()
 }
 
+// 处理Tour变化
+const handleTourChange = (id) => {
+  // 当到达音乐播放器或迷你开关步骤时，发送resize事件，是为了解决某个bug
+  if (id >= 6) {
+    // 发送resize事件
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'))
+    }, 5)
+  }
+}
+
 // 生命周期
 onMounted(async () => {
   // 完成组件加载
@@ -241,7 +252,7 @@ onMounted(async () => {
     <Footer />
 
     <!-- Tour引导 -->
-    <el-tour v-model="showTour" @finish="handleTourEnd" @close="handleTourEnd">
+    <el-tour v-model="showTour" @close="handleTourEnd" @change="handleTourChange">
       <el-tour-step
         :target="() => mainAreaRef?.$refs?.tiebaSelectorRef?.$el"
         title="选择主题贴吧"
