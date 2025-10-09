@@ -186,7 +186,7 @@ const handleTourEnd = () => {
 // 处理Tour变化
 const handleTourChange = (id) => {
   // 当到达音乐播放器或迷你开关步骤时，发送resize事件，是为了解决某个bug
-  if (id >= 6) {
+  if (id >= 7) {
     // 发送resize事件
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'))
@@ -257,6 +257,11 @@ onMounted(async () => {
         :target="() => mainAreaRef?.$refs?.tiebaSelectorRef?.$el"
         title="选择主题贴吧"
         description="切换主题贴吧后，明信片和音乐会随之改变"
+      />
+      <el-tour-step
+        :target="() => mainAreaRef?.topicUrlLinkRef?.$el"
+        title="访问活动帖"
+        description="访问对应贴吧的活动帖链接"
       />
       <el-tour-step
         :target="() => mainAreaRef?.$refs?.carouselButtonGroupRef?.$el"

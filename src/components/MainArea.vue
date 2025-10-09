@@ -3,12 +3,13 @@
     <!-- 底部控制栏 -->
     <div class="bottom-controls">
       <!-- 贴吧选择器 -->
-      <div class="tieba-selector">
-        <el-select ref="tiebaSelectorRef" v-model="selectedTiebaId" @change="handleTiebaChange" placeholder="选择贴吧" class="tieba-select"
-          :size="componentSize">
-          <el-option v-for="item in tiebaList" :key="item.id" :label="item.name" :value="item.id" />
-        </el-select>
-      </div>
+      <el-select ref="tiebaSelectorRef" v-model="selectedTiebaId" @change="handleTiebaChange" placeholder="选择贴吧" 
+        :size="componentSize" :style="tiebaSelectStyle">
+        <template #prefix>
+          <el-link ref="topicUrlLinkRef" :href="selectedTieba?.topicUrl || '#'" target="_blank" @click.stop :icon="Link"></el-link>
+        </template>
+        <el-option v-for="item in tiebaList" :key="item.id" :label="item.name" :value="item.id"  />
+      </el-select>
 
       <el-button-group ref="carouselButtonGroupRef">
         <el-button type="primary" :icon="CaretLeft" class="icon-large" plain @click="prevCarousel"
@@ -58,7 +59,7 @@
           :class="{ 'active': index === currentBackgroundIndex }"
         />
         <transition name="fade" mode="out-in">
-          <div class="main-title" @click="goToTieba" v-if="showAvatar" :style="avatarPositionStyle" :key="`${selectedTieba?.id}-${currentBackgroundIndex}`">
+          <div class="main-title" v-if="showAvatar" :style="avatarPositionStyle" :key="`${selectedTieba?.id}-${currentBackgroundIndex}`">
             <div class="text-content" :style="textContentStyle" v-if="showTiebaName">
               <h1>{{ selectedTieba?.name || '加载中...' }}</h1>
               <p>{{ selectedTieba?.description || '正在加载贴吧信息...' }}</p>
@@ -87,7 +88,7 @@
 import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import VueDanmaku from 'vue-danmaku'
-import { Download, CaretLeft, CaretRight, Setting } from '@element-plus/icons-vue'
+import { Download, CaretLeft, CaretRight, Setting, Link } from '@element-plus/icons-vue'
 import { namedColorsList, defaultColor } from '../utils/colors.js'
 import html2canvas from 'html2canvas'
 
@@ -111,6 +112,7 @@ const props = defineProps({
 const emit = defineEmits(['switchTieba'])
 
 const danmakuRef = ref(null)
+const topicUrlLinkRef = ref(null)
 const currentBackgroundIndex = ref(0)
 const debounce = ref(200)
 const showAvatar = ref(true)
@@ -313,7 +315,8 @@ watch(() => props.isPlaying, (newIsPlaying, _) => {
 // 暴露函数给父组件
 defineExpose({
   reloadDanmakus,
-  insertDanmakus
+  insertDanmakus,
+  topicUrlLinkRef
 })
 
 // 监听窗口大小变化的处理函数
@@ -416,6 +419,13 @@ const componentSize = computed(() => {
   return windowWidth.value <= 576 ? 'small' : 'default'
 })
 
+// 响应式选择框宽度
+const tiebaSelectStyle = computed(() => {
+  return {
+    width: windowWidth.value <= 576 ? '145px' : '170px'
+  }
+})
+
 // 计算文本内容样式（根据头像位置调整展开方向）
 const textContentStyle = computed(() => {
   const position = currentAvatarPosition.value
@@ -432,15 +442,6 @@ const textContentStyle = computed(() => {
     textShadow: useBlackFont ? '0 0 4px white, 0 0 6px white, 0 0 8px white' : '2px 2px 4px rgba(0, 0, 0, 0.3)'
   }
 })
-
-function goToTieba() {
-  if (!props.selectedTieba?.name) {
-    return
-  }
-  const tiebaName = encodeURIComponent(props.selectedTieba.name.slice(0, -1))
-  const url = `https://tieba.baidu.com/f?kw=${tiebaName}`
-  window.open(url, '_blank')
-}
 
 </script>
 <style scoped>
@@ -529,15 +530,6 @@ function goToTieba() {
   gap: 16px;
 }
 
-/* 贴吧选择器样式 */
-.tieba-selector {
-  display: flex;
-  align-items: center;
-  flex-shrink: 1;
-  /* 允许缩小 */
-  min-width: 0;
-  /* 避免内容撑开父容器 */
-}
 
 ::v-deep(.el-select__wrapper) {
   border: 1px solid #64D2FF;
@@ -546,17 +538,6 @@ function goToTieba() {
 
 ::v-deep(.el-select__placeholder) {
   color: #409EFF;
-}
-
-.tieba-select {
-  width: 150px;
-  /* 默认宽度 */
-  max-width: 100%;
-  /* 避免超出父容器 */
-  min-width: 80px;
-  /* 移动端最小宽度 */
-  flex-grow: 1;
-  /* 可以按比例扩展 */
 }
 
 /* 背景图片样式 */

@@ -3,6 +3,7 @@
     "id": 0,
     "name": "原神天堂内鬼吧",
     "description": "原神爆料集散地",
+    "topicUrl": "https://tieba.baidu.com/p/10073816671",
     "avatar": "assets/avatar/0.jpeg",
     "backgroundImages": [
       "assets/backgrounds/原神天堂内鬼吧1.png",
@@ -73,6 +74,7 @@
     "id": 1,
     "name": "原神吧",
     "description": "找回遗落的命运吧",
+    "topicUrl": "https://tieba.baidu.com/p/10073841943",
     "avatar": "assets/avatar/1.jpeg",
     "backgroundImages": [
       "assets/backgrounds/原神吧.png"
@@ -92,6 +94,7 @@
     "id": 2,
     "name": "原神内鬼吧",
     "description": "二游玩家终点站，宅男资讯小茶馆",
+    "topicUrl": "https://tieba.baidu.com/p/10073821938",
     "avatar": "assets/avatar/2.jpg",
     "backgroundImages": [
       "assets/backgrounds/原神内鬼吧.png"
@@ -111,6 +114,7 @@
     "id": 3,
     "name": "崩坏星穹铁道吧",
     "description": "和谐讨论，理智一点",
+    "topicUrl": "https://tieba.baidu.com/p/10073819473",
     "avatar": "assets/avatar/3.png",
     "backgroundImages": [
       "assets/backgrounds/崩坏星穹铁道吧.png"
@@ -130,6 +134,7 @@
     "id": 4,
     "name": "鸣潮内鬼吧",
     "description": "因热爱相聚，为鸣潮共鸣。",
+    "topicUrl": "https://tieba.baidu.com/p/10073860096",
     "avatar": "assets/avatar/4.jpg",
     "backgroundImages": [
       "assets/backgrounds/鸣潮内鬼吧.png"
@@ -149,6 +154,7 @@
     "id": 5,
     "name": "芙宁娜吧",
     "description": "喜欢芙宁娜的真爱聚集地",
+    "topicUrl": "https://tieba.baidu.com/p/10073925034",
     "avatar": "assets/avatar/5.jpg",
     "backgroundImages": [
       "assets/backgrounds/芙宁娜吧.png"
@@ -168,6 +174,7 @@
     "id": 6,
     "name": "小水母芙宁娜吧",
     "description": "芙宁娜真爱吧",
+    "topicUrl": "https://tieba.baidu.com/p/10073824531",
     "avatar": "assets/avatar/6.jpeg",
     "backgroundImages": [
       "assets/backgrounds/小水母芙宁娜吧.png"
@@ -187,6 +194,7 @@
     "id": 7,
     "name": "原神芙宁娜吧",
     "description": "欢迎每一个喜欢芙芙的人。",
+    "topicUrl": "https://tieba.baidu.com/p/10073820176",
     "avatar": "assets/avatar/7.jpeg",
     "backgroundImages": [
       "assets/backgrounds/原神芙宁娜吧.png"
@@ -206,6 +214,7 @@
     "id": 8,
     "name": "芙卡洛斯吧",
     "description": "芙宁娜的角色吧",
+    "topicUrl": "https://tieba.baidu.com/p/10073816927",
     "avatar": "assets/avatar/8.jpeg",
     "backgroundImages": [
       "assets/backgrounds/芙卡洛斯吧.png"
@@ -225,6 +234,7 @@
     "id": 9,
     "name": "空芙吧",
     "description": "《原神》中芙宁娜与空（玩家）的cp吧",
+    "topicUrl": "https://tieba.baidu.com/p/10073823389",
     "avatar": "assets/avatar/9.jpeg",
     "backgroundImages": [
       "assets/backgrounds/空芙吧.png"
@@ -244,6 +254,7 @@
     "id": 10,
     "name": "原神芙卡洛斯吧",
     "description": " ",
+    "topicUrl": "https://tieba.baidu.com/p/10073817871",
     "avatar": "assets/avatar/10.jpeg",
     "backgroundImages": [
       "assets/backgrounds/原神芙卡洛斯吧.png"
@@ -263,6 +274,7 @@
     "id": 11,
     "name": "幽夜净土吧",
     "description": "幽夜净土吧，鸦鸦们的家",
+    "topicUrl": "https://tieba.baidu.com/p/10073816467",
     "avatar": "assets/avatar/11.jpeg",
     "backgroundImages": [
       "assets/backgrounds/幽夜净土吧.png"
@@ -282,6 +294,7 @@
     "id": 12,
     "name": "七圣召唤吧",
     "description": "原神卡牌游戏",
+    "topicUrl": "https://tieba.baidu.com/p/10073823128",
     "avatar": "assets/avatar/12.jpeg",
     "backgroundImages": [
       "assets/backgrounds/七圣召唤吧.png"
@@ -301,6 +314,7 @@
     "id": 13,
     "name": "二游联萌吧",
     "description": "保护萌萌人二游玩家！",
+    "topicUrl": "https://tieba.baidu.com/p/10073819791",
     "blackFonts": [
       true
     ],
@@ -323,6 +337,7 @@
     "id": 14,
     "name": "黑海岸通讯吧",
     "description": "鸣潮黑海岸通讯社，和谐讨论，资讯搬运处。",
+    "topicUrl": "https://tieba.baidu.com/p/10074061869",
     "blackFonts": [
       true
     ],
