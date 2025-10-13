@@ -176,12 +176,20 @@ const canSwitchCarousel = computed(() => {
   return props.selectedTieba?.backgroundImages?.length > 1
 })
 
+// 生成随机背景图片索引的辅助函数
+const getRandomBackgroundIndex = (backgroundImages) => {
+  if (!backgroundImages || backgroundImages.length === 0) {
+    return 0
+  }
+  return Math.floor(Math.random() * backgroundImages.length)
+}
+
 // 处理贴吧切换
 const handleTiebaChange = (value) => {
   const selectedTieba = props.tiebaList.find(tieba => tieba.id === value)
   if (selectedTieba) {
-    // 重置背景图片索引
-    currentBackgroundIndex.value = 0
+    // 设置随机背景图片索引
+    currentBackgroundIndex.value = getRandomBackgroundIndex(selectedTieba.backgroundImages)
     emit('switchTieba', selectedTieba)
   }
 }
@@ -311,6 +319,13 @@ watch(() => props.isPlaying, (newIsPlaying, _) => {
     danmakuRef.value.pause()
   }
 }, { deep: true })
+
+// 监听 selectedTieba 变化，首次加载时设置随机背景索引
+watch(() => props.selectedTieba, (newTieba) => {
+  if (newTieba && newTieba.backgroundImages) {
+    currentBackgroundIndex.value = getRandomBackgroundIndex(newTieba.backgroundImages)
+  }
+}, { immediate: true })
 
 // 暴露函数给父组件
 defineExpose({

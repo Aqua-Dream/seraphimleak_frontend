@@ -164,7 +164,6 @@ const handleMusicStateChange = (playing) => {
 
 const closeBanner = () => {
   showBanner.value = false
-  musicPlayerRef.value.aplayer.list.switch(0)
   musicPlayerRef.value.aplayer.play()
 }
 
@@ -179,7 +178,6 @@ const handleGuideClick = async () => {
 
 // 处理Tour完成或关闭
 const handleTourEnd = () => {
-  musicPlayerRef.value.aplayer.list.switch(0)
   musicPlayerRef.value.aplayer.play()
 }
 
