@@ -1,33 +1,16 @@
 <template>
   <div class="comment-area">
     <div class="comment-section">
+      <div class="archive-notice">
+        本站已于 {{ archivedAt }} 归档，留言功能已关闭，仅保留历史留言供浏览。
+      </div>
       <div class="comment-input-area">
-        <el-input ref="commentInputRef" size="large" :model-value="newComment"
-          @update:model-value="$emit('update:newComment', $event)" placeholder="输入你的留言..." :minlength="1"
-          :maxlength="100" :show-word-limit="true" @keyup.enter="handleSubmitComment">
+        <el-input ref="commentInputRef" size="large" :model-value="newComment" disabled
+          placeholder="网站已归档，留言功能已关闭">
           <template #append>
-            <el-button @click="handleSubmitComment" :loading="isSubmitting" type="primary" size="large">
+            <el-button disabled type="primary" size="large">
               提交
             </el-button>
-          </template>
-          <template #prefix>
-            <el-select ref="colorSelectorRef" v-model="selectedColor" suffix-icon="" :style="{
-              width: '28px',
-              height: '28px',
-              backgroundColor: selectedColor?.value || '#FFFFFF',
-              border: selectedColor?.value === '#FFFFFF' ? '1px solid #ccc' : 'none',
-              borderRadius: '6px'
-            }">
-              <el-option v-for="item in namedColorsList" :key="item.value" :value="item" :label="item.label">
-                <div class="flex items-center">
-                  <el-tag :color="item.value" :style="{
-                    marginRight: '8px',
-                    border: item.value === '#FFFFFF' ? '1px solid #ccc' : 'none'
-                  }" size="small" />
-                  <span>{{ item.label }}</span>
-                </div>
-              </el-option>
-            </el-select>
           </template>
         </el-input>
       </div>
@@ -72,11 +55,13 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { formatDateTime, formatFullDateTime } from '../utils/dateFormatter.js'
-import { namedColorsList } from '../utils/colors.js'
 import Captcha from './Captcha.vue'
+import archiveData from '../data/archive.json'
+
+const archivedAt = archiveData.archivedAt
 
 // Props
 const props = defineProps({
@@ -447,6 +432,18 @@ defineExpose({
 
 .comment-section {
   position: relative;
+}
+
+.archive-notice {
+  margin-bottom: 12px;
+  padding: 12px 16px;
+  background: #fff8e6;
+  border: 1px solid #ffe0a3;
+  border-radius: 12px;
+  color: #8a6d3b;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
 }
 
 .comment-input-area {
