@@ -2,6 +2,9 @@
   <div class="footer-info">
     <div class="footer-container">
       <div class="footer-row">
+        <span class="archive-text">本站已于 {{ archivedAt }} 归档</span>
+      </div>
+      <div class="footer-row">
         <el-link type="primary" href="https://tieba.baidu.com/p/10073816671" target="_blank">原神天堂内鬼吧二周年纪念活动帖</el-link>
       </div>
       <div class="footer-row">
@@ -17,6 +20,11 @@
   </div>
 </template>
 
+<script setup>
+import archiveData from '../data/archive.json'
+
+const archivedAt = archiveData.archivedAt
+</script>
 
 <style scoped>
 .footer-info {
@@ -53,6 +61,11 @@
 .author-text {
   color: #666;
   font-size: 14px;
+}
+
+.archive-text {
+  color: #8a6d3b;
+  font-size: 13px;
 }
 
 .beian-link {

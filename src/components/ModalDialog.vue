@@ -6,6 +6,9 @@
       <!-- <img src="/assets/backgrounds/close-button.png" @click="$emit('close')" class="close-btn" alt=""> -->
       <!-- 网站信息内容 -->
       <div class="modal-info">
+        <div class="archive-banner">
+          本站已于 {{ archivedAt }} 归档，仅供浏览纪念。
+        </div>
         <p class="modal-text">
           本网站由百度贴吧<b>原神天堂内鬼吧</b>牵头，联合 14 个游戏主题贴吧共同搭建，是专为玩家打造的粉丝同人纪念平台。内容上以玩家自由发布的弹幕为核心，同时记录百度贴吧玩家社区的重要发展节点，见证社群成长中的精彩瞬间。
         </p>
@@ -33,6 +36,9 @@
 
 <script setup>
 import { computed, ref, onMounted } from 'vue'
+import archiveData from '../data/archive.json'
+
+const archivedAt = archiveData.archivedAt
 
 // Props
 const props = defineProps({
@@ -176,6 +182,18 @@ const handleOverlayClick = () => {
   color: #1a75ff;
   font-size: 1.5em;
   font-weight: bold;
+}
+
+.archive-banner {
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: #fff8e6;
+  border: 1px solid #ffe0a3;
+  border-radius: 10px;
+  color: #8a6d3b;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
 }
 
 .modal-text {

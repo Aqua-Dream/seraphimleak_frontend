@@ -1,80 +1,35 @@
-/*
- * @Author: 刘凯欣 18532285824@163.com
- * @Date: 2025-09-11 11:41:15
- * @LastEditors: 刘凯欣 18532285824@163.com
- * @LastEditTime: 2025-09-11 14:06:27
- * @Description: 
- */
-// API适配器 - 根据环境自动选择数据源
+// API适配器 - 归档版本
+// 网站后端服务已下线，原先依赖的接口数据已快照写入 src/data 下的静态文件。
+import commentsData from '../data/comments.json'
+import statsData from '../data/stats.json'
+import archiveData from '../data/archive.json'
+
 class ApiAdapter {
   constructor() {
-    // 检测是否为本地开发环境
-    this.isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    // this.apiUrl = this.isLocalDev ? 'http://localhost:8001' : '/api';
-    this.apiUrl = 'http://seraphimleak.com/api';
+    this.comments = commentsData.comments || []
+    this.stats = statsData
+    this.archivedAt = archiveData.archivedAt
   }
 
   // 获取统计数据
   async getStats() {
-    const response = await fetch(`${this.apiUrl}/stats`);
-    return await response.json();
+    return { ...this.stats }
   }
 
   // 获取所有评论数据（用于分页）
   async getAllComments() {
-    const response = await fetch(`${this.apiUrl}/comments`);
-    const data = await response.json();
-    return data;
+    return { comments: this.comments.map((c) => ({ ...c })) }
   }
 
-  // 提交评论
-  async submitComment(content, color="#ffffff", captcha = null, captchaId = null) {
-    // 构建请求URL，验证码参数作为query参数
-    let url = `${this.apiUrl}/comments`;
-    
-    if (captcha && captchaId) {
-      const params = new URLSearchParams();
-      params.append('captcha', captcha);
-      params.append('captcha_id', captchaId);
-      url += `?${params.toString()}`;
-    }
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ 
-        content,
-        color
-      })
-    });
-
-    const result = await response.json();
-
-    // 如果服务端返回需要验证码或验证码错误，前端需要获取验证码图片
-    if (result.captchaError === true) {
-      var captchaResponse = {}
-      try {
-        captchaResponse = await this.getCaptcha();
-      } catch (error) {
-        console.error('获取验证码失败:', error);
-      }
-      return {
-        ...result,
-        captchaData: captchaResponse.data
-      };
-    }
-
-    return result;
+  // 提交评论（归档站只读，不可提交）
+  async submitComment() {
+    return { success: false, error: '网站已归档' }
   }
 
-  // 获取验证码
+  // 获取验证码（归档站不可用）
   async getCaptcha() {
-    const response = await fetch(`${this.apiUrl}/captcha`);
-    return await response.json();
+    return { success: false, error: '网站已归档' }
   }
-
 }
 
-export default new ApiAdapter(); 
+export default new ApiAdapter();
